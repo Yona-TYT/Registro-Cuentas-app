@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".ui.addacc.AddAccFragment">
+
+    <com.google.android.material.textfield.TextInputEditText
+        android:id="@+id/input_add1"
+        android:layout_width="@dimen/input_wm"
+        android:layout_height="@dimen/input_h1"
+        android:hint="Nombre Cuenta"
+        android:inputType="textCapWords"
+        android:maxLength="20"
+        android:padding="10dp"
+        android:textSize="@dimen/inner_text_2"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/guideline2"
+        app:layout_constraintHorizontal_bias="0.101"
+        app:layout_constraintStart_toStartOf="@+id/guideline"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.40"
+        tools:ignore="MissingConstraints" />
+
+    <com.google.android.material.textfield.TextInputEditText
+        android:id="@+id/input_add2"
+        android:layout_width="@dimen/input_wm"
+        android:layout_height="@dimen/input_h1"
+        android:hint="Descripcion"
+        android:inputType="textCapWords"
+        android:maxLength="20"
+        android:padding="10dp"
+        android:textSize="@dimen/inner_text_2"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/guideline2"
+        app:layout_constraintHorizontal_bias="0.1"
+        app:layout_constraintStart_toStartOf="@+id/guideline"
+        app:layout_constraintTop_toBottomOf="@+id/input_add1"
+        app:layout_constraintVertical_bias="0.0"
+        tools:ignore="MissingConstraints" />
+
+    <com.google.android.material.textfield.TextInputEditText
+        android:id="@+id/input_add3"
+        android:layout_width="@dimen/input_wm"
+        android:layout_height="@dimen/input_h1"
+        android:hint="Monto Estimado"
+        android:inputType="numberDecimal"
+        android:maxLength="20"
+        android:padding="10dp"
+        android:textSize="@dimen/inner_text_2"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/guideline2"
+        app:layout_constraintHorizontal_bias="0.105"
+        app:layout_constraintStart_toStartOf="@+id/guideline"
+        app:layout_constraintTop_toBottomOf="@+id/input_add2"
+        app:layout_constraintVertical_bias="0.0"
+        tools:ignore="MissingConstraints" />
+
+    <Button
+        android:id="@+id/butt_add1"
+        android:layout_width="@dimen/button_w1"
+        android:layout_height="@dimen/button_h1"
+        android:layout_marginTop="15dp"
+        android:padding="2dp"
+        android:text="Agregar"
+        android:textSize="@dimen/inner_text_2"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/guideline2"
+        app:layout_constraintHorizontal_bias="0.476"
+        app:layout_constraintStart_toStartOf="@+id/guideline"
+        app:layout_constraintTop_toBottomOf="@+id/input_add3"
+        app:layout_constraintVertical_bias="0.0" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_begin="30dp" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_end="30dp" />
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

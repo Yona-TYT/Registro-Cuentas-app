@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/mobile_navigation"
+    app:startDestination="@+id/navigation_home">
+
+    <fragment
+        android:id="@+id/navigation_home"
+        android:name="com.example.registro_cuentas.ui.home.HomeFragment"
+        android:label="@string/title_home"
+        tools:layout="@layout/fragment_home" />
+
+    <fragment
+        android:id="@+id/navigation_pay"
+        android:name="com.example.registro_cuentas.ui.addpay.AddPayFragment"
+        android:label="@string/title_addpay"
+        tools:layout="@layout/fragment_addpay" />
+
+    <fragment
+        android:id="@+id/navigation_acc"
+        android:name="com.example.registro_cuentas.ui.addacc.AddAccFragment"
+        android:label="@string/title_addacc"
+        tools:layout="@layout/fragment_addacc" />
+
+
+</navigation>
