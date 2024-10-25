@@ -19,5 +19,5 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "Registro-Cuentas"
+rootProject.name = "Registro Cuentas"
 include ':app'
