@@ -304,7 +304,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener, Adap
             mLv1.setAdapter(mPayadapter);
             mPayadapter.getFilter().filter("");
         }
-        else {
+        else if(mLv1.getChildCount() > 0){
             mLv1.removeAllViews();
         }
     }

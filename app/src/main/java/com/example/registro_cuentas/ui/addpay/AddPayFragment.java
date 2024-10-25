@@ -74,9 +74,11 @@ public class AddPayFragment extends Fragment implements View.OnClickListener{
         mInputList.add(mInput3);
 
         mPermiss = SatrtVar.mPermiss;
-        mIndex = "" + appDBregistro.get(currtAcc).daoUser().getUsers().size();
-        if (mIndex.isEmpty()) {
-            mIndex = "0";
+        if(!appDBregistro.isEmpty()) {
+            mIndex = "" + appDBregistro.get(currtAcc).daoUser().getUsers().size();
+            if (mIndex.isEmpty()) {
+                mIndex = "0";
+            }
         }
 
         return root;
