@@ -33,6 +33,7 @@ public class SatrtVar {
 
 
     public static int currSel2 = 0;
+    public static int payIndex = 0;
     public static String saveDataName = "savedataID0";
 
 
@@ -107,6 +108,10 @@ public class SatrtVar {
     public void setCurrSel2(int value){
         SatrtVar.currSel2 = value;
     }
+    public void setPayIndex(int value){
+        SatrtVar.payIndex = value;
+    }
+
 
     public void setMorlist(ArrayList<String> list){
         SatrtVar.morlist.clear();

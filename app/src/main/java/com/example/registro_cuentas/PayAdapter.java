@@ -1,7 +1,9 @@
 package com.example.registro_cuentas;
 
 import android.annotation.SuppressLint;
+import android.app.Application;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Typeface;
 import android.util.Log;
 import android.view.Gravity;
@@ -145,8 +147,18 @@ public class PayAdapter extends BaseAdapter implements Filterable, View.OnClickL
         int itemId = view.getId();
 
         if(itemId == R.id.butt_paylist) {
-            int idx = (int)view.getTag();
-            Toast.makeText(mContex, "Siz is " + idx, Toast.LENGTH_LONG).show();
+            SatrtVar satrtVar = new SatrtVar(mContex);
+            satrtVar.setPayIndex( (int)view.getTag());
+
+            Application application = (Application) mContex.getApplicationContext();
+            Intent mIntent = new Intent(mContex, DetailsActivity.class);
+            mIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            application.startActivity(mIntent);
+//            int idx = (int)view.getTag();
+//            Toast.makeText(mContex, "Siz is " + idx, Toast.LENGTH_LONG).show();
+
+
+
         }
     }
 }
