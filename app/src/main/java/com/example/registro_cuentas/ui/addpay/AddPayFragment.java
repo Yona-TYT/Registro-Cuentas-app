@@ -23,6 +23,8 @@ import com.example.registro_cuentas.Registro;
 import com.example.registro_cuentas.SatrtVar;
 import com.example.registro_cuentas.databinding.FragmentAddpayBinding;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -123,9 +125,20 @@ public class AddPayFragment extends Fragment implements View.OnClickListener{
                 //Comprueba que la lista de cuentas no este vacia
                 SatrtVar mVars = new SatrtVar(mContext);
                 if (mVars.listacc.size() > 1) {
+                    //Inicia la fecha actual
+                    LocalDate currdate = null;
+                    LocalTime currtime = null;
+                    if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+                        currtime = LocalTime.now();
+                    }
+
+                    if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+                        currdate = LocalDate.now();
+                    }
+                    assert currdate != null;
                     Registro obj = new Registro(
-                            mList.get(0), mList.get(1), mList.get(2), mList.get(3), 0, 0,
-                            "5", "", "", "", "", "", ""
+                        mList.get(0), mList.get(1), mList.get(2), mList.get(3), 0, 0,
+                        "5", currdate.toString(), currtime.toString(), "", "", "", ""
                     );
                     appDBregistro.get(currtAcc).daoUser().insetUser(obj);
                     //SE Limpia la lista

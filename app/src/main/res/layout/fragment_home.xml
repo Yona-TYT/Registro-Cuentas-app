@@ -7,7 +7,6 @@
     android:id="@+id/constrain_home"
     tools:context=".ui.home.HomeFragment">
 
-
     <TextView
         android:id="@+id/txview"
         android:layout_width="@dimen/txview_wm"
@@ -68,7 +67,7 @@
         android:layout_width="@dimen/txview_w1"
         android:layout_height="@dimen/txview_h2"
         android:layout_alignParentTop="true"
-        android:background="@color/text_background"
+        android:background="@color/text_background2"
         android:iconifiedByDefault="false"
         android:queryHint="Buscar Lista"
         android:translationZ="999dp"
@@ -81,20 +80,6 @@
 
 
         />
-
-    <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/guideline3"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        app:layout_constraintGuide_begin="30dp" />
-
-    <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/guideline4"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        app:layout_constraintGuide_end="30dp" />
 
 
     <ListView
@@ -163,5 +148,18 @@
         app:layout_constraintTop_toTopOf="@+id/guideline5"
         tools:ignore="MissingConstraints" />
 
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_begin="30dp" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline4"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_end="30dp" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

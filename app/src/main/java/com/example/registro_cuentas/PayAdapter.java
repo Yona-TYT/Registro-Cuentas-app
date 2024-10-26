@@ -5,6 +5,7 @@ import android.app.Application;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Typeface;
+import android.util.AttributeSet;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
@@ -18,15 +19,23 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.appcompat.view.ContextThemeWrapper;
+import androidx.core.content.ContextCompat;
+
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class PayAdapter extends BaseAdapter implements Filterable, View.OnClickListener{
     //Test------------------------------------------------------------
     private Context mContex;
+    private CalcCalendar cale = new CalcCalendar();
+    private Basic mBasic;
 
     private List<String[]> textList = new ArrayList<>();
     private List<String[]>  currList = new ArrayList<>(); // Original Values
+    private List<String> mCurrencyList= Arrays.asList("$", "Bs");
+    private int mCindex = SatrtVar.mCurrency;
 
     private ArrayList<Integer> newList = new ArrayList<>();    // Values to be displayed
 
@@ -34,6 +43,8 @@ public class PayAdapter extends BaseAdapter implements Filterable, View.OnClickL
         this.mContex = mContex;
         this.textList = textList;
         this.currList = textList;
+
+        mBasic = new Basic(mContex);
     }
 
     @Override
@@ -54,18 +65,21 @@ public class PayAdapter extends BaseAdapter implements Filterable, View.OnClickL
     public View getView(int pos, View convertView, ViewGroup parent){
 
         Log.d("PhotoPicker", "Ya hay ? 11111------------------------: "+ newList.size() + " ::" + pos);
-        TextView text = new TextView(mContex);
-        Button butt = new Button(mContex);
+        TextView text1 = new TextView(mContex);
+        TextView text2 = new TextView(mContex);
+
+        int buttonStyle = R.style.Theme_RegistroCuentas;
+
+        Button butt = new Button(new ContextThemeWrapper(mContex, buttonStyle));
         LinearLayout layout = new LinearLayout(mContex);
-        Basic mBasic = new Basic(mContex);
         int idx = newList.get(pos);
 
         // Se ajustan los parametros del Boton ----------------------------------
         butt.setId(R.id.butt_paylist);
         butt.setTag(idx);
-        butt.setText("Detalles");
+        butt.setText("+");
         butt.setTypeface(Typeface.DEFAULT_BOLD);
-        LinearLayout.LayoutParams buttParams = new LinearLayout.LayoutParams(mBasic.getPixelSiz(R.dimen.button_ws), mBasic.getPixelSiz(R.dimen.button_h1));
+        LinearLayout.LayoutParams buttParams = new LinearLayout.LayoutParams(mBasic.getPixelSiz(R.dimen.button_wss), mBasic.getPixelSiz(R.dimen.button_h1));
         buttParams.gravity = Gravity.CENTER;
         butt.setLayoutParams(buttParams);
         butt.setTextSize(mBasic.getFloatSiz(R.dimen.inner_text_2));
@@ -74,16 +88,17 @@ public class PayAdapter extends BaseAdapter implements Filterable, View.OnClickL
         layout.addView(butt);
         //-----------------------------------------------------------------------
         // Se ajustan los parametros del Texto ----------------------------------
-        text.setText(textList.get(idx)[0] + " " + textList.get(idx)[1]);
-        text.setTypeface(Typeface.DEFAULT_BOLD);
-        LinearLayout.LayoutParams textParams = new LinearLayout.LayoutParams(mBasic.getPixelSiz(R.dimen.button_ws), mBasic.getPixelSiz(R.dimen.button_h1));
-        textParams.gravity = Gravity.CENTER;
-        text.setLayoutParams(textParams);
+        String txName = textList.get(idx)[1];
+        String txMont = textList.get(idx)[2] + " "+ mCurrencyList.get(mCindex);
+        String txFech = textList.get(idx)[3];
+        String txHora = cale.getTime(textList.get(idx)[4]);
+        text1.setText( " "+txMont  +" " +txName  );
+        text1 = setTextView(text1);
+        layout.addView(text1);
 
-        text.setTextSize(mBasic.getFloatSiz(R.dimen.inner_text_2));
-        text.setPadding(2, 10, 2, 2);
-        layout.addView(text);
-
+        text2.setText( txFech  );
+        text2 = setTextView(text2);
+        layout.addView(text2);
         //-----------------------------------------------------------------------
 
         layout.setOrientation(LinearLayout.HORIZONTAL);
@@ -91,6 +106,18 @@ public class PayAdapter extends BaseAdapter implements Filterable, View.OnClickL
         layout.setPadding(2,2,2,2);
 
         return layout;
+    }
+
+    public TextView setTextView(TextView view){
+        view.setTypeface(Typeface.DEFAULT_BOLD);
+        view.setTextColor(ContextCompat.getColor(view.getContext(), R.color.text_color1));
+        LinearLayout.LayoutParams textParams = new LinearLayout.LayoutParams(mBasic.getPixelSiz(R.dimen.txview_ws), mBasic.getPixelSiz(R.dimen.button_h1));
+        textParams.gravity = Gravity.CENTER;
+        view.setLayoutParams(textParams);
+        view.setTextSize(mBasic.getFloatSiz(R.dimen.inner_text_2));
+        view.setMaxLines(1);
+        view.setPadding(2, 15, 2, 2);
+        return view;
     }
 
     @Override
@@ -119,7 +146,7 @@ public class PayAdapter extends BaseAdapter implements Filterable, View.OnClickL
                 else {
                     constraint = constraint.toString().toLowerCase();
                     for (int i = 0; i < currList.size(); i++) {
-                        String data = currList.get(i)[0];
+                        String data = currList.get(i)[1];
                         if (data.toLowerCase().startsWith(constraint.toString())) {
                             FilteredArrList.add(i);
                             //Log.d("PhotoPicker", "Constrain ------------------------: " + i);

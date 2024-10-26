@@ -13,10 +13,11 @@ public class SatrtVar {
 
     //Nombre de data Base
     private static String nameDBacc = "Cuentas";
-    private static String nameDBreg = "Registros";
+    private static String nameDBclt = "Clientes";
 
     // Var redundants
     public static List<Cuenta> listacc =  new ArrayList<>();
+    public static List<Cliente> listclt =  new ArrayList<>();
     public static List<List> listreg = new ArrayList<>();
     public static boolean mPermiss;
     public static int mCurrenrAcc;
@@ -25,6 +26,7 @@ public class SatrtVar {
 
     // DB
     public static AppDBacc appDBcuenta;
+    public static AppDBclt appDBcliente;
     public static List<AppDBreg> appDBregistro =  new ArrayList<>();
     public static ArrayList<String> textList;
     public static ArrayList<String> dirList;
@@ -52,6 +54,19 @@ public class SatrtVar {
     public void getAccListDB(){
         //Instancia de la base de datos
         SatrtVar.listacc =  SatrtVar.appDBcuenta.daoUser().getUsers();
+    }
+    //----------------------------------------------------------------------------------
+
+    //------------------------------------------ Para guardar los clientes
+    public void setCltListDB(){
+        //Instancia de la base de datos
+        SatrtVar.appDBcliente = Room.databaseBuilder( mContex, AppDBclt.class, nameDBclt).allowMainThreadQueries().build();
+        SatrtVar.listacc =  appDBcuenta.daoUser().getUsers();
+    }
+
+    public void getCltListDB(){
+        //Instancia de la base de datos
+        SatrtVar.listclt =  SatrtVar.appDBcliente.daoUser().getUsers();
     }
     //----------------------------------------------------------------------------------
 

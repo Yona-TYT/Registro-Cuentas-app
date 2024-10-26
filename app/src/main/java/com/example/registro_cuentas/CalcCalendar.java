@@ -1,9 +1,11 @@
-package com.example.cow_data;
+package com.example.registro_cuentas;
 
 import android.content.Context;
 
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.time.Period;
+import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -59,6 +61,16 @@ public class CalcCalendar {
             }
         }
         return null;
+    }
+
+    public String getTime(String value){
+        String text = "";
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+            LocalTime mTime = LocalTime.parse(value);
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm");
+            return formatter.format(mTime);
+        }
+        return text;
     }
 }
 

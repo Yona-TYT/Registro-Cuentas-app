@@ -67,16 +67,10 @@ public class HomeFragment extends Fragment implements View.OnClickListener, Adap
     private Spinner mSpin2;
     private int currSel1 = SatrtVar.mCurrency;
     private int currSel2 = SatrtVar.mCurrenrAcc;
-    private List<String> mSpinL1= Arrays.asList("Dolar", "Bs");
+    private List<String> mSpinL1= Arrays.asList("Dolar", "Bolivar");
     //---------------------------------------------------------------------
 
     private EditText mInput1;
-
-    //Todos los View
-    private TextView mText1;
-    private TextView mText2;
-    private TextView mText3;
-    private List<TextView> mTextList = new ArrayList<>();
 
     //---------------------------------------------------------------------
     private PayAdapter mPayadapter;
@@ -172,6 +166,11 @@ public class HomeFragment extends Fragment implements View.OnClickListener, Adap
                 SatrtVar mVars = new SatrtVar(mContext);
                 mVars.setCurrency(i);
                 //----------------------------------------------------------------------------------
+                //Recarga la lista de pagos en funcion de la cuenta seleccionada--------------------
+                if(!appDBregistro.isEmpty()) {
+                    setRegList();
+                }
+                //----------------------------------------------------------------------------------
             }
             @Override
             public void onNothingSelected(AdapterView<?> adapterView) {
@@ -232,9 +231,6 @@ public class HomeFragment extends Fragment implements View.OnClickListener, Adap
             @Override
             public boolean onQueryTextSubmit(String query) {
                 ArrayList<Integer> idxList = (ArrayList<Integer>)mPayadapter.getItem(0);
-                if(!idxList.isEmpty()){
-                    setTextView(idxList.get(0), mTextList);
-                }
                 return false;
             }
             @Override
@@ -292,11 +288,12 @@ public class HomeFragment extends Fragment implements View.OnClickListener, Adap
             List<String[]> mregList = new ArrayList<>();
             for (int i = 0; i < listRegistro.size(); i++) {
                 String name = listRegistro.get(i).nombre;
-                String[] stList = new String[3];
-                stList[0] = name;
-                stList[1] = listRegistro.get(i).monto;
-                ;
-                stList[2] = Integer.toString(i);
+                String[] stList = new String[5];
+                stList[0] = Integer.toString(i);
+                stList[1] = name;
+                stList[2] = listRegistro.get(i).monto;
+                stList[3] = listRegistro.get(i).fecha;
+                stList[4] = listRegistro.get(i).time;
                 mregList.add(stList);
             }
             //Para configurar la lista de pagos
@@ -310,7 +307,6 @@ public class HomeFragment extends Fragment implements View.OnClickListener, Adap
     }
 
     public void empyLists(){
-        mTextList.clear();
         accnameList.clear();
         regdirList.clear();
     }

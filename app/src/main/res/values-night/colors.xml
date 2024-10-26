@@ -10,7 +10,7 @@
 
     <color name="text_color1">#FFFFFF</color>
     <color name="text_background">#5c5c5c</color>
-    <color name="text_background2">#885c5c5c</color>
+    <color name="text_background2">#5c5c5c</color>
     <color name="alert_background">#ff2d06</color>
     <color name="alert_text">#FFFFFF</color>
     <color name="button">#5c5c5c</color>

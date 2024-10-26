@@ -9,8 +9,8 @@
     <color name="white">#FFFFFFFF</color>
 
     <color name="text_color1">#000000</color>
-    <color name="text_background">#99ffffff</color>
-    <color name="text_background2">#99ffffff</color>
+    <color name="text_background">#30518C4D</color>
+    <color name="text_background2">#DDE6FF</color>
     <color name="alert_background">#ff2d06</color>
     <color name="alert_text">#FFFFFF</color>
     <color name="button">#05a6f1</color>
