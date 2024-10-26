@@ -15,7 +15,7 @@ public interface DaoClt {
     Cliente getUsers(String user);
 
     @Insert
-    void insetUser(Cliente...cliente);
+    void insetUser(Cliente...clientes);
 
     @Query("UPDATE cliente SET nombre= :nombre, total= :total, porc= :porc, fecha= :fecha WHERE cliente= :user")
     void updateUser(String user, String nombre, String total, Integer porc, String fecha);

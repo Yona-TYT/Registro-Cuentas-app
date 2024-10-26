@@ -6,20 +6,45 @@
     android:layout_height="match_parent"
     tools:context=".ui.addpay.AddPayFragment">
 
+    <Spinner
+        android:id="@+id/spin_pay1"
+        android:layout_width="@dimen/spinner_w1"
+        android:layout_height="@dimen/spinner_h1"
+        android:layout_marginTop="160dp"
+        android:layout_marginEnd="8dp"
+        android:padding="5dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/guideline2"
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintStart_toEndOf="@+id/input_pay1"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.0" />
+
+    <Spinner
+        android:id="@+id/spin_pay2"
+        android:layout_width="@dimen/spinner_w1"
+        android:layout_height="@dimen/spinner_h1"
+        android:layout_marginTop="64dp"
+        android:layout_marginEnd="8dp"
+        android:padding="5dp"
+        app:layout_constraintEnd_toStartOf="@+id/guideline2"
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintStart_toEndOf="@+id/input_pay3"
+        app:layout_constraintTop_toBottomOf="@+id/spin_pay1" />
+
     <TextView
         android:id="@+id/txview_pay1"
         android:layout_width="@dimen/txview_wm"
         android:layout_height="@dimen/txview_h1"
-        android:layout_marginTop="50dp"
+        android:layout_marginTop="88dp"
         android:padding="5dp"
         android:text="Seleccione Imagen / Capture"
         android:textSize="@dimen/inner_text_1"
         android:textStyle="bold"
-        app:layout_constraintBottom_toTopOf="@+id/butt_pay1"
         app:layout_constraintEnd_toStartOf="@+id/guideline2"
-        app:layout_constraintHorizontal_bias="0.100"
+        app:layout_constraintHorizontal_bias="0.96"
         app:layout_constraintStart_toStartOf="@+id/guideline"
-        app:layout_constraintTop_toBottomOf="@+id/switch1"
+        app:layout_constraintTop_toBottomOf="@+id/spin_pay2"
         tools:ignore="MissingConstraints" />
 
     <ImageButton
@@ -27,11 +52,10 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:src="@android:drawable/ic_menu_gallery"
-        app:layout_constraintBottom_toTopOf="@+id/butt_pay1"
         app:layout_constraintEnd_toStartOf="@+id/guideline2"
-        app:layout_constraintHorizontal_bias="0.824"
+        app:layout_constraintHorizontal_bias="0.787"
         app:layout_constraintStart_toStartOf="@+id/guideline"
-        app:layout_constraintTop_toBottomOf="@+id/spin_pay1" />
+        app:layout_constraintTop_toBottomOf="@+id/txview_pay1" />
 
     <com.google.android.material.textfield.TextInputEditText
         android:id="@+id/input_pay3"
@@ -89,14 +113,16 @@
         android:id="@+id/butt_pay1"
         android:layout_width="@dimen/button_w1"
         android:layout_height="@dimen/button_h1"
+        android:layout_marginBottom="64dp"
+        android:padding="2dp"
         android:text="Pagar"
         android:textSize="@dimen/inner_text_2"
-        android:padding="2dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/guideline2"
         app:layout_constraintHorizontal_bias="0.476"
         app:layout_constraintStart_toStartOf="@+id/guideline"
-        app:layout_constraintTop_toBottomOf="@+id/switch1" />
+        app:layout_constraintTop_toBottomOf="@+id/butt_pay2"
+        app:layout_constraintVertical_bias="0.297" />
 
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/guideline"
@@ -112,18 +138,6 @@
         android:orientation="vertical"
         app:layout_constraintGuide_end="30dp" />
 
-    <Spinner
-        android:id="@+id/spin_pay1"
-        android:layout_width="@dimen/spinner_w1"
-        android:layout_height="@dimen/spinner_h1"
-        android:layout_marginEnd="8dp"
-        android:padding="5dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/guideline2"
-        app:layout_constraintHorizontal_bias="1.0"
-        app:layout_constraintStart_toEndOf="@+id/input_pay3"
-        app:layout_constraintTop_toBottomOf="@+id/input_pay2"
-        app:layout_constraintVertical_bias="0.038" />
 
     <Switch
         android:id="@+id/switch1"

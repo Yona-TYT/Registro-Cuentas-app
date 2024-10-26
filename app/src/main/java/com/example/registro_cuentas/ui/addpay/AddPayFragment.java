@@ -9,13 +9,16 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
+import com.example.registro_cuentas.AppDBclt;
 import com.example.registro_cuentas.AppDBreg;
 import com.example.registro_cuentas.BaseContext;
+import com.example.registro_cuentas.Cliente;
 import com.example.registro_cuentas.Cuenta;
 import com.example.registro_cuentas.MainActivity;
 import com.example.registro_cuentas.R;
@@ -27,6 +30,8 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class AddPayFragment extends Fragment implements View.OnClickListener{
 
@@ -36,6 +41,8 @@ public class AddPayFragment extends Fragment implements View.OnClickListener{
 
     // DB
     private List<AppDBreg> appDBregistro = SatrtVar.appDBregistro;
+    private AppDBclt appDBcliente = SatrtVar.appDBcliente;
+    private List<Cliente> listCliente = new ArrayList<>();
 
     //Todos los Inputs
     private EditText mInput1;
@@ -46,6 +53,9 @@ public class AddPayFragment extends Fragment implements View.OnClickListener{
     //Botones
     private Button mButt1;
     private Button mButt2;
+
+    //Selectores
+
 
     private List<String> mList = new ArrayList<>();
     private String mIndex = "";
@@ -83,6 +93,8 @@ public class AddPayFragment extends Fragment implements View.OnClickListener{
             }
         }
 
+        listCliente = appDBcliente.daoUser().getUsers();
+
         return root;
     }
 
@@ -98,22 +110,35 @@ public class AddPayFragment extends Fragment implements View.OnClickListener{
         if (itemId == R.id.butt_pay1) {
             boolean result = true;
             int msgIdx = 0;
+            String cltId = "0";
+            boolean newClt = true;
             mList.add("payID"+mIndex);
             for(int i = 0; i < mInputList.size(); i++) {
-                String text = mInputList.get(i).getText().toString();
+                String text = mInputList.get(i).getText().toString().toLowerCase();
                 text = text.replaceAll("\"", "");
                 text = text.replaceAll(",", "");
+                if(i == 0) {
+                    for (int j = 0; j < listCliente.size(); j++) {
+                        String name = listCliente.get(j).nombre;
+                        if(name.toLowerCase().equals(text)){
+                            msgIdx = 1;
+                            cltId = listCliente.get(j).cliente;
+                            newClt = false;
+                            break;
+                        }
+                    }
+                }
                 if (text.isEmpty()){
-                    if(i == 2) {
-                        //MSG para entrada de Monto
-                        msgIdx = 3;
-                    }
-                    else if (i == 3) {
-                        //MSG para entrada de...
-                        msgIdx = 2;
-                    }
-                    result = false;
-                    break;
+                if(i == 2) {
+                    //MSG para entrada de Monto
+                    msgIdx = 3;
+                }
+                else if (i == 3) {
+                    //MSG para entrada de...
+                    msgIdx = 2;
+                }
+                result = false;
+                break;
                 }
                 mList.add(text);
             }
@@ -131,21 +156,29 @@ public class AddPayFragment extends Fragment implements View.OnClickListener{
                     if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
                         currtime = LocalTime.now();
                     }
-
                     if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
                         currdate = LocalDate.now();
                     }
                     assert currdate != null;
                     Registro obj = new Registro(
                         mList.get(0), mList.get(1), mList.get(2), mList.get(3), 0, 0,
-                        "5", currdate.toString(), currtime.toString(), "", "", "", ""
+                        "5", currdate.toString(), currtime.toString(), cltId, "", "", ""
                     );
                     appDBregistro.get(currtAcc).daoUser().insetUser(obj);
+
+                   if(newClt){
+                       cltId = ""+listCliente.size();
+                       Toast.makeText(mContext, "Siz is "+ cltId, Toast.LENGTH_LONG).show();
+                       Cliente objClt = new Cliente(cltId,"","",0, currdate.toString());
+                       appDBcliente.daoUser().insetUser(objClt);
+                   }
+
                     //SE Limpia la lista
                     mList.clear();
 
                     //Recarga La lista de la DB ----------------------------
                     mVars.getRegListDB();
+                    mVars.getCltListDB();
                     //-------------------------------------------------------
 
                     //Esto inicia las actividad Main despues de tiempo de espera del preloder
@@ -154,5 +187,25 @@ public class AddPayFragment extends Fragment implements View.OnClickListener{
                }
             }
         }
+    }
+
+    public static String[] dataValidate(String text){
+        Pattern patt = Pattern.compile("(^{"+text+"}$)");
+        Matcher matcher = patt.matcher(text);
+        if(matcher.find()) {
+            if (text.contains("-")) {
+                return text.split("-");
+            }
+            else if (text.contains("/")) {
+                return text.split("/");
+            }
+            else if (text.contains(".")) {
+                return text.split("\\.");
+            }
+            else {
+                return null;
+            }
+        }
+        return null;
     }
 }

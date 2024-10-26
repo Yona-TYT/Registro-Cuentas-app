@@ -29,6 +29,7 @@ public class MainActivity extends AppCompatActivity {
         //Satrted variables
         satrtVar = new SatrtVar(getApplicationContext());
         satrtVar.setAccListDB();
+        satrtVar.setCltListDB();
         satrtVar.setmPermiss(true);
         List<Cuenta> listCuenta = appDBcuenta.daoUser().getUsers();
 

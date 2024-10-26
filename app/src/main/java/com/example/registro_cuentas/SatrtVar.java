@@ -61,7 +61,7 @@ public class SatrtVar {
     public void setCltListDB(){
         //Instancia de la base de datos
         SatrtVar.appDBcliente = Room.databaseBuilder( mContex, AppDBclt.class, nameDBclt).allowMainThreadQueries().build();
-        SatrtVar.listacc =  appDBcuenta.daoUser().getUsers();
+        SatrtVar.listclt =  appDBcliente.daoUser().getUsers();
     }
 
     public void getCltListDB(){
