@@ -6,19 +6,20 @@ import android.text.Editable;
 import android.text.TextWatcher;
 import android.transition.TransitionValues;
 import android.view.KeyEvent;
+import android.view.MotionEvent;
 import android.view.View;
-import android.widget.Toast;
-
 import com.vicmikhailau.maskededittext.MaskedEditText;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class CurrencyInput implements View.OnClickListener, View.OnFocusChangeListener, View.OnKeyListener{
+@SuppressLint("RestrictedApi")
+public class CurrencyInput implements View.OnClickListener, View.OnFocusChangeListener, View.OnKeyListener, View.OnTouchListener {
     private Context mContext;
     private MaskedEditText mInput;
     private List<View> mViewList = new ArrayList<>();
     private int mOpt = 0;
+    private boolean allSelec = false;
 
     //Opt 0 = Input Precio Dolar
     //Opt 1 = Input Monto
@@ -29,57 +30,32 @@ public class CurrencyInput implements View.OnClickListener, View.OnFocusChangeLi
         this.mOpt = mOpt;
     }
 
+    @SuppressLint("ClickableViewAccessibility")
     public void set() {
         mInput.setOnClickListener(this);
         mInput.setOnFocusChangeListener(this);
         mInput.setOnKeyListener(this);
+        mInput.setOnTouchListener(this);
+
+        mInput.setSelectAllOnFocus(false);
 
         mInput.setSelection(0); // After initialization keep cursor on right side
         mInput.setCursorVisible(true);// Disable the cursor.
-
 
         mInput.addTextChangedListener(new TextWatcher() {
             String setTextEdit = mInput.getText().toString().trim();
             @SuppressLint("SetTextI18n")
             @Override
-            public void beforeTextChanged(CharSequence s, int i, int i1, int i2) {
-                int len = s.length();
-
-            }
+            public void beforeTextChanged(CharSequence s, int i, int i1, int i2) {}
             @Override
             public void onTextChanged(CharSequence s, int i, int i1, int i2) {
-                String value = s.toString();
                 int len = s.length();
-                String maskValue = mInput.getMaskString();
-                int maskSiz = 0;
-
                 if (s.toString().endsWith(" Bs")) {
                     mInput.setSelection(len - 3);
                 }
-
-//                glValue = value.replaceAll("([^.;^0-9]+)", "");
-//                glValue = glValue + " Bs";
-
                 if(i2 >= (len-3)){
                     mInput.setCursorVisible(false);
                 }
-                //Log.d("PhotoPicker", " Aquiiiiiiiiii Hayyyyyy 11100------------------------: " + i +" "+i1+" "+i2 );
-                //Toast.makeText(mContext, "S eses " + glValue +" "+value, Toast.LENGTH_LONG).show();
-
-
-//                if(!s.toString().equals(setTextEdit)){
-//                    input.removeTextChangedListener(this);
-//                    String remplace = s.toString().replaceAll("[Rp. ]","");
-//                    if(!remplace.isEmpty()){
-//                        setTextEdit = Basic.currencyFormat(remplace);
-//                    }
-//                    else {
-//                        setTextEdit = "";
-//                    }
-//                    input.setText(setTextEdit);
-//                    input.addTextChangedListener(this);
-//                }
-
             }
             @SuppressLint("SetTextI18n")
             @Override
@@ -88,9 +64,10 @@ public class CurrencyInput implements View.OnClickListener, View.OnFocusChangeLi
                 if(value.isEmpty()){
                     mInput.setText(Basic.setMask("0"));
                 }
-//                if(!value1.equals(glValue) && value1.endsWith(" Bs")){
-//                    input.setText(glValue);
-//                }
+                else if (!value.endsWith(" Bs")){
+                    mInput.setText(Basic.setMask(value));
+                    mInput.setSelection(0);
+                }
 
                 if (mOpt == 0) {
                     // Actualiza y guarda el Precio del dolar ------------------------
@@ -103,35 +80,6 @@ public class CurrencyInput implements View.OnClickListener, View.OnFocusChangeLi
                 //----------------------------------------------------------------------------------
             }
         });
-    }
-    @Override
-    public void onClick(View view) {
-        String value = mInput.getText().toString().trim();
-        if (value.endsWith(" Bs")) {
-            int siz = value.length();
-            mInput.setSelection(value.length() - 3);
-            value = value.replaceAll("([^.;^0-9]+)", "");
-            if (value.equals("0")){
-                mInput.setSelection( (siz - 3),0);
-            }
-            else if(value.isEmpty()){
-
-                mInput.setSelection(0);
-            }
-            //Toast.makeText(mContext, "S keyyyyy " + value , Toast.LENGTH_LONG).show();
-
-            //mInput1.setCursorVisible(true);
-        }
-        else  if (value.endsWith("Bs")) {
-            mInput.setSelection(value.length() - 2);
-        }
-
-        if(mInput.hasFocus()){
-            mInput.setCursorVisible(true);
-        }
-        //  mInput1.setSelection(0);
-        // mInput1.setText("" + Basic.floatFormat(setTextEdit));
-
     }
 
     @Override
@@ -165,13 +113,18 @@ public class CurrencyInput implements View.OnClickListener, View.OnFocusChangeLi
         String value = mInput.getText().toString();
         int siz = value.length();
 
-        //String maskValue = "";//input.getMaskString();
-        // = maskValue.replaceAll("([^#]+)","");
-        //Toast.makeText(mContext, "S keyyyyy " +      input.getSelectionEnd(), Toast.LENGTH_LONG).show();
-
         if (value.endsWith(" Bs") &&  mInput.getSelectionEnd() !=0) {
-            mInput.setSelection(siz - 3);
-            mInput.setCursorVisible(true);
+            if(allSelec){
+                mInput.clearFocus();
+                mInput.requestFocus();
+                allSelec = false;
+                mInput.setSelection((siz - 3), 0);
+                mInput.setCursorVisible(true);
+            }
+            else {
+                mInput.setSelection(siz - 3);
+                mInput.setCursorVisible(true);
+            }
         }
         if(keyEvent.getKeyCode() == 67) {
             if(siz<=3){
@@ -195,7 +148,39 @@ public class CurrencyInput implements View.OnClickListener, View.OnFocusChangeLi
                 }
                 resut.append(mlist[j]);
             }
-            Toast.makeText(mContext, "S keyyyyy " + resut +" "+min+"  "+max, Toast.LENGTH_LONG).show();
+        }
+        return false;
+    }
+
+    @Override
+    public void onClick(View view) {
+        String value = mInput.getText().toString().trim();
+        if (value.endsWith(" Bs")) {
+            int siz = value.length();
+            mInput.setSelection(value.length() - 3);
+            value = value.replaceAll("([^.;^0-9]+)", "");
+            if(value.isEmpty()){
+                mInput.setSelection(0);
+            }
+            else {
+                mInput.setCursorVisible(false);
+                mInput.setSelection( (siz - 3),0);
+            }
+        }
+        else  if (value.endsWith("Bs")) {
+            mInput.setSelection(value.length() - 2);
+        }
+        if(mInput.hasFocus()){
+            mInput.setCursorVisible(true);
+        }
+    }
+
+    @Override
+    public boolean onTouch(View view, MotionEvent motionEvent) {
+        if (MotionEvent.ACTION_UP == motionEvent.getAction()) {
+            if (mInput.hasSelection()) {
+                allSelec = true;
+            }
         }
         return false;
     }
