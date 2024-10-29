@@ -118,4 +118,49 @@
         tools:srcCompat="@tools:sample/backgrounds/scenic" />
 
 
+
+    <Switch
+        android:id="@+id/sw_dts1"
+        android:layout_width="@dimen/sw_ws"
+        android:layout_height="@dimen/sw_h1"
+        android:layout_marginTop="15dp"
+        android:text="Confirme"
+        android:padding="5dp"
+        android:textSize="@dimen/inner_text_2"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/guideline4"
+        app:layout_constraintHorizontal_bias="0.02"
+        app:layout_constraintStart_toStartOf="@+id/guideline3"
+        app:layout_constraintTop_toBottomOf="@+id/txview_dts5"
+        app:layout_constraintVertical_bias="0.0"
+        tools:ignore="UseSwitchCompatOrMaterialXml" />
+
+    <Button
+        android:id="@+id/butt_dts2"
+        android:layout_width="@dimen/sw_ws"
+        android:layout_height="@dimen/button_h1"
+        android:text="Editar"
+        android:textSize="@dimen/inner_text_2"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/guideline4"
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintStart_toEndOf="@+id/butt_dts1"
+        app:layout_constraintTop_toBottomOf="@+id/sw_dts1"
+        app:layout_constraintVertical_bias="0.0" />
+
+    <Button
+        android:id="@+id/butt_dts1"
+        android:layout_width="@dimen/sw_ws"
+        android:layout_height="@dimen/button_h1"
+        android:layout_marginStart="4dp"
+        android:layout_marginBottom="40dp"
+        android:enabled="false"
+        android:text="Eliminar"
+        android:textSize="@dimen/inner_text_2"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="@+id/guideline3"
+        app:layout_constraintTop_toBottomOf="@+id/sw_dts1"
+        app:layout_constraintVertical_bias="0.0" />
+
+
 </androidx.constraintlayout.widget.ConstraintLayout>

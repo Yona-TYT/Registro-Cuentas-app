@@ -4,6 +4,8 @@ import android.content.Context;
 
 import androidx.room.Room;
 
+import com.google.android.material.bottomnavigation.BottomNavigationView;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -19,10 +21,10 @@ public class SatrtVar {
     public static List<Cuenta> listacc =  new ArrayList<>();
     public static List<Cliente> listclt =  new ArrayList<>();
     public static List<List> listreg = new ArrayList<>();
-    public static boolean mPermiss;
-    public static int mCurrenrAcc;
-    public static int mCurrency;
-    public static String mDollar;
+    public static boolean mPermiss;     //Permisos de gestion multimedia
+    public static int mCurrenrAcc;      // Cuenta seleccionada
+    public static int mCurrency;        //Moneda seleccionada
+    public static String mDollar;       //Precio del dolar
 
     // DB
     public static AppDBacc appDBcuenta;
@@ -38,6 +40,8 @@ public class SatrtVar {
     public static int payIndex = 0;
     public static String saveDataName = "savedataID0";
 
+    //Barra de navegacion
+    public static BottomNavigationView mNavBar;
 
     private Context mContex;
     public SatrtVar(Context mContex){
@@ -113,6 +117,8 @@ public class SatrtVar {
     public void setDollar(String idx){
         mDollar = idx;
     }
+    public void setNavBar(BottomNavigationView view){mNavBar = view;}
+
 
     public void setArrayList(ArrayList<String> listA, ArrayList<String> listB, ArrayList<String> listC){
         SatrtVar.textList = listA;

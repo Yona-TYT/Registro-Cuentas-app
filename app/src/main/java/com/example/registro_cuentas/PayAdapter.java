@@ -89,7 +89,7 @@ public class PayAdapter extends BaseAdapter implements Filterable, View.OnClickL
         //-----------------------------------------------------------------------
         // Se ajustan los parametros del Texto ----------------------------------
         String txName = textList.get(idx)[1];
-        String txMont = textList.get(idx)[2] + " "+ mCurrencyList.get(mCindex);
+        String txMont = Basic.getValue(textList.get(idx)[2]) + " "+ mCurrencyList.get(mCindex);
         String txFech = textList.get(idx)[3];
         String txHora = cale.getTime(textList.get(idx)[4]);
         text1.setText( " "+txMont  +" " +txName  );
@@ -143,7 +143,7 @@ public class PayAdapter extends BaseAdapter implements Filterable, View.OnClickL
                     results.count = FilteredArrList.size();
                     results.values = FilteredArrList;
                 }
-                else {
+                else{
                     constraint = constraint.toString().toLowerCase();
                     for (int i = 0; i < currList.size(); i++) {
                         String data = currList.get(i)[1];

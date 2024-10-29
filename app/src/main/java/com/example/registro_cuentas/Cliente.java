@@ -10,15 +10,17 @@ public class Cliente {
     public long uid;
     public String cliente;
     public String nombre;
+    public String alias;
     public String total;
     public Integer porc;
     public String fecha;
 
 
-    public Cliente(@NonNull String cliente, String nombre, String total, Integer porc, String fecha)
+    public Cliente(@NonNull String cliente, String nombre, String alias, String total, Integer porc, String fecha)
     {
             this.cliente = cliente;
             this.nombre = nombre;
+            this.alias = alias;
             this.total = total;
             this.porc = porc;
             this.fecha = fecha;

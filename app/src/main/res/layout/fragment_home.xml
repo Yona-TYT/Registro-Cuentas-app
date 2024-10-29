@@ -108,16 +108,19 @@
         app:layout_constraintGuide_begin="16dp" />
 
 
-    <com.google.android.material.textfield.TextInputEditText
+    <com.vicmikhailau.maskededittext.MaskedEditText
         android:id="@+id/input_home1"
         android:layout_width="@dimen/input_wm"
         android:layout_height="@dimen/input_h1"
         android:layout_marginTop="1dp"
-        android:hint="0"
+        android:hint="Monto en Bs"
         android:inputType="numberDecimal"
+        android:ems="10"
+        android:imeOptions="actionDone"
         android:maxLength="20"
         android:padding="10dp"
         android:textSize="@dimen/inner_text_2"
+        android:cursorVisible="false"
         app:layout_constraintEnd_toStartOf="@+id/guideline4"
         app:layout_constraintTop_toBottomOf="@+id/txview2"
         tools:ignore="MissingConstraints" />

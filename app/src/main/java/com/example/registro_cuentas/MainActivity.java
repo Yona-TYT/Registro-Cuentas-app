@@ -69,6 +69,14 @@ public class MainActivity extends AppCompatActivity {
         NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment_activity_main);
         NavigationUI.setupActionBarWithNavController(this, navController, appBarConfiguration);
         NavigationUI.setupWithNavController(binding.navView, navController);
+
+        satrtVar.setNavBar(navView);
+    }
+
+    public void setBottomNavigationVisibility(int visibility) {
+        // get the reference of the bottomNavigationView and set the visibility.
+        BottomNavigationView navView = findViewById(R.id.nav_view);
+        navView.setVisibility(visibility);
     }
 
 }

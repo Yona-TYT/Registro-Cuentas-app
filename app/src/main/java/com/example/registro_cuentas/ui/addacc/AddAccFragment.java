@@ -11,17 +11,20 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.example.registro_cuentas.AppDBacc;
 import com.example.registro_cuentas.BaseContext;
+import com.example.registro_cuentas.Basic;
 import com.example.registro_cuentas.Cuenta;
 import com.example.registro_cuentas.MainActivity;
 import com.example.registro_cuentas.R;
 import com.example.registro_cuentas.SatrtVar;
 import com.example.registro_cuentas.databinding.FragmentAddaccBinding;
 import com.example.registro_cuentas.ui.home.HomeFragment;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,7 +33,7 @@ public class AddAccFragment extends Fragment implements View.OnClickListener{
 
     private FragmentAddaccBinding binding;
 
-    private Context mContext;
+    private Context mContext = BaseContext.getContext();
 
     // DB
     private AppDBacc appDBcuenta = SatrtVar.appDBcuenta;
@@ -41,6 +44,9 @@ public class AddAccFragment extends Fragment implements View.OnClickListener{
     private EditText mInput3;
     private List<EditText> mInputList = new ArrayList<>();
 
+    private ConstraintLayout mConstrain;
+    private BottomNavigationView mNavBar = SatrtVar.mNavBar;
+
     //Botones
     private Button mButt1;
 
@@ -50,13 +56,15 @@ public class AddAccFragment extends Fragment implements View.OnClickListener{
     // Para guardar los permisos de app comprobados en main
     private boolean mPermiss = false;
 
+    private Basic mBasic = new Basic(BaseContext.getContext());
+
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         AddAccViewModel addAccViewModel = new ViewModelProvider(this).get(AddAccViewModel.class);
 
         binding = FragmentAddaccBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
 
-        mContext = BaseContext.getContext();
+        mConstrain = binding.constrainAcc;
 
         mInput1 = binding.inputAdd1;
         mInput2 = binding.inputAdd2;
@@ -68,6 +76,11 @@ public class AddAccFragment extends Fragment implements View.OnClickListener{
         mInputList.add(mInput1);
         mInputList.add(mInput2);
         mInputList.add(mInput3);
+
+        // Para eventos al mostrar o ocultar el teclado-----
+        mBasic.steAllKeyEvent(mConstrain, mInputList);
+        mBasic.setAllfocusEvent(mNavBar, mInputList);
+        //-----------------------------------------------
 
         mPermiss = SatrtVar.mPermiss;
         mIndex = "" + appDBcuenta.daoUser().getUsers().size();

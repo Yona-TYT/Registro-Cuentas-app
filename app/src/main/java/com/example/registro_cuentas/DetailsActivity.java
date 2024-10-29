@@ -1,8 +1,14 @@
 package com.example.registro_cuentas;
 
 import android.annotation.SuppressLint;
+import android.content.Context;
+import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.Button;
+import android.widget.Switch;
 import android.widget.TextView;
 
 import androidx.activity.EdgeToEdge;
@@ -16,6 +22,8 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.appcompat.widget.Toolbar;
 
+import com.google.android.material.switchmaterial.SwitchMaterial;
+
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -24,10 +32,13 @@ import java.util.List;
 
 import io.reactivex.annotations.NonNull;
 
-public class DetailsActivity extends AppCompatActivity {
+public class DetailsActivity extends AppCompatActivity implements View.OnClickListener {
+
+    private  Context mContext = BaseContext.getContext();
 
     // DB ----------------------------------------------------------------
     private AppDBacc appDBcuenta = SatrtVar.appDBcuenta;
+    private AppDBclt appDBcliente = SatrtVar.appDBcliente;
     private List<Cuenta> listCuenta;
     private List<AppDBreg> appDBregistro = SatrtVar.appDBregistro;
     private List<Registro> listRegistro;
@@ -41,6 +52,13 @@ public class DetailsActivity extends AppCompatActivity {
     private TextView mText5;
     private List<TextView> mTextList = new ArrayList<>();
     //---------------------------------------------------------------------
+
+    @SuppressLint("UseSwitchCompatOrMaterialCode")
+    private Switch mSw;
+    private boolean swDel = false;
+    private String mUser = "";
+    private Button mBtton1;
+    private Button mBtton2;
 
     public int payIndex = SatrtVar.payIndex;
     public int accIndex = SatrtVar.mCurrenrAcc;
@@ -87,6 +105,14 @@ public class DetailsActivity extends AppCompatActivity {
         mText4 = findViewById(R.id.txview_dts4);
         mText5 = findViewById(R.id.txview_dts5);
 
+        mBtton1 = findViewById(R.id.butt_dts1);
+        mBtton2  = findViewById(R.id.butt_dts2);
+        mSw = findViewById(R.id.sw_dts1);
+
+        mBtton1.setOnClickListener(this);
+        mBtton2.setOnClickListener(this);
+        mSw.setOnClickListener(this);
+
         mTextList.add(mText1);
         mTextList.add(mText2);
         mTextList.add(mText3);
@@ -95,6 +121,11 @@ public class DetailsActivity extends AppCompatActivity {
 
         // Se llenan los textView
         setInputList();
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            mSw.setFocusedByDefault(false);
+        }
+
 
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
@@ -120,22 +151,52 @@ public class DetailsActivity extends AppCompatActivity {
             CalcCalendar cale = new CalcCalendar();
             listRegistro = appDBregistro.get(accIndex).daoUser().getUsers();
             Registro reg = listRegistro.get(payIndex);
+            mUser = reg.registro;
             String txName = reg.nombre;
+            String txAlias = appDBcliente.daoUser().getSaveAlias(reg.cltid);
             String txConc = reg.concep;
             String txMont = reg.monto;
             String txFech = reg.fecha;
             String txHora = cale.getTime(reg.time);
 
             int i = 0;
-            mTextList.get(i).setText("Cliente: " + txName);
+            mTextList.get(i).setText("Cliente: " + txName + " ("+txAlias+")");
             i++;
             mTextList.get(i).setText("Concepto: " + txConc);
             i++;
-            mTextList.get(i).setText("Monto: "+ txMont+ " "+mCurrencyList.get(mCindex));
+            mTextList.get(i).setText("Monto: "+ Basic.getValue(txMont)+ " "+mCurrencyList.get(mCindex));
             i++;
             mTextList.get(i).setText("Fecha: "+ txFech);
             i++;
             mTextList.get(i).setText("Hora: "+ txHora);
+        }
+    }
+
+    @Override
+    public void onClick(View view) {
+        int itemId = view.getId();
+        if (itemId == R.id.sw_dts1){
+            swDel = !swDel;
+            if(swDel) {
+                mBtton1.setEnabled(true);
+            }
+            else{
+                mBtton1.setEnabled(false);
+            }
+        }
+        if (itemId == R.id.butt_dts1){
+            //fmang.RemoveFile(saveImage, this.getContentResolver());
+
+            //Elimina el registro selecionado
+            appDBregistro.get(accIndex).daoUser().removerUser(mUser);
+            SatrtVar mVars = new SatrtVar(mContext);
+            //Recarga La lista de la DB ----------------------------
+            mVars.getCltListDB();
+            //-------------------------------------------------------
+
+            Intent mIntent = new Intent(this, MainActivity.class);
+            startActivity(mIntent);
+            finish(); //Finaliza la actividad y ya no se accede mas
 
         }
     }

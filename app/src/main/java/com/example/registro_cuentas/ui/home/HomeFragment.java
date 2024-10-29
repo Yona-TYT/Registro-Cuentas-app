@@ -3,9 +3,14 @@ package com.example.registro_cuentas.ui.home;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Rect;
+import android.icu.text.NumberFormat;
+import android.icu.util.Currency;
 import android.os.Bundle;
 import android.text.Editable;
+import android.text.TextUtils;
 import android.text.TextWatcher;
+import android.util.Log;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -34,6 +39,7 @@ import com.example.registro_cuentas.AppDBreg;
 import com.example.registro_cuentas.BaseContext;
 import com.example.registro_cuentas.Basic;
 import com.example.registro_cuentas.Cuenta;
+import com.example.registro_cuentas.CurrencyInput;
 import com.example.registro_cuentas.PayAdapter;
 import com.example.registro_cuentas.R;
 import com.example.registro_cuentas.Registro;
@@ -42,10 +48,14 @@ import com.example.registro_cuentas.SearchAdapter;
 import com.example.registro_cuentas.SelecAdapter;
 import com.example.registro_cuentas.databinding.FragmentHomeBinding;
 import com.google.android.material.textfield.TextInputEditText;
+import com.vicmikhailau.maskededittext.MaskedEditText;
+
+import org.apache.commons.lang3.StringUtils;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 
 public class HomeFragment extends Fragment implements View.OnClickListener, AdapterView.OnItemClickListener {
 
@@ -68,9 +78,10 @@ public class HomeFragment extends Fragment implements View.OnClickListener, Adap
     private int currSel1 = SatrtVar.mCurrency;
     private int currSel2 = SatrtVar.mCurrenrAcc;
     private List<String> mSpinL1= Arrays.asList("Dolar", "Bolivar");
+    private List<String> mCurrencyList= Arrays.asList("$", "Bs");
     //---------------------------------------------------------------------
 
-    private EditText mInput1;
+    private MaskedEditText mInput1;
 
     //---------------------------------------------------------------------
     private PayAdapter mPayadapter;
@@ -85,6 +96,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener, Adap
 
     private int currIdx = 0;
 
+   public String glValue = "";
 
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         //Para limpiar todas las listas
@@ -111,46 +123,18 @@ public class HomeFragment extends Fragment implements View.OnClickListener, Adap
         mLv1.setOnItemClickListener(this);
         mConstrain.setOnClickListener(this);
 
+        //-------------------------------------------------------------------------------------------------------
+        List<View> mViewL1 = new ArrayList<>();
+        mViewL1.add(mSearch1);
+        mViewL1.add(mLv1);
+        int mOpt = 0;
+        CurrencyInput mCInput = new CurrencyInput( mContext, mInput1,  mViewL1, mOpt);
+        mCInput.set();
+        //----------------------------------------------------------------------------------------------------
         // Para eventos al mostrar o ocultar el teclado
         Basic mKeyBoardEvent = new Basic(mContext);
         mKeyBoardEvent.keyboardEvent(mConstrain, mInput1, 0); //opt = 0 is clear elm focus
         //-------------------------------------------------------------------------------------
-
-        mInput1.setText(SatrtVar.mDollar);
-        mInput1.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-            @Override
-            public void onFocusChange(View view, boolean b) {
-                //Toast.makeText(mContext, "Siz is "+b, Toast.LENGTH_LONG).show();
-                if(b) {
-                    mLv1.setVisibility(View.INVISIBLE);
-                    mSearch1.setVisibility(View.INVISIBLE);
-                }
-                else{
-                    mLv1.setVisibility(View.VISIBLE);
-                    mSearch1.setVisibility(View.VISIBLE);
-                }
-            }
-        });
-        mInput1.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-            }
-            @Override
-            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-            }
-            @Override
-            public void afterTextChanged(Editable editable) {
-                String value = mInput1.getText().toString();
-                // Actualiza y guarda el estado del selector tipo de moneda ------------------------
-                appDBcuenta.daoUser().updateDollar(SatrtVar.saveDataName, value);
-
-                SatrtVar mVars = new SatrtVar(mContext);
-                mVars.setDollar(value);
-                //----------------------------------------------------------------------------------
-            }
-        });
 
         //Para la lista del selector Tipo Moneda ----------------------------------------------------------------------------------------------
         SelecAdapter adapt1 = new SelecAdapter(mContext, mSpinL1);
@@ -249,12 +233,11 @@ public class HomeFragment extends Fragment implements View.OnClickListener, Adap
     }
     @Override
     public void onClick(View view) {
-        int itemId = view.getId();
     }
+
     @SuppressLint("SetTextI18n")
     @Override
     public void onItemClick(AdapterView<?> adapterView, View view, int i, long id) {
-
         int itemId = adapterView.getId();
         if (itemId == R.id.constrain_home) {
             mLv1.setVisibility(View.VISIBLE);

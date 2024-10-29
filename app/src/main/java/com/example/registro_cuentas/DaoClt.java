@@ -14,11 +14,15 @@ public interface DaoClt {
     @Query("SELECT * FROM cliente WHERE cliente= :user")
     Cliente getUsers(String user);
 
+    // Se obtinen valores individuales de accselc, moneda, dolar------------------------------------
+    @Query("SELECT alias FROM cliente WHERE cliente= :user ")
+    String getSaveAlias(String user);
+
     @Insert
     void insetUser(Cliente...clientes);
 
-    @Query("UPDATE cliente SET nombre= :nombre, total= :total, porc= :porc, fecha= :fecha WHERE cliente= :user")
-    void updateUser(String user, String nombre, String total, Integer porc, String fecha);
+    @Query("UPDATE cliente SET nombre= :nombre, alias= :alias, total= :total, porc= :porc, fecha= :fecha WHERE cliente= :user")
+    void updateUser(String user, String nombre, String alias, String total, Integer porc, String fecha);
 
     @Query("DELETE FROM cliente WHERE  cliente= :user")
     void removerUser(String user);
