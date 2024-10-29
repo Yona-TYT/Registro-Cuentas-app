@@ -19,6 +19,7 @@ import com.example.registro_cuentas.AppDBacc;
 import com.example.registro_cuentas.BaseContext;
 import com.example.registro_cuentas.Basic;
 import com.example.registro_cuentas.Cuenta;
+import com.example.registro_cuentas.CurrencyInput;
 import com.example.registro_cuentas.MainActivity;
 import com.example.registro_cuentas.R;
 import com.example.registro_cuentas.SatrtVar;
@@ -27,6 +28,7 @@ import com.example.registro_cuentas.ui.home.HomeFragment;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class AddAccFragment extends Fragment implements View.OnClickListener{
@@ -53,6 +55,8 @@ public class AddAccFragment extends Fragment implements View.OnClickListener{
     private List<String> mList = new ArrayList<>();
     private String mIndex = "";
 
+    private List<String> mCurrencyList= Arrays.asList("$", "Bs");
+
     // Para guardar los permisos de app comprobados en main
     private boolean mPermiss = false;
 
@@ -68,7 +72,7 @@ public class AddAccFragment extends Fragment implements View.OnClickListener{
 
         mInput1 = binding.inputAdd1;
         mInput2 = binding.inputAdd2;
-        mInput3 = binding.inputAdd1;
+        mInput3 = binding.inputAdd3;
         mButt1 = binding.buttAdd1;
 
         mButt1.setOnClickListener(this);
@@ -76,6 +80,15 @@ public class AddAccFragment extends Fragment implements View.OnClickListener{
         mInputList.add(mInput1);
         mInputList.add(mInput2);
         mInputList.add(mInput3);
+
+        //Efecto moneda
+        //-------------------------------------------------------------------------------------------------------
+        List<View> mViewL1 = new ArrayList<>();
+        mViewL1.add(mNavBar);
+        int mOpt = 0;
+        CurrencyInput mCInput = new CurrencyInput( mContext, mInput3,  mViewL1, mCurrencyList.get(SatrtVar.mCurrency), mOpt);
+        mCInput.set();
+        //----------------------------------------------------------------------------------------------------
 
         // Para eventos al mostrar o ocultar el teclado-----
         mBasic.steAllKeyEvent(mConstrain, mInputList);
@@ -87,7 +100,7 @@ public class AddAccFragment extends Fragment implements View.OnClickListener{
         if (mIndex.isEmpty()) {
             mIndex = "0";
         }
-
+        
         return root;
     }
 
@@ -127,7 +140,8 @@ public class AddAccFragment extends Fragment implements View.OnClickListener{
                 for(int i = 0; i < mInputList.size(); i++) {
                     mInputList.get(i).setText("");
                 }
-                Cuenta obj = new Cuenta(mList.get(0), mList.get(1), mList.get(2), mList.get(3), 0, 0, 0, "");
+                String monto = mList.get(3).replaceAll("([^.;^0-9]+)", "");
+                Cuenta obj = new Cuenta(mList.get(0), mList.get(1), mList.get(2), monto, 0, 0, 0, "");
                 appDBcuenta.daoUser().insetUser(obj);
                 //SE Limpia la lista
                 mList.clear();

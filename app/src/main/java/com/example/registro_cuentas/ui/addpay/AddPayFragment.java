@@ -25,6 +25,7 @@ import com.example.registro_cuentas.BaseContext;
 import com.example.registro_cuentas.Basic;
 import com.example.registro_cuentas.Cliente;
 import com.example.registro_cuentas.Cuenta;
+import com.example.registro_cuentas.CurrencyInput;
 import com.example.registro_cuentas.MainActivity;
 import com.example.registro_cuentas.R;
 import com.example.registro_cuentas.Registro;
@@ -73,6 +74,7 @@ public class AddPayFragment extends Fragment implements View.OnClickListener{
     private int currSel1 = 0;
     private int currSel2 = 0;
     private List<String> mSpinL2= Arrays.asList("Ingreso (+)", "Egreso (-)");
+    private List<String> mCurrencyList= Arrays.asList("$", "Bs");
     //---------------------------------------------------------------------
 
     private Switch mSw;
@@ -117,6 +119,15 @@ public class AddPayFragment extends Fragment implements View.OnClickListener{
         mInputList.add(mInput2);
         mInputList.add(mInput3);
         mInputList.add(mInput4);
+
+        //Efecto moneda
+        //-------------------------------------------------------------------------------------------------------
+        List<View> mViewL1 = new ArrayList<>();
+        mViewL1.add(mNavBar);
+        int mOpt = 0;
+        CurrencyInput mCInput = new CurrencyInput( mContext, mInput4,  mViewL1, mCurrencyList.get(SatrtVar.mCurrency), mOpt);
+        mCInput.set();
+        //----------------------------------------------------------------------------------------------------
 
         // Para eventos al mostrar o ocultar el teclado-----
         mBasic.steAllKeyEvent(mConstrain, mInputList);

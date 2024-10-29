@@ -118,8 +118,8 @@ public class Basic {
     }
 
 
-    public static String setMask(String value){
-
-        return value.endsWith(" Bs")? value : value+" Bs";
+    public static String setMask(String value, String sing){
+        value = value.replaceAll("([^.;^0-9]+)", "");
+        return value+" "+sing;
     }
 }

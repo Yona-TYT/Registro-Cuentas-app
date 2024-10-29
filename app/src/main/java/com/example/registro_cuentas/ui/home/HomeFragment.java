@@ -123,12 +123,13 @@ public class HomeFragment extends Fragment implements View.OnClickListener, Adap
         mLv1.setOnItemClickListener(this);
         mConstrain.setOnClickListener(this);
 
+        //Efecto moneda
         //-------------------------------------------------------------------------------------------------------
-        mInput1.setText(Basic.setMask(SatrtVar.mDollar));
+        mInput1.setText(SatrtVar.mDollar);
         List<View> mViewL1 = new ArrayList<>();
         mViewL1.add(mSearch1);
         mViewL1.add(mLv1);
-        int mOpt = 0;
+        int mOpt = 1; // Opcion para guardar el precio del dolar
         CurrencyInput mCInput = new CurrencyInput( mContext, mInput1,  mViewL1, "Bs", mOpt);
         mCInput.set();
         //----------------------------------------------------------------------------------------------------

@@ -117,10 +117,10 @@
         android:inputType="numberDecimal"
         android:ems="10"
         android:imeOptions="actionDone"
+        android:cursorVisible="false"
         android:maxLength="20"
         android:padding="10dp"
         android:textSize="@dimen/inner_text_2"
-        android:cursorVisible="false"
         app:layout_constraintEnd_toStartOf="@+id/guideline4"
         app:layout_constraintTop_toBottomOf="@+id/txview2"
         tools:ignore="MissingConstraints" />

@@ -26,11 +26,9 @@ public class CurrencyInput implements View.OnClickListener, View.OnFocusChangeLi
     private boolean allSelec = false;
     public static boolean isTouch = true;
 
-
-
     //Opt 0 = Input Precio Dolar
     //Opt 1 = Input Monto
-    public CurrencyInput(Context mContex, EditText mInput, List<View> mViewList, String sing, int mOpt){
+    public CurrencyInput(Context mContex, EditText mInput, List<View> mViewList, String sing, int mOpt ){
         this.mContext = mContex;
         this.mInput = mInput;
         this.mViewList = mViewList;
@@ -50,17 +48,16 @@ public class CurrencyInput implements View.OnClickListener, View.OnFocusChangeLi
         mInput.setCursorVisible(true);// Disable the cursor.
 
         mInput.addTextChangedListener(new TextWatcher() {
-            String setTextEdit = mInput.getText().toString().trim();
             @SuppressLint("SetTextI18n")
             @Override
             public void beforeTextChanged(CharSequence s, int i, int i1, int i2) {}
             @Override
             public void onTextChanged(CharSequence s, int i, int i1, int i2) {
-                int len = s.length();
+                int siz = s.length();
                 if (s.toString().endsWith(" "+sing)) {
-                    mInput.setSelection(len - 3);
-                }
-                if(i2 >= (len-3)){
+                    int opt = 2; //mInput.setSelection( (siz - 3),0);
+                    setInputSelec(siz, opt);                }
+                if(i2 >= (siz-(sing.length()+1))){
                     mInput.setCursorVisible(false);
                 }
             }
@@ -69,22 +66,20 @@ public class CurrencyInput implements View.OnClickListener, View.OnFocusChangeLi
             public void afterTextChanged(Editable editable) {
                 String value = mInput.getText().toString();
                 if(value.isEmpty()){
-                    mInput.setText(Basic.setMask("0"));
+                    mInput.setText(Basic.setMask("0", sing));
                 }
                 else if (!value.endsWith(" "+sing)){
-                    mInput.setText(Basic.setMask(value));
+                    mInput.setText(Basic.setMask(value, sing));
                     mInput.setSelection(0);
                 }
 
-                if (mOpt == 0) {
+                if (mOpt == 1) {
                     // Actualiza y guarda el Precio del dolar ------------------------
                     SatrtVar.appDBcuenta.daoUser().updateDollar(SatrtVar.saveDataName, value);
+                    SatrtVar mVars = new SatrtVar(mContext);
+                    mVars.setDollar(value);
+                    //----------------------------------------------------------------------------------
                 }
-
-                SatrtVar mVars = new SatrtVar(mContext);
-                mVars.setDollar(value);
-
-                //----------------------------------------------------------------------------------
             }
         });
     }
@@ -96,26 +91,21 @@ public class CurrencyInput implements View.OnClickListener, View.OnFocusChangeLi
         if(b) {
             String value = mInput.getText().toString();
             if (!value.endsWith(" "+sing)) {
-                mInput.setText(Basic.setMask(value));
+                mInput.setText(Basic.setMask(value, sing));
             }
             mInput.setCursorVisible(false);
 
-            if (mOpt == 0) {
-                for (View mView : mViewList) {
-                    mView.setVisibility(View.INVISIBLE);
-                }
+            for (View mView : mViewList) {
+                mView.setVisibility(View.INVISIBLE);
             }
         }
         else{
-
             if (Basic.isDow){
                 mInput.setSelection(0);
                 isTouch = true;
             }
-            if (mOpt == 0) {
-                for (View mView : mViewList) {
-                    mView.setVisibility(View.VISIBLE);
-                }
+            for (View mView : mViewList) {
+                mView.setVisibility(View.VISIBLE);
             }
         }
     }
@@ -130,35 +120,20 @@ public class CurrencyInput implements View.OnClickListener, View.OnFocusChangeLi
                 mInput.clearFocus();
                 mInput.requestFocus();
                 allSelec = false;
-                mInput.setSelection((siz - 3), 0);
+                int opt = 2; //mInput.setSelection( (siz - 3),0);
+                setInputSelec(siz, opt);
                 mInput.setCursorVisible(true);
             }
             else {
-                mInput.setSelection(siz - 3);
+                int opt = 0; //mInput.setSelection( (siz - 3),0);
+                setInputSelec(siz, opt);
                 mInput.setCursorVisible(true);
             }
         }
         if(keyEvent.getKeyCode() == 67) {
             if(siz<=3){
-                mInput.setText(Basic.setMask("0"));
-                mInput.setSelection( (siz - 2),0);
-            }
-
-            //Para eliminar elementos seleccionados
-            int start = mInput.getSelectionStart();
-            int end = mInput.getSelectionEnd();
-
-            int max = end;//Math.max(start, end);
-            int min = start;
-
-            value = value.replaceAll("([^.;^0-9]+)", "");
-            char[] mlist = value.toCharArray();
-            StringBuilder resut = new StringBuilder();
-            for (int j = 0; j < mlist.length; j++){
-                if(j > min && j < max ){
-                    continue;
-                }
-                resut.append(mlist[j]);
+                mInput.setText(Basic.setMask("", sing));
+                mInput.setSelection(0);
             }
         }
         return false;
@@ -169,18 +144,21 @@ public class CurrencyInput implements View.OnClickListener, View.OnFocusChangeLi
         String value = mInput.getText().toString().trim();
         if (value.endsWith(" "+sing)) {
             int siz = value.length();
-            mInput.setSelection(value.length() - 3);
+            int opt = 2; //mInput.setSelection( (siz - 3),0);
+            setInputSelec(siz, opt);
             value = value.replaceAll("([^.;^0-9]+)", "");
             if(value.isEmpty()){
                 mInput.setSelection(0);
             }
             else {
                 mInput.setCursorVisible(false);
-                mInput.setSelection( (siz - 3),0);
+                //int opt = 2; //mInput.setSelection( (siz - 3),0);
+                setInputSelec(siz, opt);
             }
         }
         else  if (value.endsWith(sing)) {
-            mInput.setSelection(value.length() - 2);
+            int opt = 1; //mInput.setSelection(value.length() - 2);
+            setInputSelec(value.length(), opt);
         }
     }
 
@@ -188,7 +166,6 @@ public class CurrencyInput implements View.OnClickListener, View.OnFocusChangeLi
     public boolean onTouch(View view, MotionEvent motionEvent) {
 
         if (MotionEvent.ACTION_UP == motionEvent.getAction()) {
-
             String value = mInput.getText().toString().trim();
             if (mInput.hasSelection()) {
                 allSelec = true;
@@ -198,14 +175,12 @@ public class CurrencyInput implements View.OnClickListener, View.OnFocusChangeLi
             int start =mInput.getSelectionStart();
             int end = mInput.getSelectionEnd();
 
-            //isTouch = start == 0 && end == 0 ? true : false;
-
             if(start != end){
                 mInput.clearFocus();
                 mInput.requestFocus();
                 mInput.setCursorVisible(false);
             }
-            Toast.makeText(mContext, "Aqui hayyyyyyyy  " + Basic.isDow+ "  " + isTouch, Toast.LENGTH_LONG).show();
+            //Toast.makeText(mContext, "Aqui hayyyyyyyy  " + Basic.isDow+ "  " + isTouch, Toast.LENGTH_LONG).show();
 
             if (isTouch){
                 //Toast.makeText(mContext, "Aqui hayyyyyyyy  " + isDow+ "  " + start, Toast.LENGTH_LONG).show();
@@ -213,12 +188,25 @@ public class CurrencyInput implements View.OnClickListener, View.OnFocusChangeLi
                 if (value.endsWith(" " + sing)) {
                     mInput.clearFocus();
                     mInput.requestFocus();
-                    mInput.setSelection((value.length() - 3), 0);
+                    int opt = 2; //mInput.setSelection((value.length() - 3), 0);
+                    setInputSelec(value.length(), opt);
                     mInput.setCursorVisible(false);
                 }
                 isTouch = false;
             }
         }
         return false;
+    }
+
+    void setInputSelec(int siz, int opt) {
+        if (opt == 0) {
+            mInput.setSelection(siz - (sing.length() + 1));
+        }
+        else if (opt == 1) {
+            mInput.setSelection(siz - sing.length());
+        }
+        else if (opt == 2) {
+            mInput.setSelection((siz - (sing.length() + 1)), 0);
+        }
     }
 }
