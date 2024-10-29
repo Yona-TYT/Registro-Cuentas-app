@@ -8,6 +8,7 @@ import android.transition.TransitionValues;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
+import android.widget.EditText;
 import android.widget.Toast;
 
 import com.vicmikhailau.maskededittext.MaskedEditText;
@@ -18,18 +19,18 @@ import java.util.List;
 @SuppressLint("RestrictedApi")
 public class CurrencyInput implements View.OnClickListener, View.OnFocusChangeListener, View.OnKeyListener, View.OnTouchListener {
     private Context mContext;
-    private MaskedEditText mInput;
+    private EditText mInput;
     private List<View> mViewList = new ArrayList<>();
     private String sing = "";
     private int mOpt = 0;
     private boolean allSelec = false;
-    private boolean isTouch = true;
+    public static boolean isTouch = true;
 
 
 
     //Opt 0 = Input Precio Dolar
     //Opt 1 = Input Monto
-    public CurrencyInput(Context mContex, MaskedEditText mInput, List<View> mViewList, String sing, int mOpt){
+    public CurrencyInput(Context mContex, EditText mInput, List<View> mViewList, String sing, int mOpt){
         this.mContext = mContex;
         this.mInput = mInput;
         this.mViewList = mViewList;
@@ -106,12 +107,16 @@ public class CurrencyInput implements View.OnClickListener, View.OnFocusChangeLi
             }
         }
         else{
+
+            if (Basic.isDow){
+                mInput.setSelection(0);
+                isTouch = true;
+            }
             if (mOpt == 0) {
                 for (View mView : mViewList) {
                     mView.setVisibility(View.VISIBLE);
                 }
             }
-            isTouch = !isTouch;
         }
     }
 
@@ -181,7 +186,9 @@ public class CurrencyInput implements View.OnClickListener, View.OnFocusChangeLi
 
     @Override
     public boolean onTouch(View view, MotionEvent motionEvent) {
+
         if (MotionEvent.ACTION_UP == motionEvent.getAction()) {
+
             String value = mInput.getText().toString().trim();
             if (mInput.hasSelection()) {
                 allSelec = true;
@@ -191,28 +198,26 @@ public class CurrencyInput implements View.OnClickListener, View.OnFocusChangeLi
             int start =mInput.getSelectionStart();
             int end = mInput.getSelectionEnd();
 
-            isTouch = start == 0 && end == 0 ? true : false;
+            //isTouch = start == 0 && end == 0 ? true : false;
 
-            if(!isTouch && start != end){
+            if(start != end){
                 mInput.clearFocus();
                 mInput.requestFocus();
                 mInput.setCursorVisible(false);
             }
+            Toast.makeText(mContext, "Aqui hayyyyyyyy  " + Basic.isDow+ "  " + isTouch, Toast.LENGTH_LONG).show();
+
             if (isTouch){
+                //Toast.makeText(mContext, "Aqui hayyyyyyyy  " + isDow+ "  " + start, Toast.LENGTH_LONG).show();
+
                 if (value.endsWith(" " + sing)) {
-                    //Toast.makeText(mContext, "Aqui hayyyyyyyy  " + isTouch+ "  " + mInput.getSelectionEnd(), Toast.LENGTH_LONG).show();
                     mInput.clearFocus();
                     mInput.requestFocus();
                     mInput.setSelection((value.length() - 3), 0);
                     mInput.setCursorVisible(false);
-                    isTouch = false;
                 }
+                isTouch = false;
             }
-
-
-
-
-
         }
         return false;
     }

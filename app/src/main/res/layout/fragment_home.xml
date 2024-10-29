@@ -108,7 +108,7 @@
         app:layout_constraintGuide_begin="16dp" />
 
 
-    <com.vicmikhailau.maskededittext.MaskedEditText
+    <com.google.android.material.textfield.TextInputEditText
         android:id="@+id/input_home1"
         android:layout_width="@dimen/input_wm"
         android:layout_height="@dimen/input_h1"

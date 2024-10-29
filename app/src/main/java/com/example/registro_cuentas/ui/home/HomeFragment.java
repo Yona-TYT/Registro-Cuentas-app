@@ -81,7 +81,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener, Adap
     private List<String> mCurrencyList= Arrays.asList("$", "Bs");
     //---------------------------------------------------------------------
 
-    private MaskedEditText mInput1;
+    private EditText mInput1;
 
     //---------------------------------------------------------------------
     private PayAdapter mPayadapter;

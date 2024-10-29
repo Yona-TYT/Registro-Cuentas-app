@@ -9,6 +9,7 @@ import android.util.DisplayMetrics;
 import android.view.View;
 import android.view.ViewTreeObserver;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import androidx.constraintlayout.widget.ConstraintLayout;
 
@@ -19,6 +20,9 @@ import java.util.List;
 
 public class Basic {
     private Context mContex;
+    public static boolean isDow = true;
+    public static boolean isUp = false;
+
     public Basic(Context mContex){
         this.mContex = mContex;
     }
@@ -48,11 +52,16 @@ public class Basic {
                 // on below line getting keypad height.
                 int keypadHeight = screenHeight - rect.bottom;
                 if (keypadHeight > screenHeight * 0.15) {
+                    isDow = false;
+                    isUp = true;
                     //Toast.makeText(MainActivity.this, "Keyboard is +", Toast.LENGTH_LONG).show();
                 }
                 else {
+                    isDow = true;
+                    isUp = false;
+                    //Toast.makeText(mContex, "Keyboard is -", Toast.LENGTH_LONG).show();
+
                     if(opt == 0) {
-                        //Toast.makeText(MainActivity.this, "Keyboard is -", Toast.LENGTH_LONG).show();
                         elm.clearFocus();
                     }
                 }
