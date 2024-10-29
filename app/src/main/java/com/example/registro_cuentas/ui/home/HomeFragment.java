@@ -124,11 +124,12 @@ public class HomeFragment extends Fragment implements View.OnClickListener, Adap
         mConstrain.setOnClickListener(this);
 
         //-------------------------------------------------------------------------------------------------------
+        mInput1.setText(Basic.setMask(SatrtVar.mDollar));
         List<View> mViewL1 = new ArrayList<>();
         mViewL1.add(mSearch1);
         mViewL1.add(mLv1);
         int mOpt = 0;
-        CurrencyInput mCInput = new CurrencyInput( mContext, mInput1,  mViewL1, mOpt);
+        CurrencyInput mCInput = new CurrencyInput( mContext, mInput1,  mViewL1, "Bs", mOpt);
         mCInput.set();
         //----------------------------------------------------------------------------------------------------
         // Para eventos al mostrar o ocultar el teclado

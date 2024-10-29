@@ -8,6 +8,8 @@ import android.transition.TransitionValues;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
+import android.widget.Toast;
+
 import com.vicmikhailau.maskededittext.MaskedEditText;
 
 import java.util.ArrayList;
@@ -18,15 +20,20 @@ public class CurrencyInput implements View.OnClickListener, View.OnFocusChangeLi
     private Context mContext;
     private MaskedEditText mInput;
     private List<View> mViewList = new ArrayList<>();
+    private String sing = "";
     private int mOpt = 0;
     private boolean allSelec = false;
+    private boolean isTouch = true;
+
+
 
     //Opt 0 = Input Precio Dolar
     //Opt 1 = Input Monto
-    public CurrencyInput(Context mContex, MaskedEditText mInput, List<View> mViewList, int mOpt){
+    public CurrencyInput(Context mContex, MaskedEditText mInput, List<View> mViewList, String sing, int mOpt){
         this.mContext = mContex;
         this.mInput = mInput;
         this.mViewList = mViewList;
+        this.sing = sing;
         this.mOpt = mOpt;
     }
 
@@ -36,7 +43,6 @@ public class CurrencyInput implements View.OnClickListener, View.OnFocusChangeLi
         mInput.setOnFocusChangeListener(this);
         mInput.setOnKeyListener(this);
         mInput.setOnTouchListener(this);
-
         mInput.setSelectAllOnFocus(false);
 
         mInput.setSelection(0); // After initialization keep cursor on right side
@@ -50,7 +56,7 @@ public class CurrencyInput implements View.OnClickListener, View.OnFocusChangeLi
             @Override
             public void onTextChanged(CharSequence s, int i, int i1, int i2) {
                 int len = s.length();
-                if (s.toString().endsWith(" Bs")) {
+                if (s.toString().endsWith(" "+sing)) {
                     mInput.setSelection(len - 3);
                 }
                 if(i2 >= (len-3)){
@@ -64,7 +70,7 @@ public class CurrencyInput implements View.OnClickListener, View.OnFocusChangeLi
                 if(value.isEmpty()){
                     mInput.setText(Basic.setMask("0"));
                 }
-                else if (!value.endsWith(" Bs")){
+                else if (!value.endsWith(" "+sing)){
                     mInput.setText(Basic.setMask(value));
                     mInput.setSelection(0);
                 }
@@ -88,7 +94,7 @@ public class CurrencyInput implements View.OnClickListener, View.OnFocusChangeLi
         TransitionValues MaskedEditText;
         if(b) {
             String value = mInput.getText().toString();
-            if (!value.endsWith(" Bs")) {
+            if (!value.endsWith(" "+sing)) {
                 mInput.setText(Basic.setMask(value));
             }
             mInput.setCursorVisible(false);
@@ -105,6 +111,7 @@ public class CurrencyInput implements View.OnClickListener, View.OnFocusChangeLi
                     mView.setVisibility(View.VISIBLE);
                 }
             }
+            isTouch = !isTouch;
         }
     }
 
@@ -113,7 +120,7 @@ public class CurrencyInput implements View.OnClickListener, View.OnFocusChangeLi
         String value = mInput.getText().toString();
         int siz = value.length();
 
-        if (value.endsWith(" Bs") &&  mInput.getSelectionEnd() !=0) {
+        if (value.endsWith(" "+sing) &&  mInput.getSelectionEnd() !=0) {
             if(allSelec){
                 mInput.clearFocus();
                 mInput.requestFocus();
@@ -155,7 +162,7 @@ public class CurrencyInput implements View.OnClickListener, View.OnFocusChangeLi
     @Override
     public void onClick(View view) {
         String value = mInput.getText().toString().trim();
-        if (value.endsWith(" Bs")) {
+        if (value.endsWith(" "+sing)) {
             int siz = value.length();
             mInput.setSelection(value.length() - 3);
             value = value.replaceAll("([^.;^0-9]+)", "");
@@ -167,20 +174,45 @@ public class CurrencyInput implements View.OnClickListener, View.OnFocusChangeLi
                 mInput.setSelection( (siz - 3),0);
             }
         }
-        else  if (value.endsWith("Bs")) {
+        else  if (value.endsWith(sing)) {
             mInput.setSelection(value.length() - 2);
-        }
-        if(mInput.hasFocus()){
-            mInput.setCursorVisible(true);
         }
     }
 
     @Override
     public boolean onTouch(View view, MotionEvent motionEvent) {
         if (MotionEvent.ACTION_UP == motionEvent.getAction()) {
+            String value = mInput.getText().toString().trim();
             if (mInput.hasSelection()) {
                 allSelec = true;
+                return false;
             }
+
+            int start =mInput.getSelectionStart();
+            int end = mInput.getSelectionEnd();
+
+            isTouch = start == 0 && end == 0 ? true : false;
+
+            if(!isTouch && start != end){
+                mInput.clearFocus();
+                mInput.requestFocus();
+                mInput.setCursorVisible(false);
+            }
+            if (isTouch){
+                if (value.endsWith(" " + sing)) {
+                    //Toast.makeText(mContext, "Aqui hayyyyyyyy  " + isTouch+ "  " + mInput.getSelectionEnd(), Toast.LENGTH_LONG).show();
+                    mInput.clearFocus();
+                    mInput.requestFocus();
+                    mInput.setSelection((value.length() - 3), 0);
+                    mInput.setCursorVisible(false);
+                    isTouch = false;
+                }
+            }
+
+
+
+
+
         }
         return false;
     }
