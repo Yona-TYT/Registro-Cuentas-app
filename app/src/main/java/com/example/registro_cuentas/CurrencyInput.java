@@ -19,18 +19,21 @@ import java.util.List;
 @SuppressLint("RestrictedApi")
 public class CurrencyInput implements View.OnClickListener, View.OnFocusChangeListener, View.OnKeyListener, View.OnTouchListener {
     private Context mContext;
-    private EditText mInput;
     private List<View> mViewList = new ArrayList<>();
     private String sing = "";
     private int mOpt = 0;
     private boolean allSelec = false;
+
     public static boolean isTouch = true;
+    @SuppressLint("StaticFieldLeak")
+    public static EditText mInput;
+
 
     //Opt 0 = Input Precio Dolar
     //Opt 1 = Input Monto
     public CurrencyInput(Context mContex, EditText mInput, List<View> mViewList, String sing, int mOpt ){
         this.mContext = mContex;
-        this.mInput = mInput;
+        CurrencyInput.mInput = mInput;
         this.mViewList = mViewList;
         this.sing = sing;
         this.mOpt = mOpt;

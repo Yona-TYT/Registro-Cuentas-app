@@ -118,15 +118,19 @@ public class AddPayFragment extends Fragment implements View.OnClickListener{
         mInputList.add(mInput1);
         mInputList.add(mInput2);
         mInputList.add(mInput3);
-        mInputList.add(mInput4);
 
         //Efecto moneda
         //-------------------------------------------------------------------------------------------------------
+        String curr = mCurrencyList.get(SatrtVar.mCurrency);
+        mInput4.setText(Basic.setMask("0", curr));
         List<View> mViewL1 = new ArrayList<>();
         mViewL1.add(mNavBar);
         int mOpt = 0;
-        CurrencyInput mCInput = new CurrencyInput( mContext, mInput4,  mViewL1, mCurrencyList.get(SatrtVar.mCurrency), mOpt);
+        CurrencyInput mCInput = new CurrencyInput( mContext, mInput4,  mViewL1, curr, mOpt);
         mCInput.set();
+
+        mInputList.add(CurrencyInput.mInput);
+
         //----------------------------------------------------------------------------------------------------
 
         // Para eventos al mostrar o ocultar el teclado-----
@@ -161,10 +165,19 @@ public class AddPayFragment extends Fragment implements View.OnClickListener{
                 if (i > 0) {
                     mInput1.setText(listCliente.get(i-1).nombre.toUpperCase());
                     mInput1.setEnabled(false);
+
+                    String alias = listCliente.get(i-1).alias.toUpperCase();
+                    if (!alias.isEmpty()) {
+                        mInput2.setText(alias);
+                        mInput2.setEnabled(false);
+                    }
                 }
                 else{
                     mInput1.setText("");
                     mInput1.setEnabled(true);
+
+                    mInput2.setText("");
+                    mInput2.setEnabled(true);
                 }
             }
             @Override
@@ -264,8 +277,13 @@ public class AddPayFragment extends Fragment implements View.OnClickListener{
                         currdate = LocalDate.now();
                     }
                     assert currdate != null;
+                    String monto = Basic.setValue(mList.get(4));
+                    if(monto.isEmpty() || monto.equals("0")){
+                        msgIdx = 3;
+                        return;
+                    }
                     Registro obj = new Registro(
-                        mList.get(0), mList.get(1), mList.get(3), mList.get(4), currSel2, (swPorc?1:0),
+                        mList.get(0), mList.get(1), mList.get(3), monto, currSel2, (swPorc?1:0),
                         "5", currdate.toString(), currtime.toString(), (newClt?""+listCliente.size():cltId), "", "", ""
                     );
                     appDBregistro.get(currtAcc).daoUser().insetUser(obj);

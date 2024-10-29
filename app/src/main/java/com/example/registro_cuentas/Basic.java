@@ -93,30 +93,36 @@ public class Basic {
         }
     }
 
-    public static float getValue(String value){
-        float precDoll = 0;//floatFormat(value);
-        float number = 0;//Float.parseFloat(value);
+    public static String setValue(String value){
+        value = value.replaceAll("([^.;^0-9]+)", "");
+        float precDoll = floatFormat(SatrtVar.mDollar);
+        if (!value.isEmpty()) {
+            float number = Float.parseFloat(value);
 
-        if(SatrtVar.mCurrency == 1){    //Selector en Bs
-            number = number*precDoll;
+            if (SatrtVar.mCurrency == 1) {    //Selector en Bs
+                number = number / precDoll;
+            }
+            return Float.toString(number);
         }
-        return number;
+        else return "";
     }
 
-    public static String setValue(String value){
-        float precDoll = 0;//floatFormat(value);
-        float number = 0;//Float.parseFloat(value);
-
-        if(SatrtVar.mCurrency == 1){    //Selector en Bs
-            number = number/precDoll;
+    public static String getValue(String value){
+        value = value.replaceAll("([^.;^0-9]+)", "");
+        float precDoll = floatFormat(SatrtVar.mDollar);
+        if (!value.isEmpty()) {
+            float number = Float.parseFloat(value);
+            if (SatrtVar.mCurrency == 1) {    //Selector en Bs
+                number = number * precDoll;
+            }
+            return Float.toString(number);
         }
-        return Float.toString(number);
+        else return "";
     }
 
     public static Float floatFormat(String value){
         return Float.parseFloat(SatrtVar.mDollar.replaceAll("([^.;^0-9]+)", ""));
     }
-
 
     public static String setMask(String value, String sing){
         value = value.replaceAll("([^.;^0-9]+)", "");

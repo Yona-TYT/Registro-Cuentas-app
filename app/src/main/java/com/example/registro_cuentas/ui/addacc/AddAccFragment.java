@@ -140,7 +140,11 @@ public class AddAccFragment extends Fragment implements View.OnClickListener{
                 for(int i = 0; i < mInputList.size(); i++) {
                     mInputList.get(i).setText("");
                 }
-                String monto = mList.get(3).replaceAll("([^.;^0-9]+)", "");
+                String monto = Basic.setValue(mList.get(3));
+                if(monto.isEmpty() || monto.equals("0")){
+                    msgIdx = 3;
+                    return;
+                }
                 Cuenta obj = new Cuenta(mList.get(0), mList.get(1), mList.get(2), monto, 0, 0, 0, "");
                 appDBcuenta.daoUser().insetUser(obj);
                 //SE Limpia la lista
