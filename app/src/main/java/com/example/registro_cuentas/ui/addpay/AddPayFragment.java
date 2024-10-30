@@ -11,7 +11,6 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.Switch;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.activity.OnBackPressedCallback;
@@ -26,25 +25,20 @@ import com.example.registro_cuentas.AppDBreg;
 import com.example.registro_cuentas.BaseContext;
 import com.example.registro_cuentas.Basic;
 import com.example.registro_cuentas.Cliente;
-import com.example.registro_cuentas.Cuenta;
 import com.example.registro_cuentas.CurrencyInput;
 import com.example.registro_cuentas.MainActivity;
 import com.example.registro_cuentas.R;
 import com.example.registro_cuentas.Registro;
-import com.example.registro_cuentas.SatrtVar;
+import com.example.registro_cuentas.StartVar;
 import com.example.registro_cuentas.SelecAdapter;
-import com.example.registro_cuentas.databinding.ActivityMainBinding;
 import com.example.registro_cuentas.databinding.FragmentAddpayBinding;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
-import com.google.android.material.textfield.TextInputLayout;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 public class AddPayFragment extends Fragment implements View.OnClickListener, View.OnFocusChangeListener{
 
@@ -53,12 +47,12 @@ public class AddPayFragment extends Fragment implements View.OnClickListener, Vi
     private Context mContext = BaseContext.getContext();
 
     // DB
-    private List<AppDBreg> appDBregistro = SatrtVar.appDBregistro;
-    private AppDBclt appDBcliente = SatrtVar.appDBcliente;
+    private List<AppDBreg> appDBregistro = StartVar.appDBregistro;
+    private AppDBclt appDBcliente = StartVar.appDBcliente;
     private List<Cliente> listCliente = new ArrayList<>();
 
     private ConstraintLayout mConstrain;
-    private BottomNavigationView mNavBar = SatrtVar.mNavBar;
+    private BottomNavigationView mNavBar = StartVar.mNavBar;
 
     //Todos los Inputs
     private EditText mInput1;
@@ -88,7 +82,7 @@ public class AddPayFragment extends Fragment implements View.OnClickListener, Vi
     // Para guardar los permisos de app comprobados en main
     private boolean mPermiss = false;
     // Index de cuenta actual
-    private int currtAcc = SatrtVar.mCurrenrAcc;
+    private int currtAcc = StartVar.mCurrenrAcc;
 
     private Basic mBasic = new Basic(BaseContext.getContext());
 
@@ -140,7 +134,7 @@ public class AddPayFragment extends Fragment implements View.OnClickListener, Vi
 
         //Efecto moneda
         //-------------------------------------------------------------------------------------------------------
-        String curr = mCurrencyList.get(SatrtVar.mCurrency);
+        String curr = mCurrencyList.get(StartVar.mCurrency);
         mInput4.setText(Basic.setMask("0", curr));
         List<View> mViewL1 = new ArrayList<>();
         mViewL1.add(mNavBar);
@@ -153,7 +147,7 @@ public class AddPayFragment extends Fragment implements View.OnClickListener, Vi
         mBasic.steAllKeyEvent(mConstrain, mInputList);
         //-----------------------------------------------
 
-        mPermiss = SatrtVar.mPermiss;
+        mPermiss = StartVar.mPermiss;
         if(!appDBregistro.isEmpty()) {
             mIndex = "" + appDBregistro.get(currtAcc).daoUser().getUsers().size();
             if (mIndex.isEmpty()) {
@@ -296,7 +290,7 @@ public class AddPayFragment extends Fragment implements View.OnClickListener, Vi
                 }
             }
             if (result) {
-                SatrtVar mVars = new SatrtVar(mContext);
+                StartVar mVars = new StartVar(mContext);
                 //Comprueba que la lista de cuentas no este vacia
                 if (mVars.listacc.size() > 1) {
                     //Inicia la fecha actual

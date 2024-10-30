@@ -8,7 +8,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.TextView;
 
 import androidx.activity.OnBackPressedCallback;
 import androidx.activity.OnBackPressedDispatcher;
@@ -24,9 +23,8 @@ import com.example.registro_cuentas.Cuenta;
 import com.example.registro_cuentas.CurrencyInput;
 import com.example.registro_cuentas.MainActivity;
 import com.example.registro_cuentas.R;
-import com.example.registro_cuentas.SatrtVar;
+import com.example.registro_cuentas.StartVar;
 import com.example.registro_cuentas.databinding.FragmentAddaccBinding;
-import com.example.registro_cuentas.ui.home.HomeFragment;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import java.util.ArrayList;
@@ -40,7 +38,7 @@ public class AddAccFragment extends Fragment implements View.OnClickListener, Vi
     private Context mContext = BaseContext.getContext();
 
     // DB
-    private AppDBacc appDBcuenta = SatrtVar.appDBcuenta;
+    private AppDBacc appDBcuenta = StartVar.appDBcuenta;
 
     //Todos los Inputs
     private EditText mInput1;
@@ -49,7 +47,7 @@ public class AddAccFragment extends Fragment implements View.OnClickListener, Vi
     private List<EditText> mInputList = new ArrayList<>();
 
     private ConstraintLayout mConstrain;
-    private BottomNavigationView mNavBar = SatrtVar.mNavBar;
+    private BottomNavigationView mNavBar = StartVar.mNavBar;
 
     //Botones
     private Button mButt1;
@@ -99,7 +97,7 @@ public class AddAccFragment extends Fragment implements View.OnClickListener, Vi
 
         //Efecto moneda
         //-------------------------------------------------------------------------------------------------------
-        String curr = mCurrencyList.get(SatrtVar.mCurrency);
+        String curr = mCurrencyList.get(StartVar.mCurrency);
         mInput3.setText(Basic.setMask("0", curr));
         List<View> mViewL1 = new ArrayList<>();
         mViewL1.add(mNavBar);
@@ -112,7 +110,7 @@ public class AddAccFragment extends Fragment implements View.OnClickListener, Vi
         mBasic.steAllKeyEvent(mConstrain, mInputList);
         //-----------------------------------------------
 
-        mPermiss = SatrtVar.mPermiss;
+        mPermiss = StartVar.mPermiss;
         mIndex = "" + appDBcuenta.daoUser().getUsers().size();
         if (mIndex.isEmpty()) {
             mIndex = "0";
@@ -174,7 +172,7 @@ public class AddAccFragment extends Fragment implements View.OnClickListener, Vi
                 mList.clear();
 
                 //Recarga La lista de la DB ----------------------------
-                SatrtVar mVars = new SatrtVar(mContext);
+                StartVar mVars = new StartVar(mContext);
                 mVars.getAccListDB();
                 //-------------------------------------------------------
                 //-------------------------------------------------------

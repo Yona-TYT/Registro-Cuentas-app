@@ -9,9 +9,6 @@ import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.EditText;
-import android.widget.Toast;
-
-import com.vicmikhailau.maskededittext.MaskedEditText;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -81,8 +78,8 @@ public class CurrencyInput implements View.OnClickListener, View.OnFocusChangeLi
 
                 if (mOpt == 1) {
                     // Actualiza y guarda el Precio del dolar ------------------------
-                    SatrtVar.appDBcuenta.daoUser().updateDollar(SatrtVar.saveDataName, value);
-                    SatrtVar mVars = new SatrtVar(mContext);
+                    StartVar.appDBcuenta.daoUser().updateDollar(StartVar.saveDataName, value);
+                    StartVar mVars = new StartVar(mContext);
                     mVars.setDollar(value);
                     //----------------------------------------------------------------------------------
                 }

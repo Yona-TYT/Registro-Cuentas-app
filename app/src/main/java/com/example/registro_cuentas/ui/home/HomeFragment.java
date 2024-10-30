@@ -1,39 +1,29 @@
 package com.example.registro_cuentas.ui.home;
 
 import android.annotation.SuppressLint;
+import android.app.Application;
 import android.content.Context;
-import android.graphics.Rect;
-import android.icu.text.NumberFormat;
-import android.icu.util.Currency;
+import android.content.Intent;
 import android.os.Bundle;
-import android.text.Editable;
-import android.text.TextUtils;
-import android.text.TextWatcher;
-import android.util.Log;
-import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.ViewTreeObserver;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.EditText;
-import android.widget.GridView;
-import android.widget.ImageButton;
 import android.widget.ListView;
-import android.widget.RelativeLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import android.widget.SearchView;
-import android.widget.Toast;
 
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
+import com.example.registro_cuentas.AccDtsActivity;
 import com.example.registro_cuentas.AppDBacc;
 import com.example.registro_cuentas.AppDBreg;
 import com.example.registro_cuentas.BaseContext;
@@ -43,19 +33,13 @@ import com.example.registro_cuentas.CurrencyInput;
 import com.example.registro_cuentas.PayAdapter;
 import com.example.registro_cuentas.R;
 import com.example.registro_cuentas.Registro;
-import com.example.registro_cuentas.SatrtVar;
-import com.example.registro_cuentas.SearchAdapter;
+import com.example.registro_cuentas.StartVar;
 import com.example.registro_cuentas.SelecAdapter;
 import com.example.registro_cuentas.databinding.FragmentHomeBinding;
-import com.google.android.material.textfield.TextInputEditText;
-import com.vicmikhailau.maskededittext.MaskedEditText;
-
-import org.apache.commons.lang3.StringUtils;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Objects;
 
 public class HomeFragment extends Fragment implements View.OnClickListener, AdapterView.OnItemClickListener {
 
@@ -64,9 +48,9 @@ public class HomeFragment extends Fragment implements View.OnClickListener, Adap
     private Context mContext;
 
     // DB ----------------------------------------------------------------
-    private AppDBacc appDBcuenta = SatrtVar.appDBcuenta;
+    private AppDBacc appDBcuenta = StartVar.appDBcuenta;
     private List<Cuenta> listCuenta;
-    private List<AppDBreg> appDBregistro = SatrtVar.appDBregistro;
+    private List<AppDBreg> appDBregistro = StartVar.appDBregistro;
     private List<Registro> listRegistro;
     //--------------------------------------------------------------------
 
@@ -75,13 +59,14 @@ public class HomeFragment extends Fragment implements View.OnClickListener, Adap
     //Todos los Spinner
     private Spinner mSpin1;
     private Spinner mSpin2;
-    private int currSel1 = SatrtVar.mCurrency;
-    private int currSel2 = SatrtVar.mCurrenrAcc;
+    private int currSel1 = StartVar.mCurrency;
+    private int currSel2 = StartVar.mCurrenrAcc;
     private List<String> mSpinL1= Arrays.asList("Dolar", "Bolivar");
     private List<String> mCurrencyList= Arrays.asList("$", "Bs");
     //---------------------------------------------------------------------
 
     private EditText mInput1;
+    private Button mButt1;
 
     //---------------------------------------------------------------------
     private PayAdapter mPayadapter;
@@ -115,6 +100,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener, Adap
         mSpin2 = binding.spinHome2;
 
         mInput1 = binding.inputHome1;
+        mButt1 = binding.buttHome1;
 
         mSearch1 = binding.searchBar;
 
@@ -122,10 +108,11 @@ public class HomeFragment extends Fragment implements View.OnClickListener, Adap
 
         mLv1.setOnItemClickListener(this);
         mConstrain.setOnClickListener(this);
+        mButt1.setOnClickListener(this);
 
         //Efecto moneda
         //-------------------------------------------------------------------------------------------------------
-        mInput1.setText(SatrtVar.mDollar);
+        mInput1.setText(StartVar.mDollar);
         List<View> mViewL1 = new ArrayList<>();
         mViewL1.add(mSearch1);
         mViewL1.add(mLv1);
@@ -147,9 +134,9 @@ public class HomeFragment extends Fragment implements View.OnClickListener, Adap
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
                 currSel1 = i;
                 // Actualiza y guarda el estado del selector tipo de moneda ------------------------
-                appDBcuenta.daoUser().updateCurrency(SatrtVar.saveDataName, i);
+                appDBcuenta.daoUser().updateCurrency(StartVar.saveDataName, i);
 
-                SatrtVar mVars = new SatrtVar(mContext);
+                StartVar mVars = new StartVar(mContext);
                 mVars.setCurrency(i);
                 //----------------------------------------------------------------------------------
                 //Recarga la lista de pagos en funcion de la cuenta seleccionada--------------------
@@ -189,9 +176,9 @@ public class HomeFragment extends Fragment implements View.OnClickListener, Adap
                 // Actualiza y guarda el estado del selector de cuentas-----------------------------
                 int idx = i+1;
                 if(idx < listCuenta.size()) {
-                    appDBcuenta.daoUser().updateCurrentAcc(SatrtVar.saveDataName, idx);
+                    appDBcuenta.daoUser().updateCurrentAcc(StartVar.saveDataName, idx);
                 }
-                SatrtVar mVars = new SatrtVar(mContext);
+                StartVar mVars = new StartVar(mContext);
                 mVars.setCurrentAcc(i);
                 //----------------------------------------------------------------------------------
 
@@ -235,6 +222,13 @@ public class HomeFragment extends Fragment implements View.OnClickListener, Adap
     }
     @Override
     public void onClick(View view) {
+        int itemId = view.getId();
+        if (itemId == R.id.butt_home1) {
+            Application application = (Application) mContext.getApplicationContext();
+            Intent mIntent = new Intent(mContext, AccDtsActivity.class);
+            mIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            application.startActivity(mIntent);
+        }
     }
 
     @SuppressLint("SetTextI18n")

@@ -126,13 +126,13 @@
         tools:ignore="MissingConstraints" />
 
     <Button
-        android:id="@+id/button"
+        android:id="@+id/butt_home1"
         android:layout_width="@dimen/button_ws"
         android:layout_height="@dimen/button_h1"
         android:layout_marginTop="12dp"
         android:layout_marginEnd="48dp"
         android:padding="2dp"
-        android:text="Editar"
+        android:text="Detalles"
         android:textSize="@dimen/inner_text_2"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/guideline4"

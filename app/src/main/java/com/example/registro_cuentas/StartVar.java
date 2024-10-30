@@ -7,19 +7,20 @@ import androidx.room.Room;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
-public class SatrtVar {
+public class StartVar {
 
     //Nombre de data Base
     private static String nameDBacc = "Cuentas";
     private static String nameDBclt = "Clientes";
+    private static String nameDBfec = "Fechas";
+
 
     // Var redundants
     public static List<Cuenta> listacc =  new ArrayList<>();
     public static List<Cliente> listclt =  new ArrayList<>();
+    public static List<Fecha> listfec =  new ArrayList<>();
     public static List<List> listreg = new ArrayList<>();
     public static boolean mPermiss;     //Permisos de gestion multimedia
     public static int mCurrenrAcc;      // Cuenta seleccionada
@@ -29,7 +30,10 @@ public class SatrtVar {
     // DB
     public static AppDBacc appDBcuenta;
     public static AppDBclt appDBcliente;
+    public static AppDBfec appDBfecha;
     public static List<AppDBreg> appDBregistro =  new ArrayList<>();
+
+
     public static ArrayList<String> textList;
     public static ArrayList<String> dirList;
     public static ArrayList<String> typeList;
@@ -44,63 +48,76 @@ public class SatrtVar {
     public static BottomNavigationView mNavBar;
 
     private Context mContex;
-    public SatrtVar(Context mContex){
+    public StartVar(Context mContex){
         this.mContex = mContex;
     }
 
     //------------------------------------------ Para guardar las cuentas
     public void setAccListDB(){
         //Instancia de la base de datos
-        SatrtVar.appDBcuenta = Room.databaseBuilder( mContex, AppDBacc.class, nameDBacc).allowMainThreadQueries().build();
-        SatrtVar.listacc =  appDBcuenta.daoUser().getUsers();
+        StartVar.appDBcuenta = Room.databaseBuilder( mContex, AppDBacc.class, nameDBacc).allowMainThreadQueries().build();
+        StartVar.listacc =  appDBcuenta.daoUser().getUsers();
     }
 
     public void getAccListDB(){
         //Instancia de la base de datos
-        SatrtVar.listacc =  SatrtVar.appDBcuenta.daoUser().getUsers();
+        StartVar.listacc =  StartVar.appDBcuenta.daoUser().getUsers();
     }
     //----------------------------------------------------------------------------------
 
     //------------------------------------------ Para guardar los clientes
     public void setCltListDB(){
         //Instancia de la base de datos
-        SatrtVar.appDBcliente = Room.databaseBuilder( mContex, AppDBclt.class, nameDBclt).allowMainThreadQueries().build();
-        SatrtVar.listclt =  appDBcliente.daoUser().getUsers();
+        StartVar.appDBcliente = Room.databaseBuilder( mContex, AppDBclt.class, nameDBclt).allowMainThreadQueries().build();
+        StartVar.listclt =  appDBcliente.daoUser().getUsers();
     }
 
     public void getCltListDB(){
         //Instancia de la base de datos
-        SatrtVar.listclt =  SatrtVar.appDBcliente.daoUser().getUsers();
+        StartVar.listclt =  StartVar.appDBcliente.daoUser().getUsers();
     }
     //----------------------------------------------------------------------------------
 
     //---------------------------------------- Para Guardar los datos
     public void setRegListDB(){
         //Limpia las listas
-        if(SatrtVar.appDBregistro != null){
-            SatrtVar.appDBregistro.clear();
-            SatrtVar.listreg.clear();
+        if(StartVar.appDBregistro != null){
+            StartVar.appDBregistro.clear();
+            StartVar.listreg.clear();
         }
 
         //Instancia de la base de datos
-        int siz = SatrtVar.listacc.size();
+        int siz = StartVar.listacc.size();
         for (int i = 0; i < siz; i++){
-            String name = SatrtVar.listacc.get(i).cuenta;
+            String name = StartVar.listacc.get(i).cuenta;
             AppDBreg db = Room.databaseBuilder( mContex, AppDBreg.class, name).allowMainThreadQueries().build();
-            SatrtVar.appDBregistro.add(db);
-            SatrtVar.listreg.add(db.daoUser().getUsers());
+            StartVar.appDBregistro.add(db);
+            StartVar.listreg.add(db.daoUser().getUsers());
         }
     }
 
+    //------------------------------------------ Para guardar las Fechas
+    public void setFecListDB(){
+        //Instancia de la base de datos
+        StartVar.appDBfecha = Room.databaseBuilder( mContex, AppDBfec.class, nameDBfec).allowMainThreadQueries().build();
+        StartVar.listfec =  appDBfecha.daoUser().getUsers();
+    }
+
+    public void getFecListDB(){
+        //Instancia de la base de datos
+        StartVar.listfec =  StartVar.appDBfecha.daoUser().getUsers();
+    }
+    //----------------------------------------------------------------------------------
+
     public void getRegListDB(){
         //Limpia las listas
-        SatrtVar.appDBregistro.clear();
-        SatrtVar.listreg.clear();
+        StartVar.appDBregistro.clear();
+        StartVar.listreg.clear();
 
         //Instancia de la base de datos
-        for (int i = 0; i < SatrtVar.appDBregistro.size(); i++){
-            AppDBreg db = SatrtVar.appDBregistro.get(i);
-            SatrtVar.listreg.add(db.daoUser().getUsers());
+        for (int i = 0; i < StartVar.appDBregistro.size(); i++){
+            AppDBreg db = StartVar.appDBregistro.get(i);
+            StartVar.listreg.add(db.daoUser().getUsers());
         }
     }
     //--------------------------------------------------------------------------------
@@ -121,21 +138,21 @@ public class SatrtVar {
 
 
     public void setArrayList(ArrayList<String> listA, ArrayList<String> listB, ArrayList<String> listC){
-        SatrtVar.textList = listA;
-        SatrtVar.dirList = listB;
-        SatrtVar.typeList = listC;
+        StartVar.textList = listA;
+        StartVar.dirList = listB;
+        StartVar.typeList = listC;
     }
 
     public void setCurrSel2(int value){
-        SatrtVar.currSel2 = value;
+        StartVar.currSel2 = value;
     }
     public void setPayIndex(int value){
-        SatrtVar.payIndex = value;
+        StartVar.payIndex = value;
     }
 
 
     public void setMorlist(ArrayList<String> list){
-        SatrtVar.morlist.clear();
-        SatrtVar.morlist = list;
+        StartVar.morlist.clear();
+        StartVar.morlist = list;
     }
 }

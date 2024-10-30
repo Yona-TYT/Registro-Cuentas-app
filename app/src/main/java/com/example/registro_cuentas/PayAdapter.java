@@ -32,7 +32,7 @@ public class PayAdapter extends BaseAdapter implements Filterable, View.OnClickL
     private List<Object[]> textList = new ArrayList<>();
     private List<Object[]> currList = new ArrayList<>(); // Original Values
     private List<String> mCurrencyList= Arrays.asList("$", "Bs");
-    private int mCindex = SatrtVar.mCurrency;
+    private int mCindex = StartVar.mCurrency;
 
     private ArrayList<Integer> newList = new ArrayList<>();    // Values to be displayed
 
@@ -171,18 +171,13 @@ public class PayAdapter extends BaseAdapter implements Filterable, View.OnClickL
         int itemId = view.getId();
 
         if(itemId == R.id.butt_paylist) {
-            SatrtVar satrtVar = new SatrtVar(mContex);
-            satrtVar.setPayIndex( (int)view.getTag());
+            StartVar startVar = new StartVar(mContex);
+            startVar.setPayIndex( (int)view.getTag());
 
             Application application = (Application) mContex.getApplicationContext();
             Intent mIntent = new Intent(mContex, DetailsActivity.class);
             mIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             application.startActivity(mIntent);
-//            int idx = (int)view.getTag();
-//            Toast.makeText(mContex, "Siz is " + idx, Toast.LENGTH_LONG).show();
-
-
-
         }
     }
 }

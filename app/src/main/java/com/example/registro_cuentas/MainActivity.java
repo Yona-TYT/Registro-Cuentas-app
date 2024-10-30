@@ -1,8 +1,7 @@
 package com.example.registro_cuentas;
 
-import static com.example.registro_cuentas.SatrtVar.appDBcuenta;
+import static com.example.registro_cuentas.StartVar.appDBcuenta;
 
-import android.content.Intent;
 import android.os.Bundle;
 
 import com.example.registro_cuentas.databinding.ActivityMainBinding;
@@ -22,7 +21,7 @@ public class MainActivity extends AppCompatActivity {
 
     private ActivityMainBinding binding;
 
-    private SatrtVar satrtVar;
+    private StartVar startVar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,33 +40,33 @@ public class MainActivity extends AppCompatActivity {
 
         BaseContext.initialise(this);
         //Satrted variables
-        satrtVar = new SatrtVar(getApplicationContext());
-        satrtVar.setAccListDB();
-        satrtVar.setCltListDB();
-        satrtVar.setmPermiss(true);
+        startVar = new StartVar(getApplicationContext());
+        startVar.setAccListDB();
+        startVar.setCltListDB();
+        startVar.setmPermiss(true);
         List<Cuenta> listCuenta = appDBcuenta.daoUser().getUsers();
 
         // Se agregan datos solo la primera vez en el primer elemento de la lista ---------------------------------------------
         if(listCuenta.isEmpty()) {
-            Cuenta obj = new Cuenta(SatrtVar.saveDataName, "", "", "", 0, 0, 0, "");
+            Cuenta obj = new Cuenta(StartVar.saveDataName, "", "", "", 0, 0, 0, "");
             appDBcuenta.daoUser().insetUser(obj);
             //Recarga La lista de la DB ----------------------------
-            satrtVar.getAccListDB();
+            startVar.getAccListDB();
             //-------------------------------------------------------
             //Actualiza la db para los registros
-            satrtVar.setRegListDB();
+            startVar.setRegListDB();
             //--------------------------------
         }
         else if(listCuenta.size() > 1){
-            satrtVar.setRegListDB();
-            int idx = appDBcuenta.daoUser().getSaveCurrentAcc(SatrtVar.saveDataName);
-            satrtVar.setCurrentAcc(idx);
+            startVar.setRegListDB();
+            int idx = appDBcuenta.daoUser().getSaveCurrentAcc(StartVar.saveDataName);
+            startVar.setCurrentAcc(idx);
 
-            idx = appDBcuenta.daoUser().getSaveCurrency(SatrtVar.saveDataName);
-            satrtVar.setCurrency(idx);
+            idx = appDBcuenta.daoUser().getSaveCurrency(StartVar.saveDataName);
+            startVar.setCurrency(idx);
 
-            String value = appDBcuenta.daoUser().getSaveDollar(SatrtVar.saveDataName);
-            satrtVar.setDollar(value);
+            String value = appDBcuenta.daoUser().getSaveDollar(StartVar.saveDataName);
+            startVar.setDollar(value);
         }
         //----------------------------------------------------------------------------------------------------------------------
 
@@ -84,7 +83,7 @@ public class MainActivity extends AppCompatActivity {
         NavigationUI.setupActionBarWithNavController(this, navController, appBarConfiguration);
         NavigationUI.setupWithNavController(binding.navView, navController);
 
-        satrtVar.setNavBar(navView);
+        startVar.setNavBar(navView);
     }
 
     public void setBottomNavigationVisibility(int visibility) {

@@ -2,9 +2,6 @@ package com.example.registro_cuentas;
 
 import android.content.Context;
 import android.graphics.Rect;
-import android.os.Build;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.util.DisplayMetrics;
 import android.view.View;
 import android.view.ViewTreeObserver;
@@ -13,9 +10,6 @@ import android.widget.Toast;
 
 import androidx.constraintlayout.widget.ConstraintLayout;
 
-import com.google.android.material.bottomnavigation.BottomNavigationView;
-
-import java.text.DecimalFormat;
 import java.util.List;
 
 public class Basic {
@@ -98,11 +92,11 @@ public class Basic {
 
     public static String setValue(String value) {
         value = value.replaceAll("([^.;^0-9]+)", "");
-        float precDoll = floatFormat(SatrtVar.mDollar);
+        float precDoll = floatFormat(StartVar.mDollar);
         if (!value.isEmpty()) {
             float number = Float.parseFloat(value);
 
-            if (SatrtVar.mCurrency == 1) {    //Selector en Bs
+            if (StartVar.mCurrency == 1) {    //Selector en Bs
                 number = number / precDoll;
             }
             return Float.toString(number);
@@ -111,10 +105,10 @@ public class Basic {
 
     public static String getValue(String value) {
         value = value.replaceAll("([^.;^0-9]+)", "");
-        float precDoll = floatFormat(SatrtVar.mDollar);
+        float precDoll = floatFormat(StartVar.mDollar);
         if (!value.isEmpty()) {
             float number = Float.parseFloat(value);
-            if (SatrtVar.mCurrency == 1) {    //Selector en Bs
+            if (StartVar.mCurrency == 1) {    //Selector en Bs
                 number = number * precDoll;
             }
             return Float.toString(number);
@@ -122,7 +116,7 @@ public class Basic {
     }
 
     public static Float floatFormat(String value) {
-        return Float.parseFloat(SatrtVar.mDollar.replaceAll("([^.;^0-9]+)", ""));
+        return Float.parseFloat(StartVar.mDollar.replaceAll("([^.;^0-9]+)", ""));
     }
 
     public static String setMask(String value, String sing) {
