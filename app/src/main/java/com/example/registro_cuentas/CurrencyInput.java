@@ -39,7 +39,11 @@ public class CurrencyInput implements View.OnClickListener, View.OnFocusChangeLi
         this.mOpt = mOpt;
     }
 
-    @SuppressLint("ClickableViewAccessibility")
+    public EditText get() {
+        return mInput;
+    }
+
+        @SuppressLint("ClickableViewAccessibility")
     public void set() {
         mInput.setOnClickListener(this);
         mInput.setOnFocusChangeListener(this);
@@ -49,7 +53,6 @@ public class CurrencyInput implements View.OnClickListener, View.OnFocusChangeLi
 
         mInput.setSelection(0); // After initialization keep cursor on right side
         mInput.setCursorVisible(true);// Disable the cursor.
-
         mInput.addTextChangedListener(new TextWatcher() {
             @SuppressLint("SetTextI18n")
             @Override
@@ -103,6 +106,7 @@ public class CurrencyInput implements View.OnClickListener, View.OnFocusChangeLi
             }
         }
         else{
+            //Toast.makeText(mContext, "Aqui hayyyyyyyy?  " , Toast.LENGTH_LONG).show();
             if (Basic.isDow){
                 mInput.setSelection(0);
                 isTouch = true;
@@ -117,6 +121,7 @@ public class CurrencyInput implements View.OnClickListener, View.OnFocusChangeLi
     public boolean onKey(View view, int i, KeyEvent keyEvent) {
         String value = mInput.getText().toString();
         int siz = value.length();
+        //Toast.makeText(mContext, "Aqui hayyyyyyyy  " + keyEvent.getKeyCode() , Toast.LENGTH_LONG).show();
 
         if (value.endsWith(" "+sing) &&  mInput.getSelectionEnd() !=0) {
             if(allSelec){
@@ -138,6 +143,9 @@ public class CurrencyInput implements View.OnClickListener, View.OnFocusChangeLi
                 mInput.setText(Basic.setMask("", sing));
                 mInput.setSelection(0);
             }
+        }
+        else if(keyEvent.getKeyCode() == 67) {
+
         }
         return false;
     }

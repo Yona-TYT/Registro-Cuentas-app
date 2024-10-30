@@ -270,15 +270,15 @@ public class HomeFragment extends Fragment implements View.OnClickListener, Adap
     public void setRegList(){
         if(!appDBregistro.isEmpty()) {
             listRegistro = appDBregistro.get(currSel2).daoUser().getUsers();
-            List<String[]> mregList = new ArrayList<>();
+            List<Object[]> mregList = new ArrayList<>();
             for (int i = 0; i < listRegistro.size(); i++) {
                 String name = listRegistro.get(i).nombre;
-                String[] stList = new String[5];
+                Object[] stList = new Object[5];
                 stList[0] = Integer.toString(i);
                 stList[1] = name;
                 stList[2] = listRegistro.get(i).monto;
                 stList[3] = listRegistro.get(i).fecha;
-                stList[4] = listRegistro.get(i).time;
+                stList[4] = listRegistro.get(i).oper;
                 mregList.add(stList);
             }
             //Para configurar la lista de pagos

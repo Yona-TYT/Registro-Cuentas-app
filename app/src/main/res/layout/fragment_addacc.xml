@@ -15,8 +15,6 @@
         android:inputType="textCapWords"
         android:maxLength="20"
         android:padding="10dp"
-        android:cursorVisible="false"
-        android:imeOptions="actionDone"
         android:textSize="@dimen/inner_text_2"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/guideline2"

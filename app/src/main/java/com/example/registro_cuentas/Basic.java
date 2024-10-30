@@ -19,19 +19,19 @@ import java.text.DecimalFormat;
 import java.util.List;
 
 public class Basic {
-    private Context mContex;
+    private static Context mContex;
     public static boolean isDow = true;
     public static boolean isUp = false;
 
-    public Basic(Context mContex){
+    public Basic(Context mContex) {
         this.mContex = mContex;
     }
 
-    public int getPixelSiz(int id){
+    public int getPixelSiz(int id) {
         return mContex.getResources().getDimensionPixelSize(id);
     }
 
-    public float getFloatSiz(int id){
+    public float getFloatSiz(int id) {
         DisplayMetrics metrics = new DisplayMetrics();
         float scaledDensity = mContex.getResources().getDisplayMetrics().scaledDensity;
         return getPixelSiz(id) / scaledDensity;
@@ -42,6 +42,7 @@ public class Basic {
         mConstrain.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
             @Override
             public void onGlobalLayout() {
+
                 // on below line we are creating a variable for rect
                 Rect rect = new Rect();
                 ConstraintLayout contain = mConstrain;
@@ -52,6 +53,7 @@ public class Basic {
                 // on below line getting keypad height.
                 int keypadHeight = screenHeight - rect.bottom;
                 if (keypadHeight > screenHeight * 0.15) {
+
                     isDow = false;
                     isUp = true;
                     //Toast.makeText(MainActivity.this, "Keyboard is +", Toast.LENGTH_LONG).show();
@@ -61,31 +63,32 @@ public class Basic {
                     isUp = false;
                     //Toast.makeText(mContex, "Keyboard is -", Toast.LENGTH_LONG).show();
 
-                    if(opt == 0) {
+                    if (opt == 0) {
+                        //Toast.makeText(mContex, "Aqui hayyyyyyyy?  " , Toast.LENGTH_LONG).show();
                         elm.clearFocus();
                     }
                 }
             }
         });
     }
-    public void  steAllKeyEvent(ConstraintLayout mConstrain, List<EditText> mInputList){
-        for(int i = 0; i < mInputList.size(); i++) {
+
+    public void steAllKeyEvent(ConstraintLayout mConstrain, List<EditText> mInputList) {
+        for (int i = 0; i < mInputList.size(); i++) {
             // Para eventos al mostrar o ocultar el teclado
             keyboardEvent(mConstrain, mInputList.get(i), 0); //opt = 0 is clear elm focus
             //-------------------------------------------------------------------------------------
         }
     }
 
-    public void setAllfocusEvent(View elm, List<EditText> mInputList){
-        for(int i = 0; i < mInputList.size(); i++) {
+    public void setAllfocusEvent(View elm, List<EditText> mInputList) {
+        for (int i = 0; i < mInputList.size(); i++) {
             mInputList.get(i).setOnFocusChangeListener(new View.OnFocusChangeListener() {
                 @Override
                 public void onFocusChange(View view, boolean b) {
                     //Toast.makeText(mContext, "Siz is "+b, Toast.LENGTH_LONG).show();
                     if (b) {
                         elm.setVisibility(View.INVISIBLE);
-                    }
-                    else {
+                    } else {
                         elm.setVisibility(View.VISIBLE);
                     }
                 }
@@ -93,7 +96,7 @@ public class Basic {
         }
     }
 
-    public static String setValue(String value){
+    public static String setValue(String value) {
         value = value.replaceAll("([^.;^0-9]+)", "");
         float precDoll = floatFormat(SatrtVar.mDollar);
         if (!value.isEmpty()) {
@@ -103,11 +106,10 @@ public class Basic {
                 number = number / precDoll;
             }
             return Float.toString(number);
-        }
-        else return "";
+        } else return "";
     }
 
-    public static String getValue(String value){
+    public static String getValue(String value) {
         value = value.replaceAll("([^.;^0-9]+)", "");
         float precDoll = floatFormat(SatrtVar.mDollar);
         if (!value.isEmpty()) {
@@ -116,16 +118,19 @@ public class Basic {
                 number = number * precDoll;
             }
             return Float.toString(number);
-        }
-        else return "";
+        } else return "";
     }
 
-    public static Float floatFormat(String value){
+    public static Float floatFormat(String value) {
         return Float.parseFloat(SatrtVar.mDollar.replaceAll("([^.;^0-9]+)", ""));
     }
 
-    public static String setMask(String value, String sing){
+    public static String setMask(String value, String sing) {
         value = value.replaceAll("([^.;^0-9]+)", "");
-        return value+" "+sing;
+        return value + " " + sing;
+    }
+
+    public static void msg(String msg) {
+        Toast.makeText(mContex, msg, Toast.LENGTH_LONG).show();
     }
 }

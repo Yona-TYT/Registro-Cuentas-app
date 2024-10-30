@@ -156,6 +156,7 @@ public class DetailsActivity extends AppCompatActivity implements View.OnClickLi
             String txAlias = appDBcliente.daoUser().getSaveAlias(reg.cltid);
             String txConc = reg.concep;
             String txMont = reg.monto;
+            String txOpt = (reg.oper==0?"+ ":"- ");
             String txFech = reg.fecha;
             String txHora = cale.getTime(reg.time);
 
@@ -164,7 +165,7 @@ public class DetailsActivity extends AppCompatActivity implements View.OnClickLi
             i++;
             mTextList.get(i).setText("Concepto: " + txConc);
             i++;
-            mTextList.get(i).setText("Monto: "+ Basic.getValue(txMont)+ " "+mCurrencyList.get(mCindex));
+            mTextList.get(i).setText("Monto: "+txOpt+ Basic.getValue(txMont)+ " "+mCurrencyList.get(mCindex));
             i++;
             mTextList.get(i).setText("Fecha: "+ txFech);
             i++;

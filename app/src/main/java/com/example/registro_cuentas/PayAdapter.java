@@ -5,19 +5,16 @@ import android.app.Application;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Typeface;
-import android.util.AttributeSet;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.ViewParent;
 import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.Filter;
 import android.widget.Filterable;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.appcompat.view.ContextThemeWrapper;
 import androidx.core.content.ContextCompat;
@@ -32,14 +29,14 @@ public class PayAdapter extends BaseAdapter implements Filterable, View.OnClickL
     private CalcCalendar cale = new CalcCalendar();
     private Basic mBasic;
 
-    private List<String[]> textList = new ArrayList<>();
-    private List<String[]>  currList = new ArrayList<>(); // Original Values
+    private List<Object[]> textList = new ArrayList<>();
+    private List<Object[]> currList = new ArrayList<>(); // Original Values
     private List<String> mCurrencyList= Arrays.asList("$", "Bs");
     private int mCindex = SatrtVar.mCurrency;
 
     private ArrayList<Integer> newList = new ArrayList<>();    // Values to be displayed
 
-    public  PayAdapter(Context mContex, List<String[]> textList){
+    public  PayAdapter(Context mContex, List<Object[]> textList){
         this.mContex = mContex;
         this.textList = textList;
         this.currList = textList;
@@ -88,10 +85,10 @@ public class PayAdapter extends BaseAdapter implements Filterable, View.OnClickL
         layout.addView(butt);
         //-----------------------------------------------------------------------
         // Se ajustan los parametros del Texto ----------------------------------
-        String txName = textList.get(idx)[1];
-        String txMont = Basic.getValue(textList.get(idx)[2]) + " "+ mCurrencyList.get(mCindex);
-        String txFech = textList.get(idx)[3];
-        String txHora = cale.getTime(textList.get(idx)[4]);
+        Integer opt = (Integer)textList.get(idx)[4];
+        String txName = (String)textList.get(idx)[1];
+        String txMont = (opt==0?"+ ":"- ")+Basic.getValue((String)textList.get(idx)[2]) + " "+ mCurrencyList.get(mCindex);
+        String txFech = (String)textList.get(idx)[3];
         text1.setText( " "+txMont  +" " +txName  );
         text1 = setTextView(text1);
         layout.addView(text1);
@@ -146,7 +143,7 @@ public class PayAdapter extends BaseAdapter implements Filterable, View.OnClickL
                 else{
                     constraint = constraint.toString().toLowerCase();
                     for (int i = 0; i < currList.size(); i++) {
-                        String data = currList.get(i)[1];
+                        String data = (String)currList.get(i)[1];
                         if (data.toLowerCase().startsWith(constraint.toString())) {
                             FilteredArrList.add(i);
                             //Log.d("PhotoPicker", "Constrain ------------------------: " + i);

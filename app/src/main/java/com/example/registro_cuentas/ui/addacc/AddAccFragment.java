@@ -10,6 +10,8 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import androidx.activity.OnBackPressedCallback;
+import androidx.activity.OnBackPressedDispatcher;
 import androidx.annotation.NonNull;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
@@ -31,7 +33,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class AddAccFragment extends Fragment implements View.OnClickListener{
+public class AddAccFragment extends Fragment implements View.OnClickListener, View.OnFocusChangeListener{
 
     private FragmentAddaccBinding binding;
 
@@ -52,7 +54,6 @@ public class AddAccFragment extends Fragment implements View.OnClickListener{
     //Botones
     private Button mButt1;
 
-    private List<String> mList = new ArrayList<>();
     private String mIndex = "";
 
     private List<String> mCurrencyList= Arrays.asList("$", "Bs");
@@ -65,6 +66,19 @@ public class AddAccFragment extends Fragment implements View.OnClickListener{
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         AddAccViewModel addAccViewModel = new ViewModelProvider(this).get(AddAccViewModel.class);
 
+        //Se configura el Boton nav Back -----------------------------------------------
+        OnBackPressedDispatcher onBackPressedDispatcher = this.getActivity().getOnBackPressedDispatcher();
+        OnBackPressedCallback callback = new OnBackPressedCallback(true) {
+            @Override
+            public void handleOnBackPressed() {
+                Intent mIntent = new Intent(mContext, MainActivity.class);
+                mIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                startActivity(mIntent);
+            }
+        };
+        onBackPressedDispatcher.addCallback(this.getActivity(), callback);
+        //---------------------------------------------------------------------------------
+
         binding = FragmentAddaccBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
 
@@ -76,6 +90,8 @@ public class AddAccFragment extends Fragment implements View.OnClickListener{
         mButt1 = binding.buttAdd1;
 
         mButt1.setOnClickListener(this);
+        mInput1.setOnFocusChangeListener(this);
+        mInput2.setOnFocusChangeListener(this);
 
         mInputList.add(mInput1);
         mInputList.add(mInput2);
@@ -83,16 +99,17 @@ public class AddAccFragment extends Fragment implements View.OnClickListener{
 
         //Efecto moneda
         //-------------------------------------------------------------------------------------------------------
+        String curr = mCurrencyList.get(SatrtVar.mCurrency);
+        mInput3.setText(Basic.setMask("0", curr));
         List<View> mViewL1 = new ArrayList<>();
         mViewL1.add(mNavBar);
         int mOpt = 0;
-        CurrencyInput mCInput = new CurrencyInput( mContext, mInput3,  mViewL1, mCurrencyList.get(SatrtVar.mCurrency), mOpt);
+        CurrencyInput mCInput = new CurrencyInput( mContext, mInput3,  mViewL1, curr, mOpt);
         mCInput.set();
         //----------------------------------------------------------------------------------------------------
 
         // Para eventos al mostrar o ocultar el teclado-----
         mBasic.steAllKeyEvent(mConstrain, mInputList);
-        mBasic.setAllfocusEvent(mNavBar, mInputList);
         //-----------------------------------------------
 
         mPermiss = SatrtVar.mPermiss;
@@ -116,6 +133,7 @@ public class AddAccFragment extends Fragment implements View.OnClickListener{
         if (itemId == R.id.butt_add1) {
             boolean result = true;
             int msgIdx = 0;
+            List<String> mList = new ArrayList<>();
             mList.add("userID"+mIndex);
             for(int i = 0; i < mInputList.size(); i++) {
                 String text = mInputList.get(i).getText().toString();
@@ -137,12 +155,17 @@ public class AddAccFragment extends Fragment implements View.OnClickListener{
             }
             if (result) {
                 //Para Limpiar Todos Los inputs
-                for(int i = 0; i < mInputList.size(); i++) {
-                    mInputList.get(i).setText("");
+                for (int i = 0; i < mInputList.size(); i++) {
+                    EditText mInput = mInputList.get(i);
+                    mInput.setText("");
+                    mInput.setSelection(0);
+                    mInput.clearFocus();
                 }
                 String monto = Basic.setValue(mList.get(3));
-                if(monto.isEmpty() || monto.equals("0")){
-                    msgIdx = 3;
+                if(monto.isEmpty() || Float.parseFloat(monto) <= 0.0){
+                    //MSG Para entrada de monto
+                    msgIdx = 2;
+                    setMessage(msgIdx);
                     return;
                 }
                 Cuenta obj = new Cuenta(mList.get(0), mList.get(1), mList.get(2), monto, 0, 0, 0, "");
@@ -163,6 +186,30 @@ public class AddAccFragment extends Fragment implements View.OnClickListener{
                 startActivity(new Intent(mContext, MainActivity.class));
                 //finish(); //Finaliza la actividad y ya no se accede mas
             }
+        }
+    }
+    public void setMessage(int idx){
+        if(idx == 0){
+            Basic.msg("Ingrese NOMBRE Cliente!.");
+        }
+        else if(idx == 1){
+            Basic.msg("El nombre Cliente Ya EXISTE!.");
+        }
+        else if(idx == 2){
+            Basic.msg("Ingrese un MONTO Valido!.");
+        }
+        else if(idx == 3){
+            Basic.msg("");
+        }
+    }
+
+    @Override
+    public void onFocusChange(View view, boolean b) {
+        //Toast.makeText(mContext, "Siz is "+b, Toast.LENGTH_LONG).show();
+        if (b) {
+            mNavBar.setVisibility(View.INVISIBLE);
+        } else {
+            mNavBar.setVisibility(View.VISIBLE);
         }
     }
 }

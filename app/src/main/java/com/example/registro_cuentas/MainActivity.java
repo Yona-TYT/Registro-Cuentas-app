@@ -2,11 +2,14 @@ package com.example.registro_cuentas;
 
 import static com.example.registro_cuentas.SatrtVar.appDBcuenta;
 
+import android.content.Intent;
 import android.os.Bundle;
 
 import com.example.registro_cuentas.databinding.ActivityMainBinding;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
+import androidx.activity.OnBackPressedCallback;
+import androidx.activity.OnBackPressedDispatcher;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
@@ -24,6 +27,17 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        //Se configura el Boton nav Back -----------------------------------------------
+        OnBackPressedDispatcher onBackPressedDispatcher = getOnBackPressedDispatcher();
+        OnBackPressedCallback callback = new OnBackPressedCallback(true) {
+            @Override
+            public void handleOnBackPressed() {
+                finishAffinity();
+            }
+        };
+        onBackPressedDispatcher.addCallback(MainActivity.this, callback);
+        //---------------------------------------------------------------------------------
 
         BaseContext.initialise(this);
         //Satrted variables

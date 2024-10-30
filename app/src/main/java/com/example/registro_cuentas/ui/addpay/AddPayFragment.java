@@ -14,6 +14,8 @@ import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.activity.OnBackPressedCallback;
+import androidx.activity.OnBackPressedDispatcher;
 import androidx.annotation.NonNull;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
@@ -34,6 +36,7 @@ import com.example.registro_cuentas.SelecAdapter;
 import com.example.registro_cuentas.databinding.ActivityMainBinding;
 import com.example.registro_cuentas.databinding.FragmentAddpayBinding;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.android.material.textfield.TextInputLayout;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -43,7 +46,7 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class AddPayFragment extends Fragment implements View.OnClickListener{
+public class AddPayFragment extends Fragment implements View.OnClickListener, View.OnFocusChangeListener{
 
     private FragmentAddpayBinding binding;
 
@@ -80,7 +83,6 @@ public class AddPayFragment extends Fragment implements View.OnClickListener{
     private Switch mSw;
     private boolean swPorc = false;
 
-    private List<String> mList = new ArrayList<>();
     private String mIndex = "";
 
     // Para guardar los permisos de app comprobados en main
@@ -92,6 +94,19 @@ public class AddPayFragment extends Fragment implements View.OnClickListener{
 
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
     {
+        //Se configura el Boton nav Back -----------------------------------------------
+        OnBackPressedDispatcher onBackPressedDispatcher = this.getActivity().getOnBackPressedDispatcher();
+        OnBackPressedCallback callback = new OnBackPressedCallback(true) {
+            @Override
+            public void handleOnBackPressed() {
+                Intent mIntent = new Intent(mContext, MainActivity.class);
+                mIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                startActivity(mIntent);
+            }
+        };
+        onBackPressedDispatcher.addCallback(this.getActivity(), callback);
+        //---------------------------------------------------------------------------------
+
         AddPayViewModel addPayViewModel = new ViewModelProvider(this).get(AddPayViewModel.class);
 
         binding = FragmentAddpayBinding.inflate(inflater, container, false);
@@ -111,6 +126,9 @@ public class AddPayFragment extends Fragment implements View.OnClickListener{
 
         mButt1 = binding.buttPay1;
 
+        mInput1.setOnFocusChangeListener(this);
+        mInput2.setOnFocusChangeListener(this);
+        mInput3.setOnFocusChangeListener(this);
         mConstrain.setOnClickListener(this);
         mButt1.setOnClickListener(this);
         mSw.setOnClickListener(this);
@@ -118,6 +136,7 @@ public class AddPayFragment extends Fragment implements View.OnClickListener{
         mInputList.add(mInput1);
         mInputList.add(mInput2);
         mInputList.add(mInput3);
+        mInputList.add(mInput4);
 
         //Efecto moneda
         //-------------------------------------------------------------------------------------------------------
@@ -128,14 +147,10 @@ public class AddPayFragment extends Fragment implements View.OnClickListener{
         int mOpt = 0;
         CurrencyInput mCInput = new CurrencyInput( mContext, mInput4,  mViewL1, curr, mOpt);
         mCInput.set();
-
-        mInputList.add(CurrencyInput.mInput);
-
         //----------------------------------------------------------------------------------------------------
 
         // Para eventos al mostrar o ocultar el teclado-----
         mBasic.steAllKeyEvent(mConstrain, mInputList);
-        mBasic.setAllfocusEvent(mNavBar, mInputList);
         //-----------------------------------------------
 
         mPermiss = SatrtVar.mPermiss;
@@ -220,6 +235,7 @@ public class AddPayFragment extends Fragment implements View.OnClickListener{
             int msgIdx = 0;
             String cltId = "0";
             boolean newClt = true;
+            List<String> mList = new ArrayList<>();
             mList.add("payID"+mIndex);
             for(int i = 0; i < mInputList.size(); i++) {
                 String text = mInputList.get(i).getText().toString().toLowerCase();
@@ -230,7 +246,12 @@ public class AddPayFragment extends Fragment implements View.OnClickListener{
                     for (int j = 0; j < listCliente.size(); j++) {
                         String name = listCliente.get(j).nombre;
                         if(name.toLowerCase().equals(text)){
+                            //MSG Cliente Ya Existe
                             msgIdx = 1;
+                            //setMessage(msgIdx);
+
+                            mSpin1.setSelection(j+1); //Set Client
+
                             cltId = listCliente.get(j).cliente;
                             newClt = false;
                             break;
@@ -240,30 +261,41 @@ public class AddPayFragment extends Fragment implements View.OnClickListener{
                 if (text.isEmpty()){
                     if(i == 0) {
                         //MSG para entrada de Nombre
-                        msgIdx = 3;
+                        msgIdx = 0;
+                        setMessage(msgIdx);
+
                         result = false;
                         break;
-
                     }
                     if(i == 3) {
                         //MSG para entrada de Monto
-                        msgIdx = 3;
+                        msgIdx = 2;
+                        setMessage(msgIdx);
+
                         result = false;
                         break;
-
                     }
                     else if (i == 4) {
                         //MSG para entrada de...
-                        msgIdx = 2;
+                        msgIdx = 3;
+                        setMessage(msgIdx);
+
+                        result = false;
+                        break;
                     }
                 }
                 mList.add(text);
             }
-            if (result) {
-                //Para Limpiar Todos Los inputs
-                for (int i = 0; i < mInputList.size(); i++) {
-                    mInputList.get(i).setText("");
+            //Para Limpiar Todos Los inputs
+            for (int i = 0; i < mInputList.size(); i++) {
+                EditText mInput = mInputList.get(i);
+                if(mInput.isEnabled()) {
+                    mInput.setText("");
+                    mInput.setSelection(0);
+                    mInput.clearFocus();
                 }
+            }
+            if (result) {
                 SatrtVar mVars = new SatrtVar(mContext);
                 //Comprueba que la lista de cuentas no este vacia
                 if (mVars.listacc.size() > 1) {
@@ -278,8 +310,11 @@ public class AddPayFragment extends Fragment implements View.OnClickListener{
                     }
                     assert currdate != null;
                     String monto = Basic.setValue(mList.get(4));
-                    if(monto.isEmpty() || monto.equals("0")){
-                        msgIdx = 3;
+
+                    if(monto.isEmpty() || Float.parseFloat(monto) <= 0.0){
+                        //MSG Para entrada de monto
+                        msgIdx = 2;
+                        setMessage(msgIdx);
                         return;
                     }
                     Registro obj = new Registro(
@@ -311,6 +346,30 @@ public class AddPayFragment extends Fragment implements View.OnClickListener{
         }
         if (itemId == R.id.sw_pay1){
             swPorc = !swPorc;
+        }
+    }
+    public void setMessage(int idx){
+        if(idx == 0){
+            Basic.msg("Ingrese NOMBRE Cliente!.");
+        }
+        else if(idx == 1){
+            Basic.msg("El nombre Cliente Ya EXISTE!.");
+        }
+        else if(idx == 2){
+            Basic.msg("Ingrese un MONTO Valido!.");
+        }
+        else if(idx == 3){
+            Basic.msg("");
+        }
+    }
+
+    @Override
+    public void onFocusChange(View view, boolean b) {
+        //Toast.makeText(mContext, "Siz is "+b, Toast.LENGTH_LONG).show();
+        if (b) {
+            mNavBar.setVisibility(View.INVISIBLE);
+        } else {
+            mNavBar.setVisibility(View.VISIBLE);
         }
     }
 }
