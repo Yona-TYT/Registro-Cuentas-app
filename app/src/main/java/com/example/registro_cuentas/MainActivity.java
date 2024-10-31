@@ -1,8 +1,10 @@
 package com.example.registro_cuentas;
 
 import static com.example.registro_cuentas.StartVar.appDBcuenta;
+import static com.example.registro_cuentas.StartVar.appDBfecha;
 
 import android.os.Bundle;
+import android.widget.Toast;
 
 import com.example.registro_cuentas.databinding.ActivityMainBinding;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
@@ -15,6 +17,8 @@ import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
@@ -41,14 +45,36 @@ public class MainActivity extends AppCompatActivity {
         BaseContext.initialise(this);
         //Satrted variables
         startVar = new StartVar(getApplicationContext());
+        CalcCalendar calen = new CalcCalendar();
         startVar.setAccListDB();
         startVar.setCltListDB();
+        startVar.setFecListDB();
         startVar.setmPermiss(true);
-        List<Cuenta> listCuenta = appDBcuenta.daoUser().getUsers();
+
+        // Se agregan datos solo la primera vez a para las fechas ---------------------------------------------
+        List<Fecha> listFecha = appDBfecha.daoUser().getUsers();
+        if(listFecha.isEmpty()) {
+            Fecha obj;
+            //Inicia la fecha actual
+            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+               LocalDate currdate = LocalDate.now();
+               LocalTime currtime = LocalTime.now();
+               obj = new Fecha(StartVar.saveDataName, ""+currdate.getYear(), currdate.getMonth().toString(), ""+currdate.getDayOfMonth(), calen.getTime(currtime.toString()), currdate.toString());
+            }
+            else {
+                obj = new Fecha(StartVar.saveDataName, "", "", "", "", "");
+            }
+            appDBfecha.daoUser().insetUser(obj);
+            //Recarga La lista de la DB ----------------------------
+            startVar.getFecListDB();
+            //-------------------------------------------------------
+        }
+        //----------------------------------------------------------------------------------------------------------------------
 
         // Se agregan datos solo la primera vez en el primer elemento de la lista ---------------------------------------------
+        List<Cuenta> listCuenta = appDBcuenta.daoUser().getUsers();
         if(listCuenta.isEmpty()) {
-            Cuenta obj = new Cuenta(StartVar.saveDataName, "", "", "", 0, 0, 0, "");
+            Cuenta obj = new Cuenta(StartVar.saveDataName, "", "", "", 0, 0, 0,0, "");
             appDBcuenta.daoUser().insetUser(obj);
             //Recarga La lista de la DB ----------------------------
             startVar.getAccListDB();
@@ -57,16 +83,21 @@ public class MainActivity extends AppCompatActivity {
             startVar.setRegListDB();
             //--------------------------------
         }
-        else if(listCuenta.size() > 1){
+        else {
             startVar.setRegListDB();
-            int idx = appDBcuenta.daoUser().getSaveCurrentAcc(StartVar.saveDataName);
-            startVar.setCurrentAcc(idx);
+            int idx = 0;
+            if(listCuenta.size() > 1) {
+                idx = appDBcuenta.daoUser().getSaveCurrentAcc(StartVar.saveDataName);
+                startVar.setCurrentAcc(idx);
 
-            idx = appDBcuenta.daoUser().getSaveCurrency(StartVar.saveDataName);
-            startVar.setCurrency(idx);
+                idx = appDBcuenta.daoUser().getSaveCurrency(StartVar.saveDataName);
+                startVar.setCurrency(idx);
 
-            String value = appDBcuenta.daoUser().getSaveDollar(StartVar.saveDataName);
-            startVar.setDollar(value);
+                String value = appDBcuenta.daoUser().getSaveDollar(StartVar.saveDataName);
+                startVar.setDollar(value);
+            }
+            idx = appDBcuenta.daoUser().getSaveCurrentFec(StartVar.saveDataName);
+            startVar.setCurrentMes(idx);
         }
         //----------------------------------------------------------------------------------------------------------------------
 

@@ -166,7 +166,7 @@ public class AddAccFragment extends Fragment implements View.OnClickListener, Vi
                     setMessage(msgIdx);
                     return;
                 }
-                Cuenta obj = new Cuenta(mList.get(0), mList.get(1), mList.get(2), monto, 0, 0, 0, "");
+                Cuenta obj = new Cuenta(mList.get(0), mList.get(1), mList.get(2), monto, 0, 0, 0,0,"");
                 appDBcuenta.daoUser().insetUser(obj);
                 //SE Limpia la lista
                 mList.clear();

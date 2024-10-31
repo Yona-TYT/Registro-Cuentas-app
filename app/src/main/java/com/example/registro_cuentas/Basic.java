@@ -57,7 +57,7 @@ public class Basic {
                     isUp = false;
                     //Toast.makeText(mContex, "Keyboard is -", Toast.LENGTH_LONG).show();
 
-                    if (opt == 0) {
+                    if (opt == 0 && elm != null) {
                         //Toast.makeText(mContex, "Aqui hayyyyyyyy?  " , Toast.LENGTH_LONG).show();
                         elm.clearFocus();
                     }
@@ -116,7 +116,8 @@ public class Basic {
     }
 
     public static Float floatFormat(String value) {
-        return Float.parseFloat(StartVar.mDollar.replaceAll("([^.;^0-9]+)", ""));
+        String mValue = value.replaceAll("([^.;^0-9]+)", "");
+        return mValue.isEmpty() ? (float)0 : Float.parseFloat(mValue);
     }
 
     public static String setMask(String value, String sing) {

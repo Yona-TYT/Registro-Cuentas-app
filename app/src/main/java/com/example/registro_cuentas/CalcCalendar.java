@@ -1,6 +1,9 @@
 package com.example.registro_cuentas;
 
+import static com.example.registro_cuentas.StartVar.appDBfecha;
+
 import android.content.Context;
+import android.widget.Toast;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -63,7 +66,7 @@ public class CalcCalendar {
         return null;
     }
 
-    public String getTime(String value){
+    public static String getTime(String value){
         String text = "";
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
             LocalTime mTime = LocalTime.parse(value);
@@ -71,6 +74,30 @@ public class CalcCalendar {
             return formatter.format(mTime);
         }
         return text;
+    }
+
+    public static void startCalList(Context mContext){
+        //Inicia la fecha actual
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+            LocalDate currdate = LocalDate.now();
+            AppDBfec appDBfecha = StartVar.appDBfecha;
+            List<Fecha> listFecha = appDBfecha.daoUser().getUsers();
+            String fecha = listFecha.get(listFecha.size()-1).date;
+            LocalDate date = LocalDate.parse(fecha);
+            if(currdate.getMonth().equals(date.getMonth()) && currdate.getYear() == date.getYear()){
+                //Toast.makeText(BaseContext.getContext(), "Aquiiiiiiiiiiiiiiiiiii Hayyyyyyyyyyyyyyyyyy " + fecha, Toast.LENGTH_LONG).show();
+                return;
+            }
+            else {
+                LocalTime currtime = LocalTime.now();
+                Fecha obj = new Fecha(StartVar.saveDataName, ""+currdate.getYear(), currdate.getMonth().toString(), ""+currdate.getDayOfMonth(), CalcCalendar.getTime(currtime.toString()), currdate.toString());
+                appDBfecha.daoUser().insetUser(obj);
+                //Recarga La lista de la DB ----------------------------
+                StartVar var = new StartVar(mContext);
+                var.getFecListDB();
+                //-------------------------------------------------------
+            }
+        }
     }
 }
 

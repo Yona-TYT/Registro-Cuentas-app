@@ -13,13 +13,15 @@ public class Fecha {
     public String mes;
     public String dia;
     public String hora;
+    public String date;
 
-    public Fecha(@NonNull String fecha, String year, String mes, String dia, String hora )
+    public Fecha(@NonNull String fecha, String year, String mes, String dia, String hora, String date)
     {
             this.fecha = fecha;
             this.year = year;
             this.mes = mes;
             this.dia = dia;
             this.hora = hora;
+            this.date = date;
     }
 }

@@ -58,6 +58,7 @@ public class SelecAdapter extends BaseAdapter {
         text.setTypeface(Typeface.DEFAULT_BOLD);
         text.setGravity(Gravity.CENTER);
         text.setWidth(R.dimen.spinner_w1);
+        text.setMaxLines(1);
         text.setTextColor(ContextCompat.getColor(text.getContext(), R.color.text_color1));
         text.setBackgroundColor(ContextCompat.getColor(text.getContext(), R.color.text_background2));
 

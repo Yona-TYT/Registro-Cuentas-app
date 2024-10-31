@@ -14,16 +14,18 @@ public class Cuenta {
     public String monto;
     public Integer acctipo;
     public Integer accselc;
+    public Integer fecselc;
     public Integer moneda;
     public String dolar;
 
 
-    public Cuenta(@NonNull String cuenta, String nombre, String desc, String monto, Integer acctipo, Integer accselc, Integer moneda, String dolar) {
+    public Cuenta(@NonNull String cuenta, String nombre, String desc, String monto, Integer acctipo, Integer fecselc, Integer accselc, Integer moneda, String dolar) {
             this.cuenta = cuenta;
             this.nombre = nombre;
             this.desc = desc;
             this.monto = monto;
             this.acctipo = acctipo;
+            this.fecselc = fecselc;
             this.accselc = accselc;
             this.moneda = moneda;
             this.dolar = dolar;

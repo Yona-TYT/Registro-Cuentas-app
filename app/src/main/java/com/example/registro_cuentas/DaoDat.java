@@ -21,8 +21,8 @@ public interface DaoDat {
     @Insert
     void insetUser(Fecha...fechas);
 
-    @Query("UPDATE fecha SET year= :year, mes= :mes, dia= :dia, hora= :hora WHERE fecha= :user")
-    void updateUser(String user, String year, String mes, String dia, String hora );
+    @Query("UPDATE fecha SET year= :year, mes= :mes, dia= :dia, hora= :hora, date= :date WHERE fecha= :user")
+    void updateUser(String user, String year, String mes, String dia, String hora, String date);
 
     @Query("DELETE FROM fecha WHERE  fecha= :user")
     void removerUser(String user);

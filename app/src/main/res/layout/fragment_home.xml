@@ -8,21 +8,6 @@
     tools:context=".ui.home.HomeFragment">
 
     <TextView
-        android:id="@+id/txview"
-        android:layout_width="@dimen/txview_wm"
-        android:layout_height="@dimen/txview_h1"
-        android:layout_marginTop="8dp"
-        android:padding="5dp"
-        android:text="Seleccione Cuenta:"
-        android:textSize="@dimen/inner_text_1"
-        android:textStyle="bold"
-        app:layout_constraintEnd_toStartOf="@+id/txview2"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="@+id/guideline3"
-        app:layout_constraintTop_toBottomOf="@+id/spin_home1"
-        tools:ignore="MissingConstraints" />
-
-    <TextView
         android:id="@+id/txview1"
         android:layout_width="@dimen/txview_wm"
         android:layout_height="@dimen/txview_h1"
@@ -48,6 +33,21 @@
         app:layout_constraintStart_toStartOf="@+id/guideline3"
         app:layout_constraintTop_toBottomOf="@+id/txview1" />
 
+    <TextView
+        android:id="@+id/txview"
+        android:layout_width="@dimen/txview_wm"
+        android:layout_height="@dimen/txview_h1"
+        android:layout_marginTop="8dp"
+        android:padding="5dp"
+        android:text="Seleccione Cuenta:"
+        android:textSize="@dimen/inner_text_1"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toStartOf="@+id/txview2"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="@+id/guideline3"
+        app:layout_constraintTop_toBottomOf="@+id/spin_home1"
+        tools:ignore="MissingConstraints" />
+
     <Spinner
         android:id="@+id/spin_home2"
         android:layout_width="@dimen/spinner_w1"
@@ -55,58 +55,22 @@
         android:layout_marginTop="5dp"
         android:textSize="@dimen/selec_text"
         android:textStyle="bold"
-        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/guideline4"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="@+id/guideline3"
-        app:layout_constraintTop_toBottomOf="@+id/txview"
-        app:layout_constraintVertical_bias="0.0" />
+        app:layout_constraintTop_toBottomOf="@+id/txview" />
 
-    <SearchView
-        android:id="@+id/searchBar"
-        android:layout_width="@dimen/txview_w1"
-        android:layout_height="@dimen/txview_h2"
-        android:layout_alignParentTop="true"
-        android:background="@color/text_background2"
-        android:iconifiedByDefault="false"
-        android:queryHint="Buscar Lista"
-        android:translationZ="999dp"
-        app:layout_constraintBottom_toTopOf="@+id/lv1"
+    <TextView
+        android:id="@+id/txview2"
+        android:layout_width="@dimen/txview_wm"
+        android:layout_height="@dimen/txview_h1"
+        android:padding="5dp"
+        android:text="Precio Dolar"
+        android:textSize="@dimen/inner_text_1"
+        android:textStyle="bold"
         app:layout_constraintEnd_toStartOf="@+id/guideline4"
-        app:layout_constraintHorizontal_bias="0.515"
-        app:layout_constraintStart_toStartOf="@+id/guideline3"
         app:layout_constraintTop_toTopOf="@+id/guideline5"
-        app:layout_constraintVertical_bias="1.0"
-
-
-        />
-
-
-    <ListView
-        android:id="@+id/lv1"
-        android:layout_width="@dimen/txview_w1"
-        android:layout_height="350dp"
-        android:layout_alignTop="@+id/searchBar"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentEnd="true"
-        android:layout_alignParentBottom="true"
-        android:layout_marginStart="30dp"
-        android:background="?attr/colorBackgroundFloating"
-        android:translationZ="999dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/guideline4"
-        app:layout_constraintHorizontal_bias="0.74"
-        app:layout_constraintStart_toStartOf="@+id/guideline3"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.8" />
-
-    <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/guideline5"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        app:layout_constraintGuide_begin="16dp" />
-
+        tools:ignore="MissingConstraints" />
 
     <com.google.android.material.textfield.TextInputEditText
         android:id="@+id/input_home1"
@@ -140,16 +104,78 @@
         app:layout_constraintVertical_bias="0.028" />
 
     <TextView
-        android:id="@+id/txview2"
+        android:id="@+id/txview4"
         android:layout_width="@dimen/txview_wm"
         android:layout_height="@dimen/txview_h1"
+        android:layout_marginTop="8dp"
         android:padding="5dp"
-        android:text="Precio Dolar"
+        android:text="Por Mes:"
         android:textSize="@dimen/inner_text_1"
         android:textStyle="bold"
-        app:layout_constraintEnd_toStartOf="@+id/guideline4"
-        app:layout_constraintTop_toTopOf="@+id/guideline5"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="@+id/guideline3"
+        app:layout_constraintTop_toBottomOf="@+id/spin_home2"
         tools:ignore="MissingConstraints" />
+
+    <Spinner
+        android:id="@+id/spin_home3"
+        android:layout_width="@dimen/spinner_w1"
+        android:layout_height="@dimen/spinner_h1"
+        android:textSize="@dimen/selec_text"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/guideline4"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="@+id/guideline3"
+        app:layout_constraintTop_toBottomOf="@+id/txview4"
+        app:layout_constraintVertical_bias="0.0" />
+
+    <SearchView
+        android:id="@+id/searchBar"
+        android:layout_width="@dimen/txview_w1"
+        android:layout_height="@dimen/txview_h2"
+        android:layout_alignParentTop="true"
+        android:background="@color/text_background2"
+        android:iconifiedByDefault="false"
+        android:queryHint="Buscar Lista"
+        android:translationZ="999dp"
+        app:layout_constraintBottom_toTopOf="@+id/lv1"
+        app:layout_constraintEnd_toStartOf="@+id/guideline4"
+        app:layout_constraintHorizontal_bias="0.515"
+        app:layout_constraintStart_toStartOf="@+id/guideline3"
+        app:layout_constraintTop_toTopOf="@+id/guideline5"
+        app:layout_constraintVertical_bias="1.0"
+
+
+        />
+
+
+    <ListView
+        android:id="@+id/lv1"
+        android:layout_width="@dimen/txview_w1"
+        android:layout_height="320dp"
+        android:layout_alignTop="@+id/searchBar"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginStart="30dp"
+        android:background="?attr/colorBackgroundFloating"
+        android:translationZ="999dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/guideline4"
+        app:layout_constraintHorizontal_bias="0.74"
+        app:layout_constraintStart_toStartOf="@+id/guideline3"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.85" />
+
+
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline5"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_begin="16dp" />
 
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/guideline3"

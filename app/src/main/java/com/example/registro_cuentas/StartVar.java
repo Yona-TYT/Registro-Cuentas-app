@@ -23,9 +23,11 @@ public class StartVar {
     public static List<Fecha> listfec =  new ArrayList<>();
     public static List<List> listreg = new ArrayList<>();
     public static boolean mPermiss;     //Permisos de gestion multimedia
-    public static int mCurrenrAcc;      // Cuenta seleccionada
-    public static int mCurrency;        //Moneda seleccionada
-    public static String mDollar;       //Precio del dolar
+    public static int mCurrenrAcc = 0;      // Cuenta seleccionada
+    public static int mCurrency = 0;        //Moneda seleccionada
+    public static int mCurreMes = 0;        //Mes seleccionado
+
+    public static String mDollar = "";       //Precio del dolar
 
     // DB
     public static AppDBacc appDBcuenta;
@@ -131,6 +133,10 @@ public class StartVar {
     public void setCurrency(int idx){
         mCurrency = idx;
     }
+    public void setCurrentMes(int idx){
+        mCurreMes = idx;
+    }
+
     public void setDollar(String idx){
         mDollar = idx;
     }

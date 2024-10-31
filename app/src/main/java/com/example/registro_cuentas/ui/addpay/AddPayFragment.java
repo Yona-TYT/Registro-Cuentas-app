@@ -24,6 +24,7 @@ import com.example.registro_cuentas.AppDBclt;
 import com.example.registro_cuentas.AppDBreg;
 import com.example.registro_cuentas.BaseContext;
 import com.example.registro_cuentas.Basic;
+import com.example.registro_cuentas.CalcCalendar;
 import com.example.registro_cuentas.Cliente;
 import com.example.registro_cuentas.CurrencyInput;
 import com.example.registro_cuentas.MainActivity;
@@ -324,9 +325,11 @@ public class AddPayFragment extends Fragment implements View.OnClickListener, Vi
                        appDBcliente.daoUser().insetUser(objClt);
                    }
 
-                    //SE Limpia la lista
-                    mList.clear();
+                   //Actualisza la lista de fechas
+                   CalcCalendar.startCalList(mContext);
 
+                   //SE Limpia la lista
+                    mList.clear();
                     //Recarga La lista de la DB ----------------------------
                     mVars.getRegListDB();
                     mVars.getCltListDB();
