@@ -6,7 +6,9 @@ import android.os.Build;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.Button;
+import android.widget.Spinner;
 import android.widget.Switch;
 import android.widget.TextView;
 
@@ -21,6 +23,7 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -34,6 +37,8 @@ public class AccDtsActivity extends AppCompatActivity implements View.OnClickLis
     // DB ----------------------------------------------------------------
     private AppDBacc appDBcuenta = StartVar.appDBcuenta;
     private AppDBclt appDBcliente = StartVar.appDBcliente;
+    private AppDBfec appDBfecha = StartVar.appDBfecha;
+
     private List<Cuenta> listCuenta;
     private List<AppDBreg> appDBregistro = StartVar.appDBregistro;
     private List<Registro> listRegistro;
@@ -46,6 +51,17 @@ public class AccDtsActivity extends AppCompatActivity implements View.OnClickLis
     private TextView mText4;
     private TextView mText5;
     private List<TextView> mTextList = new ArrayList<>();
+    //---------------------------------------------------------------------
+
+    //Todos los Spinner
+    private Spinner mSpin1;
+    private Spinner mSpin2;
+    private Spinner mSpin3;
+
+    private int currSel1 = StartVar.mCurrency;
+    private int currSel2 = StartVar.mCurrenrAcc;
+    private int currSel3 = StartVar.mCurreMes;
+
     //---------------------------------------------------------------------
 
     private Switch mSw;
@@ -93,6 +109,7 @@ public class AccDtsActivity extends AppCompatActivity implements View.OnClickLis
         myToolbar.setTitleTextColor(ContextCompat.getColor(myToolbar.getContext(), R.color.inner_button));
         //------------------------------------------------------------------------------------------
 
+        mSpin1 = findViewById(R.id.spin_adts1);
         mText1 = findViewById(R.id.txview_adts1);
         mText2 = findViewById(R.id.txview_adts2);
         mText3 = findViewById(R.id.txview_adts3);
@@ -120,6 +137,37 @@ public class AccDtsActivity extends AppCompatActivity implements View.OnClickLis
             mSw.setFocusedByDefault(false);
         }
 
+        //Para la lista del selector Fechas ----------------------------------------------------------------------------------------------
+        // Genera la lista de fechas ---------------------------------------------------------
+        List<String> fechaList = new ArrayList<>();
+        fechaList.add("Todos");
+        List<Fecha> listFecha = appDBfecha.daoUser().getUsers();
+        for (int i = 0; i < listFecha.size(); i++){
+            String mes = listFecha.get(i).mes;
+            String year = listFecha.get(i).year;
+            fechaList.add(mes+" ("+year+")");
+        }
+        SelecAdapter adapt1 = new SelecAdapter(mContext, fechaList);
+        mSpin1.setAdapter(adapt1);
+        mSpin1.setSelection(currSel1); //Set La fecha default
+        mSpin1.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                currSel1 = i;
+                appDBcuenta.daoUser().updateCurrentFec(StartVar.saveDataName, i);
+                StartVar mVars = new StartVar(mContext);
+                mVars.setCurrentMes(i);
+
+                // Se llenan los textView
+                setInputList();
+            }
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+
+            }
+        });
+        //--------------------------------------------------------------------------------------------
+
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
@@ -145,15 +193,38 @@ public class AccDtsActivity extends AppCompatActivity implements View.OnClickLis
 
             float totalCred = 0;
             float totalDeb = 0;
+
+            listRegistro = appDBregistro.get(currSel2).daoUser().getUsers();
+            List<Fecha> listFecha = appDBfecha.daoUser().getUsers();
+            int idx = currSel1 - 1;
+            Fecha selFecha = listFecha.get(Math.max(idx, 0));
+
             for(int i = 0; i<listRegistro.size(); i++){
                 Registro reg = listRegistro.get(i);
-                if(reg.oper == 0){
-                    String mon = reg.monto;
-                    totalCred += mon.isEmpty()? 0 : Float.parseFloat(mon);
+                String fecha = reg.fecha;
+
+                if(currSel1 == 0) {
+                    if (reg.oper == 0) {
+                        String mon = reg.monto;
+                        totalCred += mon.isEmpty() ? 0 : Float.parseFloat(mon);
+                    } else {
+                        String mon = reg.monto;
+                        totalDeb += mon.isEmpty() ? 0 : Float.parseFloat(mon);
+                    }
                 }
-                else {
-                    String mon = reg.monto;
-                    totalDeb += mon.isEmpty()? 0 : Float.parseFloat(mon);
+                else{
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                        LocalDate date = LocalDate.parse(fecha);
+                        if(date.getMonth().toString().equals(selFecha.mes)){
+                            if (reg.oper == 0) {
+                                String mon = reg.monto;
+                                totalCred += mon.isEmpty() ? 0 : Float.parseFloat(mon);
+                            } else {
+                                String mon = reg.monto;
+                                totalDeb += mon.isEmpty() ? 0 : Float.parseFloat(mon);
+                            }
+                        }
+                    }
                 }
             }
             Cuenta mCuenta = appDBcuenta.daoUser().getUsers().get(accIndex+1);

@@ -18,32 +18,57 @@
         tools:ignore="MissingConstraints" />
 
     <TextView
+        android:id="@+id/txv_adts1"
+        android:layout_width="@dimen/txview_wm"
+        android:layout_height="@dimen/txview_h1"
+        android:layout_marginTop="40dp"
+        android:padding="5dp"
+        android:text="Por Mes:"
+        android:textSize="@dimen/inner_text_1"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toStartOf="@+id/guideline4"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="@+id/guideline3"
+        app:layout_constraintTop_toBottomOf="@+id/toolbar_adts"
+        tools:ignore="MissingConstraints" />
+
+    <Spinner
+        android:id="@+id/spin_adts1"
+        android:layout_width="@dimen/spinner_w1"
+        android:layout_height="@dimen/spinner_h1"
+        android:textSize="@dimen/selec_text"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toStartOf="@+id/guideline4"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="@+id/guideline3"
+        app:layout_constraintTop_toBottomOf="@+id/txv_adts1" />
+
+    <TextView
         android:id="@+id/txview_adts1"
         android:layout_width="@dimen/txview_w1"
         android:layout_height="@dimen/txview_h2"
-        android:layout_marginTop="144dp"
         android:background="@color/text_background"
         android:padding="@dimen/txview_pad2"
         android:text="Vacio"
         android:textSize="@dimen/inner_text_2"
         android:textStyle="bold"
-        app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintEnd_toStartOf="@+id/guideline4"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="@+id/guideline3"
-        app:layout_constraintTop_toBottomOf="@+id/toolbar_adts"
+        app:layout_constraintTop_toBottomOf="@+id/spin_adts1"
         tools:ignore="MissingConstraints" />
 
     <TextView
         android:id="@+id/txview_adts2"
         android:layout_width="@dimen/txview_w1"
         android:layout_height="@dimen/txview_h2"
+        android:background="@color/text_background"
         android:padding="@dimen/txview_pad2"
         android:text="Vacio"
         android:textSize="@dimen/inner_text_2"
         android:textStyle="bold"
-        android:background="@color/text_background"
         app:layout_constraintEnd_toStartOf="@+id/guideline4"
-        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="@+id/guideline3"
         app:layout_constraintTop_toBottomOf="@+id/txview_adts1"
         tools:ignore="MissingConstraints" />
@@ -52,13 +77,13 @@
         android:id="@+id/txview_adts3"
         android:layout_width="@dimen/txview_w1"
         android:layout_height="@dimen/txview_h2"
+        android:background="@color/text_background"
         android:padding="@dimen/txview_pad2"
         android:text="Vacio"
         android:textSize="@dimen/inner_text_2"
         android:textStyle="bold"
-        android:background="@color/text_background"
         app:layout_constraintEnd_toStartOf="@+id/guideline4"
-        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="@+id/guideline3"
         app:layout_constraintTop_toBottomOf="@+id/txview_adts2"
         tools:ignore="MissingConstraints" />
@@ -67,44 +92,44 @@
         android:id="@+id/txview_adts4"
         android:layout_width="@dimen/txview_w1"
         android:layout_height="@dimen/txview_h2"
+        android:background="@color/text_background"
         android:padding="@dimen/txview_pad2"
         android:text="Vacio"
         android:textSize="@dimen/inner_text_2"
         android:textStyle="bold"
-        android:background="@color/text_background"
         app:layout_constraintEnd_toStartOf="@+id/guideline4"
-        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="@+id/guideline3"
         app:layout_constraintTop_toBottomOf="@+id/txview_adts3"
         tools:ignore="MissingConstraints" />
+
 
     <TextView
         android:id="@+id/txview_adts5"
         android:layout_width="@dimen/txview_w1"
         android:layout_height="@dimen/txview_h2"
+        android:background="@color/text_background"
         android:padding="@dimen/txview_pad2"
         android:text="Vacio"
         android:textSize="@dimen/inner_text_2"
         android:textStyle="bold"
-        android:background="@color/text_background"
         app:layout_constraintEnd_toStartOf="@+id/guideline4"
-        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="@+id/guideline3"
         app:layout_constraintTop_toBottomOf="@+id/txview_adts4"
         tools:ignore="MissingConstraints" />
-
 
     <Switch
         android:id="@+id/sw_adts1"
         android:layout_width="@dimen/sw_ws"
         android:layout_height="@dimen/sw_h1"
         android:layout_marginTop="15dp"
-        android:text="Confirme"
         android:padding="5dp"
+        android:text="Confirme"
         android:textSize="@dimen/inner_text_2"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/guideline4"
-        app:layout_constraintHorizontal_bias="0.02"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="@+id/guideline3"
         app:layout_constraintTop_toBottomOf="@+id/txview_adts5"
         app:layout_constraintVertical_bias="0.0"
@@ -127,7 +152,6 @@
         android:id="@+id/butt_adts1"
         android:layout_width="@dimen/sw_ws"
         android:layout_height="@dimen/button_h1"
-        android:layout_marginStart="4dp"
         android:layout_marginBottom="40dp"
         android:enabled="false"
         android:text="Eliminar"
@@ -142,14 +166,14 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        app:layout_constraintGuide_begin="30dp" />
+        app:layout_constraintGuide_begin="20dp" />
 
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/guideline4"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        app:layout_constraintGuide_end="30dp" />
+        app:layout_constraintGuide_end="20dp" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -235,23 +235,6 @@ public class HomeFragment extends Fragment implements View.OnClickListener, Adap
                 if(!appDBregistro.isEmpty()) {
                     setRegList();
                 }
-                //----------------------------------------------------------------------------------
-
-
-//                // Actualiza y guarda el estado del selector de cuentas-----------------------------
-//                int idx = i+1;
-//                if(idx < listCuenta.size()) {
-//                    appDBcuenta.daoUser().updateCurrentAcc(StartVar.saveDataName, idx);
-//                }
-//                StartVar mVars = new StartVar(mContext);
-//                mVars.setCurrentAcc(i);
-//                //----------------------------------------------------------------------------------
-//
-//                //Recarga la lista de pagos en funcion de la cuenta seleccionada--------------------
-//                if(!appDBregistro.isEmpty()) {
-//                    setRegList();
-//                }
-//                //----------------------------------------------------------------------------------
             }
             @Override
             public void onNothingSelected(AdapterView<?> adapterView) {
