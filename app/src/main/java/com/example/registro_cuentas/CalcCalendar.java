@@ -85,7 +85,6 @@ public class CalcCalendar {
             String fecha = listFecha.get(listFecha.size()-1).date;
             LocalDate date = LocalDate.parse(fecha);
             if(currdate.getMonth().equals(date.getMonth()) && currdate.getYear() == date.getYear()){
-                //Toast.makeText(BaseContext.getContext(), "Aquiiiiiiiiiiiiiiiiiii Hayyyyyyyyyyyyyyyyyy " + fecha, Toast.LENGTH_LONG).show();
                 return;
             }
             else {

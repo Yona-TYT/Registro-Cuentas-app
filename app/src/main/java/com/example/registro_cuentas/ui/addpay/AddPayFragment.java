@@ -320,7 +320,6 @@ public class AddPayFragment extends Fragment implements View.OnClickListener, Vi
 
                    if(newClt){
                        cltId = ""+listCliente.size();
-                       Toast.makeText(mContext, "Siz is "+ cltId, Toast.LENGTH_LONG).show();
                        Cliente objClt = new Cliente(cltId, mList.get(1), mList.get(2),"", (swPorc?1:0), currdate.toString());
                        appDBcliente.daoUser().insetUser(objClt);
                    }
