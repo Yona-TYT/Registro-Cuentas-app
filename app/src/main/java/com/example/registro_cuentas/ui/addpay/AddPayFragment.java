@@ -1,20 +1,33 @@
 package com.example.registro_cuentas.ui.addpay;
 
+import static android.app.Activity.RESULT_OK;
+
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.net.Uri;
 import android.os.Bundle;
+import android.provider.MediaStore;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.Switch;
 import android.widget.Toast;
 
 import androidx.activity.OnBackPressedCallback;
 import androidx.activity.OnBackPressedDispatcher;
+import androidx.activity.result.ActivityResult;
+import androidx.activity.result.ActivityResultCallback;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.PickVisualMediaRequest;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
@@ -25,8 +38,10 @@ import com.example.registro_cuentas.AppDBreg;
 import com.example.registro_cuentas.BaseContext;
 import com.example.registro_cuentas.Basic;
 import com.example.registro_cuentas.CalcCalendar;
+import com.example.registro_cuentas.CameraLauncher;
 import com.example.registro_cuentas.Cliente;
 import com.example.registro_cuentas.CurrencyInput;
+import com.example.registro_cuentas.FilesManager;
 import com.example.registro_cuentas.MainActivity;
 import com.example.registro_cuentas.R;
 import com.example.registro_cuentas.Registro;
@@ -35,6 +50,7 @@ import com.example.registro_cuentas.SelecAdapter;
 import com.example.registro_cuentas.databinding.FragmentAddpayBinding;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
+import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.ArrayList;
@@ -78,6 +94,9 @@ public class AddPayFragment extends Fragment implements View.OnClickListener, Vi
     private Switch mSw;
     private boolean swPorc = false;
 
+    private ImageButton mBtnImg1;
+    private ImageView imageView1;
+
     private String mIndex = "";
 
     // Para guardar los permisos de app comprobados en main
@@ -86,6 +105,22 @@ public class AddPayFragment extends Fragment implements View.OnClickListener, Vi
     private int currtAcc = StartVar.mCurrenrAcc;
 
     private Basic mBasic = new Basic(BaseContext.getContext());
+
+    private FilesManager mFileM = new FilesManager(BaseContext.getContext());
+    private String sImage = "";
+    private Uri oldFile = null;
+    private Uri currUri = null;
+
+    private ActivityResultLauncher<Intent> launch = registerForActivityResult(
+            new ActivityResultContracts.StartActivityForResult(),
+            result -> {
+                if (result.getResultCode() == RESULT_OK && result.getData() != null){
+                    Basic.msg("Aqui haaaaaaaaayyyyyyyyyyyyyyy!!!!");
+                }
+            }
+
+    );
+
 
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
     {
@@ -120,13 +155,20 @@ public class AddPayFragment extends Fragment implements View.OnClickListener, Vi
         mInput4 = binding.inputPay4;
 
         mButt1 = binding.buttPay1;
+        mBtnImg1 = binding.buttPay2;
+        imageView1 = binding.imagePay1;
 
         mInput1.setOnFocusChangeListener(this);
         mInput2.setOnFocusChangeListener(this);
         mInput3.setOnFocusChangeListener(this);
         mConstrain.setOnClickListener(this);
         mButt1.setOnClickListener(this);
+        mBtnImg1.setOnClickListener(this);
         mSw.setOnClickListener(this);
+
+        // Set imagen picker-----------------
+        //mFileM.setImgPicker(imageView1, mBtnImg1);
+        //------------------------------------
 
         mInputList.add(mInput1);
         mInputList.add(mInput2);
@@ -216,16 +258,62 @@ public class AddPayFragment extends Fragment implements View.OnClickListener, Vi
         return root;
     }
 
+//    @Override
+//    public void onViewCreated(View view, Bundle savedInstanceState) {
+//        super.onViewCreated(view, savedInstanceState);
+//        cameraLauncher = new CameraLauncher(requireActivity().getActivityResultRegistry(), mContext, result -> {
+//            // TODO :: use the captured result
+//        });
+//        mBtnImg1.setOnClickListener(v -> cameraLauncher.launch());
+//    }
+
+
+//    public void startActivityForResult(Intent intent, int requestCode, ActivityLauncher.OnActivityResult onActivityResult) {
+//        activityLauncher.launch(intent, result -> onActivityResult.onActivityResultCallback(requestCode, result.getResultCode(), result.getData()));
+//    }
+
     @Override
     public void onDestroyView() {
         super.onDestroyView();
         binding = null;
     }
 
+    // Registers a photo picker activity launcher in single-select mode.
+    ActivityResultLauncher<PickVisualMediaRequest> pickMedia =
+            registerForActivityResult(new ActivityResultContracts.PickVisualMedia(), uri -> {
+                // Callback is invoked after the user selects a media item or closes the
+                // photo picker.
+                if (uri != null) {
+                    Log.d("PhotoPicker", "Selected URI: " + uri);
+                    imageView1.setImageURI(uri);
+                    currUri = uri;
+                }
+                else {
+                    Basic.msg("No hay imagen seleccionada!");
+                }
+            });
+
     @Override
     public void onClick(View view) {
         int itemId = view.getId();
+        if (itemId == R.id.butt_pay2) {
+            if (StartVar.mPermiss) {
+                // Launch the photo picker and let the user choose only images.
+                //fmang.FilesManager();
+                pickMedia.launch(new PickVisualMediaRequest.Builder().setMediaType(ActivityResultContracts.PickVisualMedia.ImageOnly.INSTANCE).build());
+            }
+            else {
+                Basic.msg("Error Permiso Denegado!");
+            }
+        }
         if (itemId == R.id.butt_pay1) {
+            //Comprueba que la lista de cuentas no este vacia
+            StartVar mVars = new StartVar(mContext);
+            if (StartVar.listacc.size() < 2) {
+                setMessage(3); //MSG lista de cuentas vacia
+                return;
+            }
+
             boolean result = true;
             int msgIdx = 0;
             String cltId = "0";
@@ -291,53 +379,70 @@ public class AddPayFragment extends Fragment implements View.OnClickListener, Vi
                 }
             }
             if (result) {
-                StartVar mVars = new StartVar(mContext);
-                //Comprueba que la lista de cuentas no este vacia
-                if (mVars.listacc.size() > 1) {
-                    //Inicia la fecha actual
-                    LocalDate currdate = null;
-                    LocalTime currtime = null;
-                    if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
-                        currtime = LocalTime.now();
+                //Inicia la fecha actual
+                LocalDate currdate = null;
+                LocalTime currtime = null;
+                if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+                    currtime = LocalTime.now();
+                }
+                if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+                    currdate = LocalDate.now();
+                }
+                assert currdate != null;
+                String monto = Basic.setValue(mList.get(4));
+
+                if(monto.isEmpty() || Float.parseFloat(monto) <= 0.0){
+                    //MSG Para entrada de monto
+                    msgIdx = 2;
+                    setMessage(msgIdx);
+                    return;
+                }
+
+                //Se guarda la foto en un nuevo directorio --------------------------------
+                Bitmap bitmap = null;
+                try {
+                    if(!sImage.isEmpty() || currUri == null){
+                        oldFile = Uri.parse(sImage);
                     }
-                    if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
-                        currdate = LocalDate.now();
+                    else {
+                        //Log.d("PhotoPicker", "Aqi hayyyyyyyyyyyyy5555----------------------------------: ");
+                        bitmap = MediaStore.Images.Media.getBitmap(mContext.getContentResolver(), currUri);
+                        sImage = mFileM.SavePhoto(bitmap, (mList.get(0)), oldFile, mContext, mContext.getContentResolver());
                     }
-                    assert currdate != null;
-                    String monto = Basic.setValue(mList.get(4));
+                }
+                catch (IOException e) {
+                    Basic.msg("Error al guardar la IMAGEN!");
+                    e.printStackTrace();
+                    sImage = "";
+                }
+                //-------------------------------------------------------------------
 
-                    if(monto.isEmpty() || Float.parseFloat(monto) <= 0.0){
-                        //MSG Para entrada de monto
-                        msgIdx = 2;
-                        setMessage(msgIdx);
-                        return;
-                    }
-                    Registro obj = new Registro(
-                        mList.get(0), mList.get(1), mList.get(3), monto, currSel2, (swPorc?1:0),
-                        "5", currdate.toString(), currtime.toString(), (newClt?""+listCliente.size():cltId), "", "", ""
-                    );
-                    appDBregistro.get(currtAcc).daoUser().insetUser(obj);
 
-                   if(newClt){
-                       cltId = ""+listCliente.size();
-                       Cliente objClt = new Cliente(cltId, mList.get(1), mList.get(2),"", (swPorc?1:0), currdate.toString());
-                       appDBcliente.daoUser().insetUser(objClt);
-                   }
+                Registro obj = new Registro(
+                    mList.get(0), mList.get(1), mList.get(3), monto, currSel2, (swPorc?1:0),
+                        sImage, currdate.toString(), currtime.toString(), (newClt?""+listCliente.size():cltId), "", "", ""
+                );
+                appDBregistro.get(currtAcc).daoUser().insetUser(obj);
 
-                   //Actualisza la lista de fechas
-                   CalcCalendar.startCalList(mContext);
-
-                   //SE Limpia la lista
-                    mList.clear();
-                    //Recarga La lista de la DB ----------------------------
-                    mVars.getRegListDB();
-                    mVars.getCltListDB();
-                    //-------------------------------------------------------
-
-                    //Esto inicia las actividad Main despues de tiempo de espera del preloder
-                    startActivity(new Intent(mContext, MainActivity.class));
-                    //finish(); //Finaliza la actividad y ya no se accede mas
+               if(newClt){
+                   cltId = ""+listCliente.size();
+                   Cliente objClt = new Cliente(cltId, mList.get(1), mList.get(2),"", (swPorc?1:0), currdate.toString());
+                   appDBcliente.daoUser().insetUser(objClt);
                }
+
+               //Actualisza la lista de fechas
+               CalcCalendar.startCalList(mContext);
+
+               //SE Limpia la lista
+                mList.clear();
+                //Recarga La lista de la DB ----------------------------
+                mVars.getRegListDB();
+                mVars.getCltListDB();
+                //-------------------------------------------------------
+
+                //Esto inicia las actividad Main despues de tiempo de espera del preloder
+                startActivity(new Intent(mContext, MainActivity.class));
+                //finish(); //Finaliza la actividad y ya no se accede mas
             }
         }
         if (itemId == R.id.sw_pay1){
@@ -355,7 +460,7 @@ public class AddPayFragment extends Fragment implements View.OnClickListener, Vi
             Basic.msg("Ingrese un MONTO Valido!.");
         }
         else if(idx == 3){
-            Basic.msg("");
+            Basic.msg("Primero debe registrar una CUENTA!");
         }
     }
 

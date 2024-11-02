@@ -1,14 +1,22 @@
 package com.example.registro_cuentas;
 
+import static android.widget.GridLayout.spec;
+
 import android.content.Context;
 import android.graphics.Rect;
+import android.graphics.Typeface;
 import android.util.DisplayMetrics;
+import android.view.Gravity;
 import android.view.View;
 import android.view.ViewTreeObserver;
 import android.widget.EditText;
+import android.widget.GridLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.cardview.widget.CardView;
 import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.core.content.ContextCompat;
 
 import java.util.List;
 
@@ -125,7 +133,26 @@ public class Basic {
         return value + " " + sing;
     }
 
-    public static void msg(String msg) {
-        Toast.makeText(mContex, msg, Toast.LENGTH_LONG).show();
+    public static void msg(String msg)
+    {
+        TextView text = new TextView(mContex);
+        // Se ajustan los parametros del Texto ----------------------------------
+        text.setText(msg);
+        text.setTypeface(Typeface.DEFAULT_BOLD);
+        text.setGravity(Gravity.CENTER);
+        text.setWidth(R.dimen.spinner_w1);
+        text.setMaxLines(1);
+        text.setTextColor(ContextCompat.getColor(text.getContext(), R.color.text_color1));
+        text.setBackgroundColor(ContextCompat.getColor(text.getContext(), R.color.text_background2));
+        text.setPadding(10,5,10,5);
+
+        CardView cardView = new CardView(mContex);
+        cardView.setLayoutParams(new GridLayout.LayoutParams(spec(140), spec(150)));
+        cardView.addView(text);
+        cardView.setRadius(10f);
+
+        Toast mToast = new Toast(mContex);
+        mToast.setView(cardView);
+        mToast.show();
     }
 }

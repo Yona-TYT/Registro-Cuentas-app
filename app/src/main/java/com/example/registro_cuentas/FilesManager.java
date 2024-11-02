@@ -1,26 +1,38 @@
 package com.example.registro_cuentas;
 
+import static android.service.controls.ControlsProviderService.TAG;
+
 import android.annotation.SuppressLint;
 import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Environment;
 import android.provider.MediaStore;
+import android.provider.Settings;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.PickVisualMediaRequest;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.documentfile.provider.DocumentFile;
 
 import com.opencsv.CSVReader;
 import com.opencsv.exceptions.CsvValidationException;
+
+import androidx.activity.result.ActivityResult;
+import androidx.activity.result.ActivityResultCallback;
+import android.Manifest;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -30,12 +42,22 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Objects;
 
-public class FilesManager extends AppCompatActivity {
-    Context context2;
+public class FilesManager extends MainActivity implements View.OnClickListener{
+    private Context mContext;
 
-    @SuppressLint("NotConstructor")
-    public void FilesManager(){
+    public static ImageView mImgPrev;
+    public static Uri currUri;
+
+    public FilesManager(Context mContext){
+        this.mContext = mContext;
+    }
+
+    public void setImgPicker(ImageView mImg, View mView){
+        mView.setTag("pick");
+        mView.setOnClickListener(this);
+        FilesManager.mImgPrev = mImg;
     }
 
     public String getImage(String sImage, ImageView mImgPrev) {
@@ -59,7 +81,7 @@ public class FilesManager extends AppCompatActivity {
     public String SavePhoto(Bitmap bmp, String fName, Uri oldFile, Context contex, ContentResolver resolver){
 
         //Creamos el directorio para los archivos
-        File path = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS+"/.cowdata/");
+        File path = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS+"/.accdata/");
         boolean isDiralloway = true;
         if(!path.exists()){
             isDiralloway = path.mkdir();
@@ -104,7 +126,7 @@ public class FilesManager extends AppCompatActivity {
         CsvWriterSimple write = new CsvWriterSimple();
 
         //Creamos el directorio para los archivos
-        File path = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS+"/.cowdata/");
+        File path = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS+"/.accdata/");
         boolean isDiralloway = true;
         if(!path.exists()){
             isDiralloway = path.mkdir();
@@ -117,7 +139,7 @@ public class FilesManager extends AppCompatActivity {
             if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
                 currdate = LocalDate.now();
             }
-            String name = (currdate == null? "CowData_Save.csv" : "CowData_"+currdate.toString()+".csv" );
+            String name = (currdate == null? "CowData_Save.csv" : "RegistroDatos_"+currdate.toString()+".csv" );
             File file = new File(path, name);
             write.writeToCsvFile(list, file);
             return file;
@@ -187,4 +209,35 @@ public class FilesManager extends AppCompatActivity {
         // Paths that should rarely be exposed
         return dir.startsWith("content://media/" + MediaStore.VOLUME_EXTERNAL_PRIMARY) || dir.startsWith("/storage/emulated/0/Documents/");
     }
+
+    @Override
+    public void onClick(View view) {
+        Object itemTag = view.getTag();
+        if (Objects.equals((String)itemTag, "pick")) {
+            if (StartVar.mPermiss){
+                // Launch the photo picker and let the user choose only images.
+                //fmang.FilesManager();
+                pickMedia.launch(new PickVisualMediaRequest.Builder().setMediaType(ActivityResultContracts.PickVisualMedia.ImageOnly.INSTANCE).build());
+            }
+            else{
+                Basic.msg("Error Permiso Denegado!");
+            }
+        }
+    }
+
+    // Registers a photo picker activity launcher in single-select mode.
+    ActivityResultLauncher<PickVisualMediaRequest> pickMedia =
+            registerForActivityResult(new ActivityResultContracts.PickVisualMedia(), uri -> {
+                // Callback is invoked after the user selects a media item or closes the
+                // photo picker.
+                if (uri != null) {
+                    Log.d("PhotoPicker", "Selected URI: " + uri);
+                    FilesManager.mImgPrev.setImageURI(uri);
+                    FilesManager.currUri = uri;
+                }
+                else {
+                    Log.d("PhotoPicker", "No media selected");
+                }
+            });
+
 }

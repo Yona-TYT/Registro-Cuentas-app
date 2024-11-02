@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.Switch;
 import android.widget.TextView;
 
@@ -62,6 +63,11 @@ public class DetailsActivity extends AppCompatActivity implements View.OnClickLi
     private List<String> mCurrencyList= Arrays.asList("$", "Bs");
     private int mCindex = StartVar.mCurrency;
 
+    private ImageView mImage1;
+    private String currDir = "";
+    // Classs para la gestion de archivos
+    private FilesManager mFileM = new FilesManager(BaseContext.getContext());
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -94,6 +100,8 @@ public class DetailsActivity extends AppCompatActivity implements View.OnClickLi
 
         myToolbar.setTitleTextColor(ContextCompat.getColor(myToolbar.getContext(), R.color.inner_button));
         //------------------------------------------------------------------------------------------
+
+        mImage1 = findViewById(R.id.image_dts1);
 
         mText1 = findViewById(R.id.txview_dts1);
         mText2 = findViewById(R.id.txview_dts2);
@@ -165,6 +173,8 @@ public class DetailsActivity extends AppCompatActivity implements View.OnClickLi
             mTextList.get(i).setText("Fecha: "+ txFech);
             i++;
             mTextList.get(i).setText("Hora: "+ txHora);
+
+            currDir = mFileM.getImage(reg.imagen, mImage1);
         }
     }
 

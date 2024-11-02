@@ -11,7 +11,7 @@
         android:id="@+id/spin_pay1"
         android:layout_width="@dimen/spinner_w1"
         android:layout_height="@dimen/spinner_h1"
-        android:layout_marginTop="145dp"
+        android:layout_marginTop="45dp"
         android:padding="5dp"
         android:textSize="@dimen/selec_text"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -52,17 +52,19 @@
         android:id="@+id/butt_pay2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="28dp"
+        android:layout_marginEnd="52dp"
         android:src="@android:drawable/ic_menu_gallery"
         app:layout_constraintEnd_toStartOf="@+id/guideline2"
-        app:layout_constraintHorizontal_bias="0.787"
-        app:layout_constraintStart_toStartOf="@+id/guideline"
+        app:layout_constraintHorizontal_bias="0.82"
+        app:layout_constraintStart_toEndOf="@+id/image_pay1"
         app:layout_constraintTop_toBottomOf="@+id/txview_pay1" />
 
     <com.google.android.material.textfield.TextInputEditText
         android:id="@+id/input_pay1"
         android:layout_width="@dimen/input_wm"
         android:layout_height="@dimen/input_h1"
-        android:layout_marginTop="150dp"
+        android:layout_marginTop="50dp"
         android:hint="Nombre Cliente"
         android:inputType="textCapWords"
         android:maxLength="20"
@@ -141,6 +143,15 @@
         app:layout_constraintTop_toBottomOf="@+id/input_pay1"
         tools:ignore="MissingConstraints" />
 
+    <ImageView
+        android:id="@+id/image_pay1"
+        android:layout_width="177dp"
+        android:layout_height="125dp"
+        android:layout_marginTop="12dp"
+        app:layout_constraintBottom_toTopOf="@+id/butt_pay1"
+        app:layout_constraintStart_toStartOf="@+id/guideline"
+        app:layout_constraintTop_toBottomOf="@+id/sw_pay1"
+        tools:src="@tools:sample/backgrounds/scenic" />
 
     <Button
         android:id="@+id/butt_pay1"
@@ -153,7 +164,8 @@
         app:layout_constraintEnd_toStartOf="@+id/guideline2"
         app:layout_constraintHorizontal_bias="0.476"
         app:layout_constraintStart_toStartOf="@+id/guideline"
-        app:layout_constraintTop_toBottomOf="@+id/input_pay4" />
+        app:layout_constraintTop_toBottomOf="@+id/input_pay4"
+        app:layout_constraintVertical_bias="0.607" />
 
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/guideline"
@@ -168,6 +180,8 @@
         android:layout_height="wrap_content"
         android:orientation="vertical"
         app:layout_constraintGuide_end="30dp" />
+
+
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

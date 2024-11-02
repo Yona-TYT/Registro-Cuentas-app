@@ -61,7 +61,6 @@ public class SelecAdapter extends BaseAdapter {
         text.setMaxLines(1);
         text.setTextColor(ContextCompat.getColor(text.getContext(), R.color.text_color1));
         text.setBackgroundColor(ContextCompat.getColor(text.getContext(), R.color.text_background2));
-
         text.setPadding(10,5,10,5);
         layout.addView(text);
 
