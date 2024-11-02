@@ -133,6 +133,13 @@ public class Basic {
         return value + " " + sing;
     }
 
+    public static String nameProcessor(String value){
+        String text = value.replaceAll("([^\\s;^0-9a-zA-Z]+)", "");
+        text = text.replaceAll("(\\s{2,})", " ");
+        text = text.replaceAll("(^\\s)|(\\s$)", "");
+        return text;
+    }
+
     public static void msg(String msg)
     {
         TextView text = new TextView(mContex);

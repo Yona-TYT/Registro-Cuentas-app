@@ -326,6 +326,7 @@ public class AddPayFragment extends Fragment implements View.OnClickListener, Vi
                 text = text.replaceAll(",", "");
                 //Para el input Nombre
                 if(i == 0) {
+                    text = Basic.nameProcessor(text);
                     for (int j = 0; j < listCliente.size(); j++) {
                         String name = listCliente.get(j).nombre;
                         if(name.toLowerCase().equals(text)){
@@ -416,8 +417,6 @@ public class AddPayFragment extends Fragment implements View.OnClickListener, Vi
                     sImage = "";
                 }
                 //-------------------------------------------------------------------
-
-
                 Registro obj = new Registro(
                     mList.get(0), mList.get(1), mList.get(3), monto, currSel2, (swPorc?1:0),
                         sImage, currdate.toString(), currtime.toString(), (newClt?""+listCliente.size():cltId), "", "", ""
