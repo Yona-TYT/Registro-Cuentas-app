@@ -89,7 +89,7 @@ public class CalcCalendar {
             }
             else {
                 LocalTime currtime = LocalTime.now();
-                Fecha obj = new Fecha(StartVar.saveDataName, ""+currdate.getYear(), currdate.getMonth().toString(), ""+currdate.getDayOfMonth(), CalcCalendar.getTime(currtime.toString()), currdate.toString());
+                Fecha obj = new Fecha("dateID"+(listFecha.size()-1), ""+currdate.getYear(), currdate.getMonth().toString(), ""+currdate.getDayOfMonth(), CalcCalendar.getTime(currtime.toString()), currdate.toString());
                 appDBfecha.daoUser().insetUser(obj);
                 //Recarga La lista de la DB ----------------------------
                 StartVar var = new StartVar(mContext);

@@ -140,6 +140,10 @@ public class Basic {
         return text;
     }
 
+    public static String inputProcessor(String value){
+        return value.replaceAll("([;,\"<>]+)", "");
+    }
+
     public static void msg(String msg)
     {
         TextView text = new TextView(mContex);

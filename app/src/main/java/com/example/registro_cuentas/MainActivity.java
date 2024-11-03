@@ -5,6 +5,7 @@ import static com.example.registro_cuentas.StartVar.appDBcuenta;
 import static com.example.registro_cuentas.StartVar.appDBfecha;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
@@ -12,7 +13,11 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.Settings;
+import android.text.SpannableString;
+import android.text.style.ForegroundColorSpan;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.widget.Toast;
 
 import com.example.registro_cuentas.databinding.ActivityMainBinding;
@@ -27,14 +32,26 @@ import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+import androidx.core.content.FileProvider;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
+import androidx.room.Room;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
+
+import io.reactivex.annotations.NonNull;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -43,6 +60,14 @@ public class MainActivity extends AppCompatActivity {
     private StartVar startVar;
     private static final int STORAGE_PERMISSION_CODE = 23;
 
+    private List<Cuenta> listCuenta = new ArrayList<>();
+
+
+    // Para guardar datos a exportar
+    private List<String[]> totalList = new ArrayList<>();
+
+    //Check for permission---------------------------------
+    private FilesManager mFile;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -62,22 +87,19 @@ public class MainActivity extends AppCompatActivity {
         BaseContext.initialise(this);
         //Satrted variables
         startVar = new StartVar(getApplicationContext());
+
+        //Start File manager class
+        mFile = new FilesManager(this);
+
         CalcCalendar calen = new CalcCalendar();
 
-        //Check for permission---------------------------------
-        FilesManager mFile = new FilesManager(MainActivity.this);
-
-
-
-        boolean mPermiss = false;
         if(!StartVar.mPermiss) {
             if (checkStoragePermissions()) {
-                mPermiss = true;
                 startVar.setmPermiss(true);
             }
             else {
                 requestForStoragePermissions();
-                mPermiss = checkStoragePermissions();
+                startVar.setmPermiss(checkStoragePermissions());
             }
         }
         //-------------------------------------------------------
@@ -95,22 +117,22 @@ public class MainActivity extends AppCompatActivity {
             if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
                LocalDate currdate = LocalDate.now();
                LocalTime currtime = LocalTime.now();
-               obj = new Fecha(StartVar.saveDataName, ""+currdate.getYear(), currdate.getMonth().toString(), ""+currdate.getDayOfMonth(), calen.getTime(currtime.toString()), currdate.toString());
+               obj = new Fecha("dateID0", ""+currdate.getYear(), currdate.getMonth().toString(), ""+currdate.getDayOfMonth(), calen.getTime(currtime.toString()), currdate.toString());
             }
             else {
-                obj = new Fecha(StartVar.saveDataName, "", "", "", "", "");
+                obj = new Fecha("dateID0", "0", "0", "0", "0", "0");
             }
             appDBfecha.daoUser().insetUser(obj);
-            //Recarga La lista de la DB ----------------------------
-            startVar.getFecListDB();
             //-------------------------------------------------------
         }
+        //Recarga La lista de la DB ----------------------------
+        startVar.getFecListDB();
         //----------------------------------------------------------------------------------------------------------------------
 
         // Se agregan datos solo la primera vez en el primer elemento de la lista ---------------------------------------------
-        List<Cuenta> listCuenta = appDBcuenta.daoUser().getUsers();
+        listCuenta = appDBcuenta.daoUser().getUsers();
         if(listCuenta.isEmpty()) {
-            Cuenta obj = new Cuenta(StartVar.saveDataName, "", "", "", 0, 0, 0,0, "");
+            Cuenta obj = new Cuenta(StartVar.saveDataName, "0", "0", "0", 0, 0, 0,0, "");
             appDBcuenta.daoUser().insetUser(obj);
             //Recarga La lista de la DB ----------------------------
             startVar.getAccListDB();
@@ -158,6 +180,281 @@ public class MainActivity extends AppCompatActivity {
         BottomNavigationView navView = findViewById(R.id.nav_view);
         navView.setVisibility(visibility);
     }
+    //Para cargar los menus en toolbar
+    @SuppressLint("ResourceType")
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu){
+        getMenuInflater().inflate(R.menu.save, menu);
+        getMenuInflater().inflate(R.menu.impor, menu);
+
+        for(int i = 0; i < menu.size(); i++){
+            MenuItem item = menu.getItem(i);
+//            Drawable drawable = item.getIcon();
+
+//            if(drawable != null) {
+////                drawable.mutate();
+////                drawable.setColorFilter(ContextCompat.getColor(this, R.color.inner_button), PorterDuff.Mode.SRC_ATOP);
+//            }
+
+            SpannableString spannabl = new SpannableString(item.getTitle().toString());
+            spannabl.setSpan(new ForegroundColorSpan(ContextCompat.getColor(this, R.color.black)),0 ,spannabl.length(),0);
+            item.setTitle(spannabl);
+        }
+        //test.setBackgroundColor(ContextCompat.getColor(test.getContext(), R.color.purple_500));
+
+
+        return true;
+    }
+    // Accion listern para los menus toolbar
+    @SuppressLint("SetWorldReadable")
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item){
+        int itemId = item.getItemId();
+
+        //Para Exportar archivo CSV
+        if (itemId == R.id.save) {
+            //Se agrega un indicador numerico para identificar nuevas versiones del save.csv
+            totalList.add(new String[]{"1"});
+            totalList.add(new String[]{"<0>"}); // Etiqueta de inicio Cuenta
+            for(int i = 0; i < listCuenta.size(); i++) {
+                Cuenta arr = listCuenta.get(i);
+                //------------------------------------------------------
+                // Se crea la lista para esportar a csv  ---------------
+                String[] txList= new String[9];
+                txList[0]=arr.cuenta;
+                txList[1]=arr.nombre;
+                txList[2]=arr.desc;
+                txList[3]=arr.monto;
+                txList[4]=arr.acctipo.toString();
+                txList[5]=arr.fecselc.toString();
+                txList[6]=arr.accselc.toString();
+                txList[7]=arr.moneda.toString();
+                txList[8]=arr.dolar;
+
+                totalList.add(txList);
+                //--------------------------------------------------------
+            }
+
+            totalList.add(new String[]{"<1>"}); // Etiqueta de inicio Registro
+            //Instancia de la base de datos
+            for (int i = 0; i < StartVar.appDBregistro.size(); i++) {
+                List<Registro> list = StartVar.appDBregistro.get(i).daoUser().getUsers();
+                for (int j = 0; j < list.size(); j++) {
+                    Registro arr = list.get(j);
+
+                    //------------------------------------------------------
+                    // Se crea la lista para esportar a csv  ---------------
+                    String[] txList= new String[13];
+
+                    txList[0]=arr.registro;
+                    txList[1]=arr.nombre;
+                    txList[2]=arr.concep;
+                    txList[3]=arr.monto;
+                    txList[4]=arr.oper.toString();
+                    txList[5]=arr.porc.toString();
+                    txList[6]=arr.imagen;
+                    txList[7]=arr.fecha;
+                    txList[8]=arr.time;
+                    txList[9]=arr.cltid;
+                    txList[10]=arr.more3;
+                    txList[11]=arr.more4;
+                    txList[12]=arr.more5;
+
+                    totalList.add(txList);
+                    //--------------------------------------------------------
+                }
+            }
+            totalList.add(new String[]{"<2>"}); // Etiqueta de inicio Cliente
+            List<Cliente> listCliente = StartVar.listclt;
+            for(int i = 0; i < listCliente.size(); i++) {
+                Cliente arr = listCliente.get(i);
+                //------------------------------------------------------
+                // Se crea la lista para esportar a csv  ---------------
+                String[] txList= new String[6];
+
+                txList[0]=arr.cliente;
+                txList[1]=arr.nombre;
+                txList[2]=arr.alias;
+                txList[3]=arr.total;
+                txList[4]=arr.porc.toString();
+                txList[5]=arr.fecha;
+
+                totalList.add(txList);
+                //--------------------------------------------------------
+            }
+
+            totalList.add(new String[]{"<3>"}); // Etiqueta de inicio Fechas
+            List<Fecha> listFecha = StartVar.listfec;
+            for(int i = 0; i < listFecha.size(); i++) {
+                Fecha arr = listFecha.get(i);
+                //------------------------------------------------------
+                // Se crea la lista para esportar a csv  ---------------
+                String[] txList= new String[6];
+
+                txList[0]=arr.fecha;
+                txList[1]=arr.year;
+                txList[2]=arr.mes;
+                txList[3]=arr.dia;
+                txList[4]=arr.hora;
+                txList[5]=arr.date;
+
+                totalList.add(txList);
+                //--------------------------------------------------------
+            }
+            try {
+                File file = mFile.csvExport(totalList);
+                if(file != null) {
+                    Intent intent = new Intent(Intent.ACTION_SEND);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    intent.setType("text/comma-separated-values");
+                    // Se obtine la Uri , se debe modificar manidest con: android:authorities="com.example.cow_data.provider"
+                    Uri fileUri = FileProvider.getUriForFile(MainActivity.this, getPackageName() + ".provider", file);
+                    // Log.d("PhotoPicker", " Aquiiiiiiiiii Hayyyyyy ------------------------: "+ fileUri.toString());
+
+                    intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION); // this will not work
+                    intent.addFlags(Intent.FLAG_GRANT_WRITE_URI_PERMISSION); // this will not work
+                    intent.putExtra(Intent.EXTRA_STREAM, fileUri);
+
+                    startActivity(Intent.createChooser(intent, "Enviar datos para GUARDAR"));
+                }
+            }
+            catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        //Para Importar archivo CSV
+        if (itemId == R.id.impor) {
+            if (StartVar.mPermiss) {
+                try {
+                    String[] mimetype = {"text/csv", "text/comma-separated-values"};
+                    mCsvRequest.launch(mimetype);
+                }
+                catch (Exception e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        }
+        return true;
+    }
+
+    //Para importar archivos CSV
+    private final ActivityResultLauncher<String[]> mCsvRequest = registerForActivityResult(
+            new ActivityResultContracts.OpenDocument(),
+            uri -> {
+                if (uri != null) {
+                    // call this to persist permission across decice reboots
+                    getContentResolver().takePersistableUriPermission(uri, Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                    StringBuilder stringBuilder = new StringBuilder();
+                    try (InputStream inputStream = getContentResolver().openInputStream(uri);
+                         BufferedReader reader = new BufferedReader( new InputStreamReader(Objects.requireNonNull(inputStream)))) {
+                        String line;
+                        String version = "1";
+                        int opt = 0;
+                        String[] t = {"<0>", "<1>", "<2>", "<3>"};
+                        while ((line = reader.readLine()) != null) {
+                            String[] spl = line.split(",");
+                            //Log.d("PhotoPicker", " Aquiiiiiiiiii Hayyyyyy ------------------------: "+ line);
+                            int f = spl.length;
+                            for(int i = 0; i < spl.length; i++){
+                                spl[i] = spl[i].replaceAll("\"", "");
+                            }
+                            if(f==1){
+                                String tx = spl[0];
+                                if(tx.equals(t[0])){
+                                    t[0] = "";
+                                    stringBuilder.append(line);
+                                    continue;
+                                }
+                                else if(tx.equals(t[1])){
+                                    t[1] = "";
+                                    startVar.getAccListDB();
+                                    opt = 1;
+                                    stringBuilder.append(line);
+                                    continue;
+                                }
+                                else if(tx.equals(t[2])){
+                                    t[2] = "";
+                                    opt = 2;
+                                    stringBuilder.append(line);
+                                    continue;
+                                }
+                                else if(tx.equals(t[3])){
+                                    t[3] = "";
+                                    StartVar.appDBfecha.daoUser().removerUser("0");
+                                    opt = 3;
+                                    stringBuilder.append(line);
+                                    continue;
+                                }
+                                stringBuilder.append(line);
+                                continue;
+                            }
+                            //if(Objects.equals(version, "1")) {
+                                if(opt==0) {
+                                    String id = spl[0];
+                                    if(id.equals(StartVar.saveDataName)){
+                                        StartVar.appDBcuenta.daoUser().updateData(id, Integer.parseInt(spl[5]), Integer.parseInt(spl[6]), Integer.parseInt(spl[7]), spl[8]);
+                                    }
+                                    else {
+                                        Cuenta obj = new Cuenta(
+                                                id, spl[1], spl[2], spl[3], 0, 0, 0, 0, "0"
+                                        );
+                                        StartVar.appDBcuenta.daoUser().insetUser(obj);
+                                    }
+                                }
+                                else if(opt==1){
+                                    String idx = spl[10];
+                                    String name = StartVar.listacc.get(Integer.parseInt(idx)).cuenta;
+                                    AppDBreg db = Room.databaseBuilder( this, AppDBreg.class, name).allowMainThreadQueries().build();
+
+                                    Registro obj = new Registro(
+                                            spl[0], spl[1], spl[2], spl[3], Integer.parseInt(spl[4]), Integer.parseInt(spl[5]),
+                                            spl[6], spl[7], spl[8], spl[9], spl[10], spl[11], spl[12]
+                                    );
+                                    db.daoUser().insetUser(obj);
+                                    StartVar.appDBregistro.add(db);
+                                    //StartVar.listreg.add(db.daoUser().getUsers());
+                                }
+                                else if(opt==2){
+                                    String id = spl[1];
+                                    Cliente obj = new Cliente(
+                                            spl[0], spl[1], spl[2], spl[3], Integer.parseInt(spl[4]), spl[5]
+                                    );
+                                    StartVar.appDBcliente.daoUser().insetUser(obj);
+                                }
+                                else {
+                                    String id = spl[0];
+                                    if(id.equals("dateID0")) {
+                                        StartVar.appDBfecha.daoUser().updateUser(spl[0], spl[1], spl[2], spl[3], spl[4], spl[5]);
+                                    }
+                                    else {
+                                        Fecha obj = new Fecha(
+                                                spl[0], spl[1], spl[2], spl[3], spl[4], spl[5]
+                                        );
+                                        StartVar.appDBfecha.daoUser().insetUser(obj);
+                                    }
+                                }
+                           // }
+                            stringBuilder.append(line);
+                        }
+                        startVar.getFecListDB();
+
+                        Intent mIntent = new Intent(this, MainActivity.class);
+                        startActivity(mIntent);
+                        this.finish();
+                    }
+                    catch (FileNotFoundException e) {
+                        throw new RuntimeException(e);
+                    }
+                    catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
+                }
+                else {
+                    Basic.msg("Solicitud Denegada!");
+                }
+            }
+    );
+
 
     private boolean checkStoragePermissions(){
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.R){

@@ -322,8 +322,7 @@ public class AddPayFragment extends Fragment implements View.OnClickListener, Vi
             mList.add("payID"+mIndex);
             for(int i = 0; i < mInputList.size(); i++) {
                 String text = mInputList.get(i).getText().toString().toLowerCase();
-                text = text.replaceAll("\"", "");
-                text = text.replaceAll(",", "");
+                text = Basic.inputProcessor(text); //Elimina caracteres que afectan a los csv
                 //Para el input Nombre
                 if(i == 0) {
                     text = Basic.nameProcessor(text);
@@ -417,15 +416,16 @@ public class AddPayFragment extends Fragment implements View.OnClickListener, Vi
                     sImage = "";
                 }
                 //-------------------------------------------------------------------
+                Basic.msg(Integer.toString(currtAcc));
                 Registro obj = new Registro(
                     mList.get(0), mList.get(1), mList.get(3), monto, currSel2, (swPorc?1:0),
-                        sImage, currdate.toString(), currtime.toString(), (newClt?""+listCliente.size():cltId), "", "", ""
+                        sImage, currdate.toString(), currtime.toString(), (newClt?"cltID"+listCliente.size():"cltID"+cltId), Integer.toString(currtAcc), "0", "0"
                 );
                 appDBregistro.get(currtAcc).daoUser().insetUser(obj);
 
                if(newClt){
                    cltId = ""+listCliente.size();
-                   Cliente objClt = new Cliente(cltId, mList.get(1), mList.get(2),"", (swPorc?1:0), currdate.toString());
+                   Cliente objClt = new Cliente("cltID"+cltId, mList.get(1), mList.get(2),"0", (swPorc?1:0), currdate.toString());
                    appDBcliente.daoUser().insetUser(objClt);
                }
 

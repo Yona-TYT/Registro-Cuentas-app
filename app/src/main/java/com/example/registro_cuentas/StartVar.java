@@ -97,18 +97,6 @@ public class StartVar {
             StartVar.listreg.add(db.daoUser().getUsers());
         }
     }
-
-    //------------------------------------------ Para guardar las Fechas
-    public void setFecListDB(){
-        //Instancia de la base de datos
-        StartVar.appDBfecha = Room.databaseBuilder( mContex, AppDBfec.class, nameDBfec).allowMainThreadQueries().build();
-        StartVar.listfec =  appDBfecha.daoUser().getUsers();
-    }
-
-    public void getFecListDB(){
-        //Instancia de la base de datos
-        StartVar.listfec =  StartVar.appDBfecha.daoUser().getUsers();
-    }
     //----------------------------------------------------------------------------------
 
     public void getRegListDB(){
@@ -123,6 +111,17 @@ public class StartVar {
         }
     }
     //--------------------------------------------------------------------------------
+    //------------------------------------------ Para guardar las Fechas
+    public void setFecListDB(){
+        //Instancia de la base de datos
+        StartVar.appDBfecha = Room.databaseBuilder( mContex, AppDBfec.class, nameDBfec).allowMainThreadQueries().build();
+        StartVar.listfec =  appDBfecha.daoUser().getUsers();
+    }
+
+    public void getFecListDB(){
+        //Instancia de la base de datos
+        StartVar.listfec =  StartVar.appDBfecha.daoUser().getUsers();
+    }
 
     public void setmPermiss(boolean permiss){
         mPermiss = permiss;

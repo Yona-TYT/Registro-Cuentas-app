@@ -38,8 +38,8 @@ public interface DaoAcc {
     @Query("UPDATE cuenta SET nombre= :nombre, desc= :desc, monto= :monto WHERE cuenta= :user")
     void updateAcc(String user, String nombre, String desc, String monto);
 
-    @Query("UPDATE cuenta SET acctipo= :acctipo, moneda= :moneda, dolar= :dolar WHERE cuenta= :user")
-    void updateData(String user, Integer acctipo, Integer moneda, String dolar );
+    @Query("UPDATE cuenta SET fecselc= :fecselc,  accselc= :accselc, moneda= :moneda, dolar= :dolar WHERE cuenta= :user")
+    void updateData(String user, Integer fecselc, Integer accselc, Integer moneda, String dolar );
 
     // Para actualizar valores individuales --------------------------------------------------------
     @Query("UPDATE cuenta SET accselc= :accselc WHERE cuenta= :user")
