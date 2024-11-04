@@ -71,6 +71,8 @@ public class DetailsActivity extends AppCompatActivity implements View.OnClickLi
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        EdgeToEdge.enable(this);
+        setContentView(R.layout.activity_details);
 
         //Se configura el Boton nav Back -----------------------------------------------
         OnBackPressedDispatcher onBackPressedDispatcher = getOnBackPressedDispatcher();
@@ -82,10 +84,6 @@ public class DetailsActivity extends AppCompatActivity implements View.OnClickLi
         };
         onBackPressedDispatcher.addCallback(this, callback);
         //---------------------------------------------------------------------------------
-
-        EdgeToEdge.enable(this);
-        setContentView(R.layout.activity_details);
-
         //Activate ToolBar ----------------------------------------------------------------
         Toolbar myToolbar = findViewById(R.id.toolbar_dts);
         setSupportActionBar(myToolbar);
@@ -203,7 +201,10 @@ public class DetailsActivity extends AppCompatActivity implements View.OnClickLi
             Intent mIntent = new Intent(this, MainActivity.class);
             startActivity(mIntent);
             finish(); //Finaliza la actividad y ya no se accede mas
-
+        }
+        if (itemId == R.id.butt_dts2){
+            Intent mIntent = new Intent(this, PayEditActivity.class);
+            startActivity(mIntent);
         }
     }
 }

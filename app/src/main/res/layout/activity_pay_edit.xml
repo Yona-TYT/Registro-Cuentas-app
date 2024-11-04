@@ -5,10 +5,10 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".AccDtsActivity">
+    tools:context=".PayEditActivity">
 
     <androidx.appcompat.widget.Toolbar
-        android:id="@+id/toolbar_adts"
+        android:id="@+id/toolbar_editpay"
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
         android:background="?attr/colorPrimary"
@@ -17,111 +17,114 @@
         android:popupTheme="@style/ThemeOverlay.AppCompat.Dark"
         tools:ignore="MissingConstraints" />
 
-    <TextView
-        android:id="@+id/txv_adts1"
-        android:layout_width="@dimen/txview_wm"
-        android:layout_height="@dimen/txview_h1"
-        android:layout_marginTop="40dp"
-        android:padding="5dp"
-        android:text="Por Mes:"
-        android:textSize="@dimen/inner_text_1"
-        android:textStyle="bold"
+    <ImageView
+        android:id="@+id/image_editp1"
+        android:layout_width="279dp"
+        android:layout_height="235dp"
+        android:layout_marginTop="30dp"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/guideline4"
-        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintHorizontal_bias="0.493"
         app:layout_constraintStart_toStartOf="@+id/guideline3"
-        app:layout_constraintTop_toBottomOf="@+id/toolbar_adts"
-        tools:ignore="MissingConstraints" />
-
-    <Spinner
-        android:id="@+id/spin_adts1"
-        android:layout_width="@dimen/spinner_w1"
-        android:layout_height="@dimen/spinner_h1"
-        android:textSize="@dimen/selec_text"
-        android:textStyle="bold"
-        app:layout_constraintEnd_toStartOf="@+id/guideline4"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="@+id/guideline3"
-        app:layout_constraintTop_toBottomOf="@+id/txv_adts1" />
+        app:layout_constraintTop_toBottomOf="@+id/toolbar_editpay"
+        app:layout_constraintVertical_bias="0.0"
+        tools:srcCompat="@tools:sample/backgrounds/scenic" />
 
     <TextView
-        android:id="@+id/txview_adts1"
+        android:id="@+id/txview_editp1"
         android:layout_width="@dimen/txview_w1"
         android:layout_height="@dimen/txview_h2"
+        android:layout_marginTop="30dp"
         android:background="@color/text_background"
         android:padding="@dimen/txview_pad2"
         android:text="Vacio"
         android:textSize="@dimen/inner_text_2"
         android:textStyle="bold"
         app:layout_constraintEnd_toStartOf="@+id/guideline4"
-        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="@+id/guideline3"
-        app:layout_constraintTop_toBottomOf="@+id/spin_adts1"
+        app:layout_constraintTop_toBottomOf="@+id/image_editp1"
         tools:ignore="MissingConstraints" />
 
     <TextView
-        android:id="@+id/txview_adts2"
+        android:id="@+id/txview_editp2"
         android:layout_width="@dimen/txview_w1"
         android:layout_height="@dimen/txview_h2"
-        android:background="@color/text_background"
         android:padding="@dimen/txview_pad2"
         android:text="Vacio"
         android:textSize="@dimen/inner_text_2"
         android:textStyle="bold"
+        android:background="@color/text_background"
         app:layout_constraintEnd_toStartOf="@+id/guideline4"
-        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="@+id/guideline3"
-        app:layout_constraintTop_toBottomOf="@+id/txview_adts1"
+        app:layout_constraintTop_toBottomOf="@+id/txview_editp1"
         tools:ignore="MissingConstraints" />
 
     <TextView
-        android:id="@+id/txview_adts3"
+        android:id="@+id/txview_editp3"
         android:layout_width="@dimen/txview_w1"
         android:layout_height="@dimen/txview_h2"
-        android:background="@color/text_background"
         android:padding="@dimen/txview_pad2"
         android:text="Vacio"
         android:textSize="@dimen/inner_text_2"
         android:textStyle="bold"
+        android:background="@color/text_background"
         app:layout_constraintEnd_toStartOf="@+id/guideline4"
-        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="@+id/guideline3"
-        app:layout_constraintTop_toBottomOf="@+id/txview_adts2"
+        app:layout_constraintTop_toBottomOf="@+id/txview_editp2"
         tools:ignore="MissingConstraints" />
 
     <TextView
-        android:id="@+id/txview_adts4"
+        android:id="@+id/txview_editp4"
         android:layout_width="@dimen/txview_w1"
         android:layout_height="@dimen/txview_h2"
-        android:background="@color/text_background"
         android:padding="@dimen/txview_pad2"
         android:text="Vacio"
         android:textSize="@dimen/inner_text_2"
         android:textStyle="bold"
+        android:background="@color/text_background"
         app:layout_constraintEnd_toStartOf="@+id/guideline4"
-        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="@+id/guideline3"
-        app:layout_constraintTop_toBottomOf="@+id/txview_adts3"
+        app:layout_constraintTop_toBottomOf="@+id/txview_editp3"
+        tools:ignore="MissingConstraints" />
+
+    <TextView
+        android:id="@+id/txview_editp5"
+        android:layout_width="@dimen/txview_w1"
+        android:layout_height="@dimen/txview_h2"
+        android:padding="@dimen/txview_pad2"
+        android:text="Vacio"
+        android:textSize="@dimen/inner_text_2"
+        android:textStyle="bold"
+        android:background="@color/text_background"
+        app:layout_constraintEnd_toStartOf="@+id/guideline4"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="@+id/guideline3"
+        app:layout_constraintTop_toBottomOf="@+id/txview_editp4"
         tools:ignore="MissingConstraints" />
 
 
     <Switch
-        android:id="@+id/sw_adts1"
+        android:id="@+id/sw_editp1"
         android:layout_width="@dimen/sw_ws"
         android:layout_height="@dimen/sw_h1"
         android:layout_marginTop="15dp"
-        android:padding="5dp"
         android:text="Confirme"
+        android:padding="5dp"
         android:textSize="@dimen/inner_text_2"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/guideline4"
-        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintHorizontal_bias="0.02"
         app:layout_constraintStart_toStartOf="@+id/guideline3"
-        app:layout_constraintTop_toBottomOf="@+id/txview_adts4"
+        app:layout_constraintTop_toBottomOf="@+id/txview_editp5"
         app:layout_constraintVertical_bias="0.0"
         tools:ignore="UseSwitchCompatOrMaterialXml" />
 
     <Button
-        android:id="@+id/butt_adts2"
+        android:id="@+id/butt_dts2"
         android:layout_width="@dimen/sw_ws"
         android:layout_height="@dimen/button_h1"
         android:text="Editar"
@@ -129,21 +132,22 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/guideline4"
         app:layout_constraintHorizontal_bias="1.0"
-        app:layout_constraintStart_toEndOf="@+id/butt_adts1"
-        app:layout_constraintTop_toBottomOf="@+id/sw_adts1"
+        app:layout_constraintStart_toEndOf="@+id/butt_editp1"
+        app:layout_constraintTop_toBottomOf="@+id/sw_editp1"
         app:layout_constraintVertical_bias="0.0" />
 
     <Button
-        android:id="@+id/butt_adts1"
+        android:id="@+id/butt_editp1"
         android:layout_width="@dimen/sw_ws"
         android:layout_height="@dimen/button_h1"
+        android:layout_marginStart="4dp"
         android:layout_marginBottom="40dp"
         android:enabled="false"
         android:text="Eliminar"
         android:textSize="@dimen/inner_text_2"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="@+id/guideline3"
-        app:layout_constraintTop_toBottomOf="@+id/sw_adts1"
+        app:layout_constraintTop_toBottomOf="@+id/sw_editp1"
         app:layout_constraintVertical_bias="0.0" />
 
     <androidx.constraintlayout.widget.Guideline
@@ -151,14 +155,14 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        app:layout_constraintGuide_begin="20dp" />
+        app:layout_constraintGuide_begin="30dp" />
 
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/guideline4"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        app:layout_constraintGuide_end="20dp" />
+        app:layout_constraintGuide_end="30dp" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

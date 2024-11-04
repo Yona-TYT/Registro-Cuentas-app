@@ -2,6 +2,7 @@ package com.example.registro_cuentas;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.MenuItem;
@@ -49,7 +50,6 @@ public class AccDtsActivity extends AppCompatActivity implements View.OnClickLis
     private TextView mText2;
     private TextView mText3;
     private TextView mText4;
-    private TextView mText5;
     private List<TextView> mTextList = new ArrayList<>();
     //---------------------------------------------------------------------
 
@@ -114,7 +114,6 @@ public class AccDtsActivity extends AppCompatActivity implements View.OnClickLis
         mText2 = findViewById(R.id.txview_adts2);
         mText3 = findViewById(R.id.txview_adts3);
         mText4 = findViewById(R.id.txview_adts4);
-        mText5 = findViewById(R.id.txview_adts5);
 
         mBtton1 = findViewById(R.id.butt_adts1);
         mBtton2  = findViewById(R.id.butt_adts2);
@@ -128,7 +127,6 @@ public class AccDtsActivity extends AppCompatActivity implements View.OnClickLis
         mTextList.add(mText2);
         mTextList.add(mText3);
         mTextList.add(mText4);
-        mTextList.add(mText5);
 
         // Se llenan los textView
         setInputList();
@@ -241,8 +239,7 @@ public class AccDtsActivity extends AppCompatActivity implements View.OnClickLis
             mTextList.get(i).setText("Total Credito: "+ totalCred);
             i++;
             mTextList.get(i).setText("Total Debito: " + (totalDeb!=0?"-":"") + totalDeb);
-            i++;
-            mTextList.get(i).setText("Hora: ");
+
         }
     }
 
@@ -271,6 +268,10 @@ public class AccDtsActivity extends AppCompatActivity implements View.OnClickLis
 //            Intent mIntent = new Intent(this, MainActivity.class);
 //            startActivity(mIntent);
 //            finish(); //Finaliza la actividad y ya no se accede mas
+        }
+        if (itemId == R.id.butt_adts2){
+            Intent mIntent = new Intent(this, EditAccActivity.class);
+            startActivity(mIntent);
         }
     }
     //------------------------------------------------------------
