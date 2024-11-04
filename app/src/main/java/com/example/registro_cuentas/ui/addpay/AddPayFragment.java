@@ -1,7 +1,5 @@
 package com.example.registro_cuentas.ui.addpay;
 
-import static android.app.Activity.RESULT_OK;
-
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -19,12 +17,9 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.Switch;
-import android.widget.Toast;
 
 import androidx.activity.OnBackPressedCallback;
 import androidx.activity.OnBackPressedDispatcher;
-import androidx.activity.result.ActivityResult;
-import androidx.activity.result.ActivityResultCallback;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.PickVisualMediaRequest;
 import androidx.activity.result.contract.ActivityResultContracts;
@@ -38,7 +33,6 @@ import com.example.registro_cuentas.AppDBreg;
 import com.example.registro_cuentas.BaseContext;
 import com.example.registro_cuentas.Basic;
 import com.example.registro_cuentas.CalcCalendar;
-import com.example.registro_cuentas.CameraLauncher;
 import com.example.registro_cuentas.Cliente;
 import com.example.registro_cuentas.CurrencyInput;
 import com.example.registro_cuentas.FilesManager;
@@ -102,7 +96,7 @@ public class AddPayFragment extends Fragment implements View.OnClickListener, Vi
     // Para guardar los permisos de app comprobados en main
     private boolean mPermiss = false;
     // Index de cuenta actual
-    private int currtAcc = StartVar.mCurrenrAcc;
+    private int currtAcc = StartVar.mCurrentAcc;
 
     private Basic mBasic = new Basic(BaseContext.getContext());
 
@@ -110,16 +104,6 @@ public class AddPayFragment extends Fragment implements View.OnClickListener, Vi
     private String sImage = "";
     private Uri oldFile = null;
     private Uri currUri = null;
-
-    private ActivityResultLauncher<Intent> launch = registerForActivityResult(
-            new ActivityResultContracts.StartActivityForResult(),
-            result -> {
-                if (result.getResultCode() == RESULT_OK && result.getData() != null){
-                    Basic.msg("Aqui haaaaaaaaayyyyyyyyyyyyyyy!!!!");
-                }
-            }
-
-    );
 
 
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
@@ -416,7 +400,6 @@ public class AddPayFragment extends Fragment implements View.OnClickListener, Vi
                     sImage = "";
                 }
                 //-------------------------------------------------------------------
-                Basic.msg(Integer.toString(currtAcc));
                 Registro obj = new Registro(
                     mList.get(0), mList.get(1), mList.get(3), monto, currSel2, (swPorc?1:0),
                         sImage, currdate.toString(), currtime.toString(), (newClt?"cltID"+listCliente.size():"cltID"+cltId), Integer.toString(currtAcc), "0", "0"

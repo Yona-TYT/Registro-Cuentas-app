@@ -31,7 +31,7 @@ import java.util.List;
 
 import io.reactivex.annotations.NonNull;
 
-public class AccDtsActivity extends AppCompatActivity implements View.OnClickListener {
+public class AccDtailsActivity extends AppCompatActivity implements View.OnClickListener {
 
     private Context mContext = BaseContext.getContext();
 
@@ -59,7 +59,7 @@ public class AccDtsActivity extends AppCompatActivity implements View.OnClickLis
     private Spinner mSpin3;
 
     private int currSel1 = StartVar.mCurrency;
-    private int currSel2 = StartVar.mCurrenrAcc;
+    private int currSel2 = StartVar.mCurrentAcc;
     private int currSel3 = StartVar.mCurreMes;
 
     //---------------------------------------------------------------------
@@ -71,7 +71,7 @@ public class AccDtsActivity extends AppCompatActivity implements View.OnClickLis
     private Button mBtton2;
 
     public int payIndex = StartVar.payIndex;
-    public int accIndex = StartVar.mCurrenrAcc;
+    public int accIndex = StartVar.mCurrentAcc;
 
     private List<String> mCurrencyList= Arrays.asList("$", "Bs");
     private int mCindex = StartVar.mCurrency;
@@ -85,7 +85,7 @@ public class AccDtsActivity extends AppCompatActivity implements View.OnClickLis
         OnBackPressedCallback callback = new OnBackPressedCallback(true) {
             @Override
             public void handleOnBackPressed() {
-                AccDtsActivity.this.finish();
+                AccDtailsActivity.this.finish();
             }
         };
         onBackPressedDispatcher.addCallback(this, callback);
@@ -270,7 +270,7 @@ public class AccDtsActivity extends AppCompatActivity implements View.OnClickLis
 //            finish(); //Finaliza la actividad y ya no se accede mas
         }
         if (itemId == R.id.butt_adts2){
-            Intent mIntent = new Intent(this, EditAccActivity.class);
+            Intent mIntent = new Intent(this, AccEditActivity.class);
             startActivity(mIntent);
         }
     }

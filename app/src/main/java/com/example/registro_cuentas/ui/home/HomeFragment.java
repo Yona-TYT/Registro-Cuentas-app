@@ -15,17 +15,15 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Spinner;
-import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import android.widget.SearchView;
-import android.widget.Toast;
 
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
-import com.example.registro_cuentas.AccDtsActivity;
+import com.example.registro_cuentas.AccDtailsActivity;
 import com.example.registro_cuentas.AppDBacc;
 import com.example.registro_cuentas.AppDBfec;
 import com.example.registro_cuentas.AppDBreg;
@@ -33,6 +31,7 @@ import com.example.registro_cuentas.BaseContext;
 import com.example.registro_cuentas.Basic;
 import com.example.registro_cuentas.Cuenta;
 import com.example.registro_cuentas.CurrencyInput;
+import com.example.registro_cuentas.DaoClt;
 import com.example.registro_cuentas.Fecha;
 import com.example.registro_cuentas.PayAdapter;
 import com.example.registro_cuentas.R;
@@ -58,7 +57,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener, Adap
     private AppDBfec appDBfecha = StartVar.appDBfecha;
     private List<Cuenta> listCuenta;
     private List<AppDBreg> appDBregistro = StartVar.appDBregistro;
-    private List<Registro> listRegistro;
+    private List<Registro> listRegistro = new ArrayList<>();
     //--------------------------------------------------------------------
 
     private ConstraintLayout mConstrain;
@@ -70,7 +69,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener, Adap
     private Spinner mSpin3;
 
     private int currSel1 = StartVar.mCurrency;
-    private int currSel2 = StartVar.mCurrenrAcc;
+    private int currSel2 = StartVar.mCurrentAcc;
     private int currSel3 = StartVar.mCurreMes;
 
     private List<String> mSpinL1= Arrays.asList("Dolar", "Bolivar");
@@ -274,7 +273,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener, Adap
         int itemId = view.getId();
         if (itemId == R.id.butt_home1) {
             Application application = (Application) mContext.getApplicationContext();
-            Intent mIntent = new Intent(mContext, AccDtsActivity.class);
+            Intent mIntent = new Intent(mContext, AccDtailsActivity.class);
             mIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             application.startActivity(mIntent);
         }
@@ -308,15 +307,17 @@ public class HomeFragment extends Fragment implements View.OnClickListener, Adap
             Fecha selFecha = listFecha.get(Math.max(idx, 0));
             List<Object[]> mregList = new ArrayList<>();
             for (int i = 0; i < listRegistro.size(); i++) {
-                String name = listRegistro.get(i).nombre;
-                String fecha = listRegistro.get(i).fecha;
+                Registro reg = listRegistro.get(i);
+                DaoClt mDao = StartVar.appDBcliente.daoUser();
+                String name = mDao.getSaveName(reg.cltid);
+                String fecha = reg.fecha;
                 if(currSel3 == 0) {
                     Object[] stList = new Object[5];
                     stList[0] = Integer.toString(i);
                     stList[1] = name;
-                    stList[2] = listRegistro.get(i).monto;
+                    stList[2] = reg.monto;
                     stList[3] = fecha;
-                    stList[4] = listRegistro.get(i).oper;
+                    stList[4] = reg.oper;
                     mregList.add(stList);
                 }
                 else {
@@ -326,9 +327,9 @@ public class HomeFragment extends Fragment implements View.OnClickListener, Adap
                             Object[] stList = new Object[5];
                             stList[0] = Integer.toString(i);
                             stList[1] = name;
-                            stList[2] = listRegistro.get(i).monto;
+                            stList[2] = reg.monto;
                             stList[3] = fecha;
-                            stList[4] = listRegistro.get(i).oper;
+                            stList[4] = reg.oper;
                             mregList.add(stList);
                         }
                     }

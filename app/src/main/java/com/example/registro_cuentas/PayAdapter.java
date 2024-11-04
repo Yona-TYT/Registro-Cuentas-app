@@ -175,7 +175,7 @@ public class PayAdapter extends BaseAdapter implements Filterable, View.OnClickL
             startVar.setPayIndex( (int)view.getTag());
 
             Application application = (Application) mContex.getApplicationContext();
-            Intent mIntent = new Intent(mContex, DetailsActivity.class);
+            Intent mIntent = new Intent(mContex, RegDetailsActivity.class);
             mIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             application.startActivity(mIntent);
         }

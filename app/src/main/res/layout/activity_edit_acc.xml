@@ -5,7 +5,7 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".EditAccActivity">
+    tools:context=".AccEditActivity">
 
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/toolbar_editacc"
@@ -17,123 +17,88 @@
         android:popupTheme="@style/ThemeOverlay.AppCompat.Dark"
         tools:ignore="MissingConstraints" />
 
-    <TextView
-        android:id="@+id/txview_adts1"
-        android:layout_width="@dimen/txview_w1"
-        android:layout_height="@dimen/txview_h2"
-        android:layout_marginTop="100dp"
-
-        android:background="@color/text_background"
-        android:padding="@dimen/txview_pad2"
-        android:text="Vacio"
-        android:textSize="@dimen/inner_text_2"
-        android:textStyle="bold"
-        app:layout_constraintEnd_toStartOf="@+id/guideline4"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="@+id/guideline3"
-        app:layout_constraintTop_toBottomOf="@+id/toolbar_editacc"
-        tools:ignore="MissingConstraints" />
-
-    <TextView
-        android:id="@+id/txview_adts2"
-        android:layout_width="@dimen/txview_w1"
-        android:layout_height="@dimen/txview_h2"
-        android:background="@color/text_background"
-        android:padding="@dimen/txview_pad2"
-        android:text="Vacio"
-        android:textSize="@dimen/inner_text_2"
-        android:textStyle="bold"
-        app:layout_constraintEnd_toStartOf="@+id/guideline4"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="@+id/guideline3"
-        app:layout_constraintTop_toBottomOf="@+id/txview_adts1"
-        tools:ignore="MissingConstraints" />
-
-    <TextView
-        android:id="@+id/txview_adts3"
-        android:layout_width="@dimen/txview_w1"
-        android:layout_height="@dimen/txview_h2"
-        android:background="@color/text_background"
-        android:padding="@dimen/txview_pad2"
-        android:text="Vacio"
-        android:textSize="@dimen/inner_text_2"
-        android:textStyle="bold"
-        app:layout_constraintEnd_toStartOf="@+id/guideline4"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="@+id/guideline3"
-        app:layout_constraintTop_toBottomOf="@+id/txview_adts2"
-        tools:ignore="MissingConstraints" />
-
-    <TextView
-        android:id="@+id/txview_adts4"
-        android:layout_width="@dimen/txview_w1"
-        android:layout_height="@dimen/txview_h2"
-        android:background="@color/text_background"
-        android:padding="@dimen/txview_pad2"
-        android:text="Vacio"
-        android:textSize="@dimen/inner_text_2"
-        android:textStyle="bold"
-        app:layout_constraintEnd_toStartOf="@+id/guideline4"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="@+id/guideline3"
-        app:layout_constraintTop_toBottomOf="@+id/txview_adts3"
-        tools:ignore="MissingConstraints" />
-
-    <Switch
-        android:id="@+id/sw_adts1"
-        android:layout_width="@dimen/sw_ws"
-        android:layout_height="@dimen/sw_h1"
-        android:layout_marginTop="15dp"
-        android:padding="5dp"
-        android:text="Confirme"
+    <com.google.android.material.textfield.TextInputEditText
+        android:id="@+id/input_accedit1"
+        android:layout_width="@dimen/input_wm"
+        android:layout_height="@dimen/input_h1"
+        android:hint="Nombre Cuenta"
+        android:inputType="textCapWords"
+        android:maxLength="20"
+        android:padding="10dp"
         android:textSize="@dimen/inner_text_2"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/guideline4"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="@+id/guideline3"
-        app:layout_constraintTop_toBottomOf="@+id/txview_adts4"
+        app:layout_constraintEnd_toStartOf="@+id/guideline2"
+        app:layout_constraintHorizontal_bias="0.101"
+        app:layout_constraintStart_toStartOf="@+id/guideline"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.40"
+        tools:ignore="MissingConstraints" />
+
+    <com.google.android.material.textfield.TextInputEditText
+        android:id="@+id/input_accedit2"
+        android:layout_width="@dimen/input_wm"
+        android:layout_height="@dimen/input_h1"
+        android:hint="Descripcion"
+        android:inputType="textCapWords"
+        android:maxLength="20"
+        android:padding="10dp"
+        android:textSize="@dimen/inner_text_2"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/guideline2"
+        app:layout_constraintHorizontal_bias="0.1"
+        app:layout_constraintStart_toStartOf="@+id/guideline"
+        app:layout_constraintTop_toBottomOf="@+id/input_accedit1"
         app:layout_constraintVertical_bias="0.0"
-        tools:ignore="UseSwitchCompatOrMaterialXml" />
+        tools:ignore="MissingConstraints" />
 
-    <Button
-        android:id="@+id/butt_adts2"
-        android:layout_width="@dimen/sw_ws"
-        android:layout_height="@dimen/button_h1"
-        android:text="Editar"
+    <com.google.android.material.textfield.TextInputEditText
+        android:id="@+id/input_accedit3"
+        android:layout_width="@dimen/input_wm"
+        android:layout_height="@dimen/input_h1"
+        android:hint="Monto Estimado"
+        android:inputType="numberDecimal"
+        android:ems="10"
+        android:imeOptions="actionDone"
+        android:cursorVisible="false"
+        android:maxLength="20"
+        android:padding="10dp"
         android:textSize="@dimen/inner_text_2"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/guideline4"
-        app:layout_constraintHorizontal_bias="1.0"
-        app:layout_constraintStart_toEndOf="@+id/butt_adts1"
-        app:layout_constraintTop_toBottomOf="@+id/sw_adts1"
-        app:layout_constraintVertical_bias="0.0" />
+        app:layout_constraintEnd_toStartOf="@+id/guideline2"
+        app:layout_constraintHorizontal_bias="0.105"
+        app:layout_constraintStart_toStartOf="@+id/guideline"
+        app:layout_constraintTop_toBottomOf="@+id/input_accedit2"
+        app:layout_constraintVertical_bias="0.0"
+        tools:ignore="MissingConstraints" />
 
     <Button
-        android:id="@+id/butt_adts1"
-        android:layout_width="@dimen/sw_ws"
+        android:id="@+id/butt_accedit1"
+        android:layout_width="@dimen/button_w1"
         android:layout_height="@dimen/button_h1"
-        android:layout_marginBottom="40dp"
-        android:enabled="false"
-        android:text="Eliminar"
+        android:layout_marginTop="15dp"
+        android:padding="2dp"
+        android:text="Agregar"
         android:textSize="@dimen/inner_text_2"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="@+id/guideline3"
-        app:layout_constraintTop_toBottomOf="@+id/sw_adts1"
+        app:layout_constraintEnd_toStartOf="@+id/guideline2"
+        app:layout_constraintHorizontal_bias="0.476"
+        app:layout_constraintStart_toStartOf="@+id/guideline"
+        app:layout_constraintTop_toBottomOf="@+id/input_accedit3"
         app:layout_constraintVertical_bias="0.0" />
 
     <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/guideline3"
+        android:id="@+id/guideline"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        app:layout_constraintGuide_begin="20dp" />
+        app:layout_constraintGuide_begin="30dp" />
 
     <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/guideline4"
+        android:id="@+id/guideline2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        app:layout_constraintGuide_end="20dp" />
+        app:layout_constraintGuide_end="30dp" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

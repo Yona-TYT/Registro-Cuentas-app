@@ -15,6 +15,9 @@ public interface DaoClt {
     Cliente getUsers(String user);
 
     // Se obtinen valores individuales de accselc, moneda, dolar------------------------------------
+    @Query("SELECT nombre FROM cliente WHERE cliente= :user ")
+    String getSaveName(String user);
+
     @Query("SELECT alias FROM cliente WHERE cliente= :user ")
     String getSaveAlias(String user);
 

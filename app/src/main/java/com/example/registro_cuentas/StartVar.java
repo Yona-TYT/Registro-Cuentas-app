@@ -23,7 +23,7 @@ public class StartVar {
     public static List<Fecha> listfec =  new ArrayList<>();
     public static List<List> listreg = new ArrayList<>();
     public static boolean mPermiss = false;     //Permisos de gestion multimedia
-    public static int mCurrenrAcc = 0;      // Cuenta seleccionada
+    public static int mCurrentAcc = 0;      // Cuenta seleccionada
     public static int mCurrency = 0;        //Moneda seleccionada
     public static int mCurreMes = 0;        //Mes seleccionado
 
@@ -127,7 +127,7 @@ public class StartVar {
         mPermiss = permiss;
     }
     public void setCurrentAcc(int idx){
-        mCurrenrAcc = idx;
+        mCurrentAcc = idx;
     }
     public void setCurrency(int idx){
         mCurrency = idx;

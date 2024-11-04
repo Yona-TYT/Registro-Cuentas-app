@@ -29,7 +29,7 @@ import java.util.List;
 
 import io.reactivex.annotations.NonNull;
 
-public class DetailsActivity extends AppCompatActivity implements View.OnClickListener {
+public class RegDetailsActivity extends AppCompatActivity implements View.OnClickListener {
 
     private  Context mContext = BaseContext.getContext();
 
@@ -58,7 +58,7 @@ public class DetailsActivity extends AppCompatActivity implements View.OnClickLi
     private Button mBtton2;
 
     public int payIndex = StartVar.payIndex;
-    public int accIndex = StartVar.mCurrenrAcc;
+    public int accIndex = StartVar.mCurrentAcc;
 
     private List<String> mCurrencyList= Arrays.asList("$", "Bs");
     private int mCindex = StartVar.mCurrency;
@@ -72,14 +72,14 @@ public class DetailsActivity extends AppCompatActivity implements View.OnClickLi
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
-        setContentView(R.layout.activity_details);
+        setContentView(R.layout.activity_reg_dts);
 
         //Se configura el Boton nav Back -----------------------------------------------
         OnBackPressedDispatcher onBackPressedDispatcher = getOnBackPressedDispatcher();
         OnBackPressedCallback callback = new OnBackPressedCallback(true) {
             @Override
             public void handleOnBackPressed() {
-                DetailsActivity.this.finish();
+                RegDetailsActivity.this.finish();
             }
         };
         onBackPressedDispatcher.addCallback(this, callback);
@@ -153,8 +153,11 @@ public class DetailsActivity extends AppCompatActivity implements View.OnClickLi
             listRegistro = appDBregistro.get(accIndex).daoUser().getUsers();
             Registro reg = listRegistro.get(payIndex);
             mUser = reg.registro;
-            String txName = reg.nombre;
-            String txAlias = appDBcliente.daoUser().getSaveAlias(reg.cltid);
+
+            DaoClt mDao = appDBcliente.daoUser();
+            String txName = mDao.getSaveName(reg.cltid);
+            String txAlias = mDao.getSaveAlias(reg.cltid);
+
             String txConc = reg.concep;
             String txMont = reg.monto;
             String txOpt = (reg.oper==0?"+ ":"- ");
@@ -204,6 +207,7 @@ public class DetailsActivity extends AppCompatActivity implements View.OnClickLi
         }
         if (itemId == R.id.butt_dts2){
             Intent mIntent = new Intent(this, PayEditActivity.class);
+            this.finish();
             startActivity(mIntent);
         }
     }

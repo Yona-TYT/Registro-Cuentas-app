@@ -43,15 +43,15 @@
             android:exported="false"
             android:theme="@style/Theme.RegistroCuentas.NoActionBar" />
         <activity
-            android:name=".EditAccActivity"
+            android:name=".AccEditActivity"
             android:exported="false"
             android:theme="@style/Theme.RegistroCuentas.NoActionBar" />
         <activity
-            android:name=".AccDtsActivity"
+            android:name=".AccDtailsActivity"
             android:exported="false"
             android:theme="@style/Theme.RegistroCuentas.NoActionBar" />
         <activity
-            android:name=".DetailsActivity"
+            android:name=".RegDetailsActivity"
             android:exported="false"
             android:theme="@style/Theme.RegistroCuentas.NoActionBar" />
         <activity
