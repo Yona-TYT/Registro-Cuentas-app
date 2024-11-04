@@ -120,7 +120,6 @@ public class HomeFragment extends Fragment implements View.OnClickListener, Adap
 
         mLv1.setOnItemClickListener(this);
         mConstrain.setOnClickListener(this);
-        mButt1.setOnClickListener(this);
         mSearch1.setOnFocusChangeListener(this);
 
         //Efecto moneda
@@ -169,6 +168,12 @@ public class HomeFragment extends Fragment implements View.OnClickListener, Adap
         //Para la lista del selector Cuentas ----------------------------------------------------------------------------------------------
         // Genera la lista de cuentas ---------------------------------------------------------
         listCuenta = appDBcuenta.daoUser().getUsers();
+        if(listCuenta.size() > 1) {
+            mButt1.setOnClickListener(this);
+        }
+        else {
+            mButt1.setEnabled(false);
+        }
         List<String[]> maccList = new ArrayList<>();
         for (int i = 1; listCuenta.size() > 1 && i < listCuenta.size(); i++){
             String name = listCuenta.get(i).nombre;
