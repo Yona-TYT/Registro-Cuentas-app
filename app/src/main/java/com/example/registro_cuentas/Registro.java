@@ -18,13 +18,13 @@ public class Registro {
     public String fecha;
     public String time;
     public String cltid;
-    public String more3;
-    public String more4;
+    public String accid;
+    public Integer estat;
     public String more5;
 
     public Registro(@NonNull String registro, String nombre, String concep, String monto, Integer oper,
-                    Integer porc, String imagen, String fecha, String time, String cltid, String more3,
-                    String more4, String more5
+                    Integer porc, String imagen, String fecha, String time, String cltid, String accid,
+                    Integer estat, String more5
                     )
     {
             this.registro = registro;
@@ -37,8 +37,8 @@ public class Registro {
             this.fecha = fecha;
             this.time = time;
             this.cltid = cltid;
-            this.more3 = more3;
-            this.more4 = more4;
+            this.accid = accid;
+            this.estat = estat;
             this.more5 = more5;
     }
 }

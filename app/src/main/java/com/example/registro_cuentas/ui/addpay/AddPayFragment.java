@@ -402,7 +402,7 @@ public class AddPayFragment extends Fragment implements View.OnClickListener, Vi
                 //-------------------------------------------------------------------
                 Registro obj = new Registro(
                     mList.get(0), mList.get(1), mList.get(3), monto, currSel2, (swPorc?1:0),
-                        sImage, currdate.toString(), currtime.toString(), (newClt?"cltID"+listCliente.size():"cltID"+cltId), Integer.toString(currtAcc), "0", "0"
+                        sImage, currdate.toString(), currtime.toString(), (newClt?"cltID"+listCliente.size():"cltID"+cltId), Integer.toString(currtAcc), 0, "0"
                 );
                 appDBregistro.get(currtAcc).daoUser().insetUser(obj);
 

@@ -256,8 +256,8 @@ public class MainActivity extends AppCompatActivity {
                     txList[7]=arr.fecha;
                     txList[8]=arr.time;
                     txList[9]=arr.cltid;
-                    txList[10]=arr.more3;
-                    txList[11]=arr.more4;
+                    txList[10]=arr.accid;
+                    txList[11]=arr.estat.toString();
                     txList[12]=arr.more5;
 
                     totalList.add(txList);
@@ -408,7 +408,7 @@ public class MainActivity extends AppCompatActivity {
 
                                     Registro obj = new Registro(
                                             spl[0], spl[1], spl[2], spl[3], Integer.parseInt(spl[4]), Integer.parseInt(spl[5]),
-                                            spl[6], spl[7], spl[8], spl[9], spl[10], spl[11], spl[12]
+                                            spl[6], spl[7], spl[8], spl[9], spl[10], Integer.parseInt(spl[11]), spl[12]
                                     );
                                     db.daoUser().insetUser(obj);
                                     StartVar.appDBregistro.add(db);
