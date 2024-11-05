@@ -24,8 +24,12 @@ public interface DaoClt {
     @Insert
     void insetUser(Cliente...clientes);
 
-    @Query("UPDATE cliente SET nombre= :nombre, alias= :alias, total= :total, porc= :porc, fecha= :fecha WHERE cliente= :user")
-    void updateUser(String user, String nombre, String alias, String total, Integer porc, String fecha);
+    @Query("UPDATE cliente SET nombre= :nombre, alias= :alias, total= :total, porc= :porc, fecha= :fecha, estat= :estat, pagado= :pagado, ulfech= :ulfech, oper= :oper, debe= :debe WHERE cliente= :user")
+    void updateUser(String user, String nombre, String alias, String total, Integer porc, String fecha, Integer estat, Integer pagado, String ulfech, Integer oper, String debe);
+
+    @Query("UPDATE cliente SET  pagado= :pagado, ulfech= :ulfech, debe= :debe WHERE cliente= :user")
+    void updateDebt(String user, Integer pagado, String ulfech, String debe);
+
 
     @Query("DELETE FROM cliente WHERE  cliente= :user")
     void removerUser(String user);

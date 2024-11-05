@@ -122,10 +122,27 @@ public class Basic {
             return Float.toString(number);
         } else return "";
     }
-
     public static Float floatFormat(String value) {
         String mValue = value.replaceAll("([^.;^0-9]+)", "");
         return mValue.isEmpty() ? (float)0 : Float.parseFloat(mValue);
+    }
+
+    public static float getDebt(int mult, String mont, String debt) {
+        mont = mont.replaceAll("([^.;^0-9]+)", "");
+        debt = debt.replaceAll("([^.;^0-9]+)", "");
+
+        float precDoll = Basic.floatFormat(StartVar.mDollar);
+        if (!mont.isEmpty() && !debt.isEmpty()) {
+            float numA = Float.parseFloat(mont);
+            float numB = Float.parseFloat(debt);
+
+            float result = numA*mult;
+
+            Basic.msg(""+result+" : "+numB);
+            result -= numB;
+            return result;
+        }
+        return 0;
     }
 
     public static String setMask(String value, String sing) {

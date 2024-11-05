@@ -110,7 +110,7 @@ public class AccDtailsActivity extends AppCompatActivity implements View.OnClick
         //------------------------------------------------------------------------------------------
 
         mSpin1 = findViewById(R.id.spin_adts1);
-        mText1 = findViewById(R.id.txview_adts1);
+        mText1 = findViewById(R.id.txview_clt1);
         mText2 = findViewById(R.id.txview_adts2);
         mText3 = findViewById(R.id.txview_adts3);
         mText4 = findViewById(R.id.txview_adts4);

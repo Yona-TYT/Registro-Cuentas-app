@@ -74,7 +74,6 @@ public class AddPayFragment extends Fragment implements View.OnClickListener, Vi
 
     //Botones
     private Button mButt1;
-    private Button mButt2;
 
     //Todos los Spinner
     private Spinner mSpin1;
@@ -98,13 +97,15 @@ public class AddPayFragment extends Fragment implements View.OnClickListener, Vi
     // Index de cuenta actual
     private int currtAcc = StartVar.mCurrentAcc;
 
+    private String mCurr = mCurrencyList.get(StartVar.mCurrency);
+
+
     private Basic mBasic = new Basic(BaseContext.getContext());
 
     private FilesManager mFileM = new FilesManager(BaseContext.getContext());
     private String sImage = "";
     private Uri oldFile = null;
     private Uri currUri = null;
-
 
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
     {
@@ -161,12 +162,11 @@ public class AddPayFragment extends Fragment implements View.OnClickListener, Vi
 
         //Efecto moneda
         //-------------------------------------------------------------------------------------------------------
-        String curr = mCurrencyList.get(StartVar.mCurrency);
-        mInput4.setText(Basic.setMask("0", curr));
+        mInput4.setText(Basic.setMask("0", mCurr));
         List<View> mViewL1 = new ArrayList<>();
         mViewL1.add(mNavBar);
         int mOpt = 0;
-        CurrencyInput mCInput = new CurrencyInput( mContext, mInput4,  mViewL1, curr, mOpt);
+        CurrencyInput mCInput = new CurrencyInput( mContext, mInput4,  mViewL1, mCurr, mOpt);
         mCInput.set();
         //----------------------------------------------------------------------------------------------------
 
@@ -199,13 +199,24 @@ public class AddPayFragment extends Fragment implements View.OnClickListener, Vi
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
                 currSel1 = i;
                 if (i > 0) {
-                    mInput1.setText(listCliente.get(i-1).nombre.toUpperCase());
+                    mButt1.setEnabled(true);
+
+                    Cliente mClt = listCliente.get(i - 1);
+                    mInput1.setText(mClt.nombre.toUpperCase());
                     mInput1.setEnabled(false);
 
-                    String alias = listCliente.get(i-1).alias.toUpperCase();
+                    String alias = mClt.alias.toUpperCase();
                     if (!alias.isEmpty()) {
                         mInput2.setText(alias);
                         mInput2.setEnabled(false);
+                    }
+                    if (mClt.estat == 1) {
+                        mInput4.setText(Basic.setMask(mClt.total, mCurr));
+
+                        if (mClt.pagado == 1) {
+                            mButt1.setEnabled(false);
+                            Basic.msg("Este cliente no Tine DEUDAS!");
+                        }
                     }
                 }
                 else{
@@ -241,6 +252,11 @@ public class AddPayFragment extends Fragment implements View.OnClickListener, Vi
 
         return root;
     }
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        binding = null;
+    }
 
 //    @Override
 //    public void onViewCreated(View view, Bundle savedInstanceState) {
@@ -256,11 +272,6 @@ public class AddPayFragment extends Fragment implements View.OnClickListener, Vi
 //        activityLauncher.launch(intent, result -> onActivityResult.onActivityResultCallback(requestCode, result.getResultCode(), result.getData()));
 //    }
 
-    @Override
-    public void onDestroyView() {
-        super.onDestroyView();
-        binding = null;
-    }
 
     // Registers a photo picker activity launcher in single-select mode.
     ActivityResultLauncher<PickVisualMediaRequest> pickMedia =
@@ -402,14 +413,69 @@ public class AddPayFragment extends Fragment implements View.OnClickListener, Vi
                 //-------------------------------------------------------------------
                 Registro obj = new Registro(
                     mList.get(0), mList.get(1), mList.get(3), monto, currSel2, (swPorc?1:0),
-                        sImage, currdate.toString(), currtime.toString(), (newClt?"cltID"+listCliente.size():"cltID"+cltId), Integer.toString(currtAcc), 0, "0"
+                        sImage, currdate.toString(), currtime.toString(), (newClt?"cltID"+listCliente.size():cltId), Integer.toString(currtAcc), 0, "0"
                 );
                 appDBregistro.get(currtAcc).daoUser().insetUser(obj);
 
                if(newClt){
                    cltId = ""+listCliente.size();
-                   Cliente objClt = new Cliente("cltID"+cltId, mList.get(1), mList.get(2),"0", (swPorc?1:0), currdate.toString(), 0);
+                   Cliente objClt = null;
+                   objClt = new Cliente(
+                           "cltID"+cltId, mList.get(1), mList.get(2),"0",
+                           (swPorc?1:0), currdate.toString(), 0,0, currdate.toString(), 0, "0"
+                   );
                    appDBcliente.daoUser().insetUser(objClt);
+               }
+               else {
+                   Cliente mclt = appDBcliente.daoUser().getUsers(cltId);
+                   int pagado = 0;
+                   String debe =  mclt.debe;
+                   String ulFech = mclt.ulfech;
+                   if(mclt.estat==1) {
+                       int mult = CalcCalendar.getRangeMultiple(ulFech, 0);
+                       float debt = Float.parseFloat(debe);;
+                       float currMnt = Float.parseFloat(monto);
+                       float total = Float.parseFloat(mclt.total);
+                       currMnt += debt;
+
+                       int i = 1;
+                       //Basic.msg(total+" : "+currMnt);
+                       for (; i <= mult ; i++) {
+                           if(currMnt < total){
+                               debe = Float.toString(currMnt);
+                               i--;
+                               break;
+                           }
+                           else {
+                               currMnt -= total;
+                               debt -= total;
+                           }
+                           //La deuda no fue pagada
+                           if(currMnt == 0){
+                               debe = Float.toString(0);
+                               break;
+                           }
+                       }
+
+                       //Deuda fue saldada
+                       if(i == mult){
+                           debe =  "0";
+                           pagado = 1;
+                           ulFech = currdate.toString();
+                       }
+                       else if (i < 0){
+                           Basic.msg("El MONTO es mayor a la deuda!");
+                           debe =  Float.toString(currMnt);
+                           pagado = 1;
+                           ulFech = currdate.toString();
+                       }
+                       else {
+                           ulFech = CalcCalendar.getDatePlus(mclt.ulfech, i, 0);
+                       }
+
+                       Basic.msg(ulFech+" : "+  CalcCalendar.getRangeMultiple(ulFech, 0)+" : "+i );
+                   }
+                   StartVar.appDBcliente.daoUser().updateDebt(cltId, pagado, ulFech, debe);
                }
 
                //Actualisza la lista de fechas
@@ -422,7 +488,7 @@ public class AddPayFragment extends Fragment implements View.OnClickListener, Vi
                 mVars.getCltListDB();
                 //-------------------------------------------------------
 
-                //Esto inicia las actividad Main despues de tiempo de espera del preloder
+                //Esto inicia las actividad Main
                 startActivity(new Intent(mContext, MainActivity.class));
                 //finish(); //Finaliza la actividad y ya no se accede mas
             }

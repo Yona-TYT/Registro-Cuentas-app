@@ -273,8 +273,8 @@ public class MainActivity extends AppCompatActivity {
             for(int i = 0; i < listCliente.size(); i++) {
                 Cliente arr = listCliente.get(i);
                 //------------------------------------------------------
-                // Se crea la lista para esportar a csv  ---------------
-                String[] txList= new String[6];
+                // Se crea la lista para exportar a csv  ---------------
+                String[] txList= new String[11];
 
                 txList[0]=arr.cliente;
                 txList[1]=arr.nombre;
@@ -282,6 +282,11 @@ public class MainActivity extends AppCompatActivity {
                 txList[3]=arr.total;
                 txList[4]=arr.porc.toString();
                 txList[5]=arr.fecha;
+                txList[6]=arr.estat.toString();
+                txList[7]=arr.pagado.toString();
+                txList[8]=arr.ulfech;
+                txList[9]=arr.oper.toString();
+                txList[10]=arr.debe;
 
                 totalList.add(txList);
                 //--------------------------------------------------------
@@ -421,7 +426,8 @@ public class MainActivity extends AppCompatActivity {
                                 else if(opt==2){
                                     String id = spl[1];
                                     Cliente obj = new Cliente(
-                                            spl[0], spl[1], spl[2], spl[3], Integer.parseInt(spl[4]), spl[5], 0
+                                            spl[0], spl[1], spl[2], spl[3], Integer.parseInt(spl[4]), spl[5], Integer.parseInt(spl[6]),
+                                            Integer.parseInt(spl[7]), spl[8], Integer.parseInt(spl[9]), spl[10]
                                     );
                                     StartVar.appDBcliente.daoUser().insetUser(obj);
                                 }
