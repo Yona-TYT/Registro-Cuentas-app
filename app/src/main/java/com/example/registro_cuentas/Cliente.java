@@ -14,16 +14,16 @@ public class Cliente {
     public String total;
     public Integer porc;
     public String fecha;
+    public Integer estat;
 
-
-    public Cliente(@NonNull String cliente, String nombre, String alias, String total, Integer porc, String fecha)
+    public Cliente(@NonNull String cliente, String nombre, String alias, String total, Integer porc, String fecha, Integer estat)
     {
-            this.cliente = cliente;
-            this.nombre = nombre;
-            this.alias = alias;
-            this.total = total;
-            this.porc = porc;
-            this.fecha = fecha;
-
+        this.cliente = cliente;
+        this.nombre = nombre;
+        this.alias = alias;
+        this.total = total;
+        this.porc = porc;
+        this.fecha = fecha;
+        this.estat = estat;
     }
 }

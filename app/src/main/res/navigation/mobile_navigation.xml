@@ -23,5 +23,11 @@
         android:label="@string/title_addacc"
         tools:layout="@layout/fragment_addacc" />
 
+    <fragment
+        android:id="@+id/navigation_clt"
+        android:name="com.example.registro_cuentas.ui.addclt.AddCltFragment"
+        android:label="@string/title_addacc"
+        tools:layout="@layout/fragment_addacc" />
+
 
 </navigation>

@@ -408,7 +408,7 @@ public class AddPayFragment extends Fragment implements View.OnClickListener, Vi
 
                if(newClt){
                    cltId = ""+listCliente.size();
-                   Cliente objClt = new Cliente("cltID"+cltId, mList.get(1), mList.get(2),"0", (swPorc?1:0), currdate.toString());
+                   Cliente objClt = new Cliente("cltID"+cltId, mList.get(1), mList.get(2),"0", (swPorc?1:0), currdate.toString(), 0);
                    appDBcliente.daoUser().insetUser(objClt);
                }
 

@@ -16,4 +16,9 @@
         android:icon="@android:drawable/ic_menu_add"
         android:title="@string/title_addacc" />
 
+    <item
+        android:id="@+id/navigation_clt"
+        android:icon="@android:drawable/ic_menu_add"
+        android:title="@string/title_addclt" />
+
 </menu>

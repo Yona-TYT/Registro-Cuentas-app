@@ -166,7 +166,7 @@ public class MainActivity extends AppCompatActivity {
         // Passing each menu ID as a set of Ids because each
         // menu should be considered as top level destinations.
         AppBarConfiguration appBarConfiguration = new AppBarConfiguration.Builder(
-                R.id.navigation_home, R.id.navigation_pay, R.id.navigation_acc)
+                R.id.navigation_home, R.id.navigation_pay, R.id.navigation_acc, R.id.navigation_clt)
                 .build();
         NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment_activity_main);
         NavigationUI.setupActionBarWithNavController(this, navController, appBarConfiguration);
@@ -257,7 +257,7 @@ public class MainActivity extends AppCompatActivity {
                     txList[8]=arr.time;
                     txList[9]=arr.cltid;
                     txList[10]=arr.accid;
-                    txList[11]=arr.estat.toString();
+                    txList[11]=arr.more4.toString();
                     txList[12]=arr.more5;
 
                     totalList.add(txList);
@@ -417,7 +417,7 @@ public class MainActivity extends AppCompatActivity {
                                 else if(opt==2){
                                     String id = spl[1];
                                     Cliente obj = new Cliente(
-                                            spl[0], spl[1], spl[2], spl[3], Integer.parseInt(spl[4]), spl[5]
+                                            spl[0], spl[1], spl[2], spl[3], Integer.parseInt(spl[4]), spl[5], 0
                                     );
                                     StartVar.appDBcliente.daoUser().insetUser(obj);
                                 }

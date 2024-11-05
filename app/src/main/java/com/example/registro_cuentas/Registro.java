@@ -19,26 +19,26 @@ public class Registro {
     public String time;
     public String cltid;
     public String accid;
-    public Integer estat;
+    public Integer more4;
     public String more5;
 
     public Registro(@NonNull String registro, String nombre, String concep, String monto, Integer oper,
                     Integer porc, String imagen, String fecha, String time, String cltid, String accid,
-                    Integer estat, String more5
+                    Integer more4, String more5
                     )
     {
-            this.registro = registro;
-            this.nombre = nombre;
-            this.concep = concep;
-            this.monto = monto;
-            this.oper = oper;
-            this.porc = porc;
-            this.imagen = imagen;
-            this.fecha = fecha;
-            this.time = time;
-            this.cltid = cltid;
-            this.accid = accid;
-            this.estat = estat;
-            this.more5 = more5;
+        this.registro = registro;
+        this.nombre = nombre;
+        this.concep = concep;
+        this.monto = monto;
+        this.oper = oper;
+        this.porc = porc;
+        this.imagen = imagen;
+        this.fecha = fecha;
+        this.time = time;
+        this.cltid = cltid;
+        this.accid = accid;
+        this.more4 = more4;
+        this.more5 = more5;
     }
 }
