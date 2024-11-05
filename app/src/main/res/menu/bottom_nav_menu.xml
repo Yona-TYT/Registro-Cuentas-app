@@ -9,7 +9,8 @@
     <item
         android:id="@+id/navigation_pay"
         android:icon="@android:drawable/ic_menu_add"
-        android:title="@string/title_addpay" />
+        android:title="@string/title_addpay"
+        />
 
     <item
         android:id="@+id/navigation_acc"
@@ -19,6 +20,7 @@
     <item
         android:id="@+id/navigation_clt"
         android:icon="@android:drawable/ic_menu_add"
-        android:title="@string/title_addclt" />
+        android:title="@string/title_addclt"
+        />
 
 </menu>
