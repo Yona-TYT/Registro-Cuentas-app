@@ -138,7 +138,6 @@ public class Basic {
 
             float result = numA*mult;
 
-            Basic.msg(""+result+" : "+numB);
             result -= numB;
             return result;
         }

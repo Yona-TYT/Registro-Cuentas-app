@@ -29,12 +29,14 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.example.registro_cuentas.AppDBclt;
+import com.example.registro_cuentas.AppDBdeb;
 import com.example.registro_cuentas.AppDBreg;
 import com.example.registro_cuentas.BaseContext;
 import com.example.registro_cuentas.Basic;
 import com.example.registro_cuentas.CalcCalendar;
 import com.example.registro_cuentas.Cliente;
 import com.example.registro_cuentas.CurrencyInput;
+import com.example.registro_cuentas.Deuda;
 import com.example.registro_cuentas.FilesManager;
 import com.example.registro_cuentas.MainActivity;
 import com.example.registro_cuentas.R;
@@ -59,6 +61,8 @@ public class AddPayFragment extends Fragment implements View.OnClickListener, Vi
 
     // DB
     private List<AppDBreg> appDBregistro = StartVar.appDBregistro;
+    private List<AppDBdeb> appDBdeuda = StartVar.appDBdeuda;
+
     private AppDBclt appDBcliente = StartVar.appDBcliente;
     private List<Cliente> listCliente = new ArrayList<>();
 
@@ -287,7 +291,6 @@ public class AddPayFragment extends Fragment implements View.OnClickListener, Vi
                     Basic.msg("No hay imagen seleccionada!");
                 }
             });
-
     @Override
     public void onClick(View view) {
         int itemId = view.getId();
@@ -392,7 +395,6 @@ public class AddPayFragment extends Fragment implements View.OnClickListener, Vi
                     setMessage(msgIdx);
                     return;
                 }
-
                 //Se guarda la foto en un nuevo directorio --------------------------------
                 Bitmap bitmap = null;
                 try {
@@ -411,12 +413,6 @@ public class AddPayFragment extends Fragment implements View.OnClickListener, Vi
                     sImage = "";
                 }
                 //-------------------------------------------------------------------
-                Registro obj = new Registro(
-                    mList.get(0), mList.get(1), mList.get(3), monto, currSel2, (swPorc?1:0),
-                        sImage, currdate.toString(), currtime.toString(), (newClt?"cltID"+listCliente.size():cltId), Integer.toString(currtAcc), 0, "0"
-                );
-                appDBregistro.get(currtAcc).daoUser().insetUser(obj);
-
                if(newClt){
                    cltId = ""+listCliente.size();
                    Cliente objClt = null;
@@ -425,17 +421,23 @@ public class AddPayFragment extends Fragment implements View.OnClickListener, Vi
                            (swPorc?1:0), currdate.toString(), 0,0, currdate.toString(), 0, "0"
                    );
                    appDBcliente.daoUser().insetUser(objClt);
+
+                   Deuda objDeb = new Deuda(
+                           "cltID"+cltId, Integer.toString(currtAcc), "0", 0, currdate.toString(),
+                           0, 0, currdate.toString(), 0,"0"
+                           );
+                   appDBdeuda.get(currtAcc).daoUser().insetUser(objDeb);
                }
                else {
-                   Cliente mclt = appDBcliente.daoUser().getUsers(cltId);
+                   Deuda mDeb = appDBdeuda.get(currtAcc).daoUser().getUsers(cltId);
                    int pagado = 0;
-                   String debe =  mclt.debe;
-                   String ulFech = mclt.ulfech;
-                   if(mclt.estat==1) {
+                   String debe =  mDeb.debe;
+                   String ulFech = mDeb.ulfech;
+                   if(mDeb.estat==1) {
                        int mult = CalcCalendar.getRangeMultiple(ulFech, 0);
                        float debt = Float.parseFloat(debe);;
                        float currMnt = Float.parseFloat(monto);
-                       float total = Float.parseFloat(mclt.total);
+                       float total = Float.parseFloat(mDeb.total);
                        currMnt += debt;
 
                        int i = 1;
@@ -456,7 +458,6 @@ public class AddPayFragment extends Fragment implements View.OnClickListener, Vi
                                break;
                            }
                        }
-
                        //Deuda fue saldada
                        if(i == mult){
                            debe =  "0";
@@ -470,13 +471,28 @@ public class AddPayFragment extends Fragment implements View.OnClickListener, Vi
                            ulFech = currdate.toString();
                        }
                        else {
-                           ulFech = CalcCalendar.getDatePlus(mclt.ulfech, i, 0);
-                       }
+                           ulFech = CalcCalendar.getDatePlus(mDeb.ulfech, i, 0);
+                           if(CalcCalendar.getRangeMultiple(ulFech, 0) < 0) {
+                               Basic.msg("El MONTO es mayor a la deuda!");
 
-                       Basic.msg(ulFech+" : "+  CalcCalendar.getRangeMultiple(ulFech, 0)+" : "+i );
+                               mInput4.setText(Basic.setMask(Float.toString(debt), mCurr));
+
+                               return;
+//                               debe =  Float.toString(currMnt);
+//                               pagado = 1;
+//                               ulFech = currdate.toString();
+                           }
+                       }
+                    //   Basic.msg(ulFech+" : "+  CalcCalendar.getRangeMultiple(ulFech, 0)+" : "+i );
                    }
-                   StartVar.appDBcliente.daoUser().updateDebt(cltId, pagado, ulFech, debe);
+                   StartVar.appDBdeuda.get(currtAcc).daoUser().updateDebt(cltId, pagado, ulFech, debe);
                }
+
+                Registro obj = new Registro(
+                        mList.get(0), mList.get(1), mList.get(3), monto, currSel2, (swPorc?1:0),
+                        sImage, currdate.toString(), currtime.toString(), (newClt?"cltID"+listCliente.size():cltId), Integer.toString(currtAcc), 0, "0"
+                );
+                appDBregistro.get(currtAcc).daoUser().insetUser(obj);
 
                //Actualisza la lista de fechas
                CalcCalendar.startCalList(mContext);
@@ -486,6 +502,7 @@ public class AddPayFragment extends Fragment implements View.OnClickListener, Vi
                 //Recarga La lista de la DB ----------------------------
                 mVars.getRegListDB();
                 mVars.getCltListDB();
+                mVars.getDebListDB();
                 //-------------------------------------------------------
 
                 //Esto inicia las actividad Main

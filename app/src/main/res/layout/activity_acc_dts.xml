@@ -44,7 +44,7 @@
         app:layout_constraintTop_toBottomOf="@+id/txv_adts1" />
 
     <TextView
-        android:id="@+id/txview_clt1"
+        android:id="@+id/txview_adts1"
         android:layout_width="@dimen/txview_w1"
         android:layout_height="@dimen/txview_h2"
         android:background="@color/text_background"
@@ -70,7 +70,7 @@
         app:layout_constraintEnd_toStartOf="@+id/guideline4"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="@+id/guideline3"
-        app:layout_constraintTop_toBottomOf="@+id/txview_clt1"
+        app:layout_constraintTop_toBottomOf="@+id/txview_adts1"
         tools:ignore="MissingConstraints" />
 
     <TextView

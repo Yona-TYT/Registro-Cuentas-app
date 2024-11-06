@@ -139,12 +139,16 @@ public class MainActivity extends AppCompatActivity {
             //Recarga La lista de la DB ----------------------------
             startVar.getAccListDB();
             //-------------------------------------------------------
-            //Actualiza la db para los registros
+            //Actualiza la db para los registros y Deuda
             startVar.setRegListDB();
+            startVar.setDebListDB();
             //--------------------------------
         }
         else {
+            //Actualiza la db para los registros y Deuda
             startVar.setRegListDB();
+            startVar.setDebListDB();
+            //--------------------------------
             int idx = 0;
             if(listCuenta.size() > 1) {
                 idx = appDBcuenta.daoUser().getSaveCurrentAcc(StartVar.saveDataName);
@@ -268,7 +272,35 @@ public class MainActivity extends AppCompatActivity {
                     //--------------------------------------------------------
                 }
             }
-            totalList.add(new String[]{"<2>"}); // Etiqueta de inicio Cliente
+
+            totalList.add(new String[]{"<2>"}); // Etiqueta de inicio Deuda
+            //Instancia de la base de datos
+            for (int i = 0; i < StartVar.appDBdeuda.size(); i++) {
+                List<Deuda> list = StartVar.appDBdeuda.get(i).daoUser().getUsers();
+                for (int j = 0; j < list.size(); j++) {
+                    Deuda arr = list.get(j);
+
+                    //------------------------------------------------------
+                    // Se crea la lista para esportar a csv  ---------------
+                    String[] txList= new String[10];
+
+                    txList[0]=arr.deuda;
+                    txList[1]=arr.accidx;
+                    txList[2]=arr.total;
+                    txList[3]=arr.porc.toString();
+                    txList[4]=arr.fecha;
+                    txList[5]=arr.estat.toString();
+                    txList[6]=arr.pagado.toString();
+                    txList[7]=arr.ulfech;
+                    txList[8]=arr.oper.toString();
+                    txList[9]=arr.debe;
+
+                    totalList.add(txList);
+                    //--------------------------------------------------------
+                }
+            }
+
+            totalList.add(new String[]{"<3>"}); // Etiqueta de inicio Cliente
             List<Cliente> listCliente = StartVar.listclt;
             for(int i = 0; i < listCliente.size(); i++) {
                 Cliente arr = listCliente.get(i);
@@ -292,7 +324,7 @@ public class MainActivity extends AppCompatActivity {
                 //--------------------------------------------------------
             }
 
-            totalList.add(new String[]{"<3>"}); // Etiqueta de inicio Fechas
+            totalList.add(new String[]{"<4>"}); // Etiqueta de inicio Fechas
             List<Fecha> listFecha = StartVar.listfec;
             for(int i = 0; i < listFecha.size(); i++) {
                 Fecha arr = listFecha.get(i);
@@ -359,7 +391,7 @@ public class MainActivity extends AppCompatActivity {
                         String line;
                         String version = "1";
                         int opt = 0;
-                        String[] t = {"<0>", "<1>", "<2>", "<3>"};
+                        String[] t = {"<0>", "<1>", "<2>", "<3>", "<4>"};
                         while ((line = reader.readLine()) != null) {
                             String[] spl = line.split(",");
                             //Log.d("PhotoPicker", " Aquiiiiiiiiii Hayyyyyy ------------------------: "+ line);
@@ -389,8 +421,14 @@ public class MainActivity extends AppCompatActivity {
                                 }
                                 else if(tx.equals(t[3])){
                                     t[3] = "";
-                                    StartVar.appDBfecha.daoUser().removerUser("0");
                                     opt = 3;
+                                    stringBuilder.append(line);
+                                    continue;
+                                }
+                                else if(tx.equals(t[4])){
+                                    t[4] = "";
+                                    StartVar.appDBfecha.daoUser().removerUser("0");
+                                    opt = 4;
                                     stringBuilder.append(line);
                                     continue;
                                 }
@@ -413,7 +451,7 @@ public class MainActivity extends AppCompatActivity {
                                 else if(opt==1){
                                     String idx = spl[10];
                                     String name = StartVar.listacc.get(Integer.parseInt(idx)).cuenta;
-                                    AppDBreg db = Room.databaseBuilder( this, AppDBreg.class, name).allowMainThreadQueries().build();
+                                    AppDBreg db = Room.databaseBuilder( this, AppDBreg.class, StartVar.saveRegName+name).allowMainThreadQueries().build();
 
                                     Registro obj = new Registro(
                                             spl[0], spl[1], spl[2], spl[3], Integer.parseInt(spl[4]), Integer.parseInt(spl[5]),
@@ -421,10 +459,22 @@ public class MainActivity extends AppCompatActivity {
                                     );
                                     db.daoUser().insetUser(obj);
                                     StartVar.appDBregistro.add(db);
-                                    //StartVar.listreg.add(db.daoUser().getUsers());
                                 }
+
                                 else if(opt==2){
-                                    String id = spl[1];
+                                    String idx = spl[1];
+                                    String name = StartVar.listacc.get(Integer.parseInt(idx)).cuenta;
+                                    AppDBdeb db = Room.databaseBuilder( this, AppDBdeb.class, StartVar.saveDebName+name).allowMainThreadQueries().build();
+
+                                    Deuda obj = new Deuda(
+                                            spl[0], spl[1], spl[2], Integer.parseInt(spl[3]), spl[4], Integer.parseInt(spl[5]),
+                                            Integer.parseInt(spl[6]), spl[7], Integer.parseInt(spl[8]), spl[9]
+                                    );
+                                    db.daoUser().insetUser(obj);
+                                    StartVar.appDBdeuda.add(db);
+                                }
+
+                                else if(opt==3){
                                     Cliente obj = new Cliente(
                                             spl[0], spl[1], spl[2], spl[3], Integer.parseInt(spl[4]), spl[5], Integer.parseInt(spl[6]),
                                             Integer.parseInt(spl[7]), spl[8], Integer.parseInt(spl[9]), spl[10]

@@ -3,8 +3,6 @@ package com.example.registro_cuentas.ui.addclt;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.net.Uri;
 import android.os.Bundle;
 
 import androidx.activity.OnBackPressedCallback;
@@ -14,7 +12,7 @@ import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
-import android.provider.MediaStore;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -26,6 +24,7 @@ import android.widget.Switch;
 import android.widget.TextView;
 
 import com.example.registro_cuentas.AppDBclt;
+import com.example.registro_cuentas.AppDBdeb;
 import com.example.registro_cuentas.AppDBreg;
 import com.example.registro_cuentas.BaseContext;
 import com.example.registro_cuentas.Basic;
@@ -33,7 +32,8 @@ import com.example.registro_cuentas.CalcCalendar;
 import com.example.registro_cuentas.Cliente;
 import com.example.registro_cuentas.CurrencyInput;
 import com.example.registro_cuentas.DaoClt;
-import com.example.registro_cuentas.DaoReg;
+import com.example.registro_cuentas.DaoDeb;
+import com.example.registro_cuentas.Deuda;
 import com.example.registro_cuentas.MainActivity;
 import com.example.registro_cuentas.R;
 import com.example.registro_cuentas.SelecAdapter;
@@ -43,9 +43,7 @@ import com.example.registro_cuentas.databinding.FragmentAddcltBinding;
 import com.example.registro_cuentas.ui.addpay.AddPayViewModel;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
-import java.io.IOException;
 import java.time.LocalDate;
-import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -60,8 +58,10 @@ public class AddCltFragment extends Fragment  implements View.OnClickListener, A
     // DB
     private List<AppDBreg> appDBregistro = StartVar.appDBregistro;
     private AppDBclt appDBcliente = StartVar.appDBcliente;
+    private List<AppDBdeb> appDBdeuda = StartVar.appDBdeuda;
     private List<Cliente> listCliente = new ArrayList<>();
-    private Cliente mclt = null;
+    private Cliente mClt = null;
+    private Deuda mDeb = null;
 
     private ConstraintLayout mConstrain;
     private BottomNavigationView mNavBar = StartVar.mNavBar;
@@ -70,9 +70,6 @@ public class AddCltFragment extends Fragment  implements View.OnClickListener, A
     private TextView mText2;
     private List<String> mListFech = Arrays.asList("Dias", "Meses", "Años");
     private int accType = 0;
-
-
-
 
     //Todos los Inputs
     private EditText mInput1;
@@ -186,8 +183,8 @@ public class AddCltFragment extends Fragment  implements View.OnClickListener, A
         if(!mCltList.isEmpty()) {
             mSpin1.setSelection(currSel1); //Set default client
             if (currSel1 > 0) {
-                mclt = listCliente.get(currSel1 - 1);
-                swEstat = mclt.estat==1;
+                mClt = listCliente.get(currSel1 - 1);
+                swEstat = mClt.estat==1;
                 mSw.setChecked(swEstat);
             }
             else {
@@ -200,19 +197,45 @@ public class AddCltFragment extends Fragment  implements View.OnClickListener, A
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
                 currSel1 = i;
                 if (i > 0) {
-                    mclt = listCliente.get(i-1);
+                    mClt = listCliente.get(i-1);
+                    mDeb = appDBdeuda.get(currtAcc).daoUser().getUsers(mClt.cliente);
+                    //Log.d("PhotoPicker", "-->>>>>>>>>>>>>>>>>>>>>>>>>>>> year: "+mDeb );
+                    if (mDeb == null){
+                        //Inicia la fecha actual
+                        String currdate = "";
+                        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+                            currdate = LocalDate.now().toString();
+                        }
+                        //Datos de deudas y monto fijo
+                        Deuda objDeb = new Deuda(
+                                mClt.cliente, Integer.toString(currtAcc), "0", 0, currdate,
+                                0, 0, currdate, 0,"0"
+                        );
+                        appDBdeuda.get(currtAcc).daoUser().insetUser(objDeb);
+
+                        //Actualisza la lista de fechas
+                        CalcCalendar.startCalList(mContext);
+
+                        StartVar mVars = new StartVar(mContext);
+                        //Recarga La lista de la DB ----------------------------
+                        mVars.getCltListDB();
+                        //-------------------------------------------------------
+                        appDBdeuda = StartVar.appDBdeuda;
+                        mDeb = appDBdeuda.get(currtAcc).daoUser().getUsers(mClt.cliente);
+                    }
+
                     String curr = mCurrencyList.get(StartVar.mCurrency);
 
-                    int mult = CalcCalendar.getRangeMultiple(mclt.ulfech,0);
-                    float monto = Basic.getDebt(mult, mclt.total, mclt.debe);
-                    String tx = mclt.pagado == 0 ? monto +" "+curr+" ("+mult+" "+mListFech.get(accType)+")":"Pagado";
+                    int mult = CalcCalendar.getRangeMultiple(mDeb.ulfech,0);
+                    float monto = Basic.getDebt(mult, mDeb.total, mDeb.debe);
+                    String tx = mDeb.pagado == 0 ? monto +" "+curr+" ("+mult+" "+mListFech.get(accType)+")":"Pagado";
                     mText1.setText("Deuda: "+tx);
-                    mText2.setText(mclt.ulfech +" (Ultima Fecha Pagada)" );
-                    mInput1.setText(mclt.nombre.toUpperCase());
-                    mInput2.setText(mclt.alias.toUpperCase());
-                    mInput4.setText(Basic.setMask(mclt.total, curr));
+                    mText2.setText(mDeb.ulfech +" (Ultima Fecha Pagada)" );
+                    mInput1.setText(mClt.nombre.toUpperCase());
+                    mInput2.setText(mClt.alias.toUpperCase());
+                    mInput4.setText(Basic.setMask(mDeb.total, curr));
 
-                    swEstat = mclt.estat==1;
+                    swEstat = mDeb.estat==1;
                     if(swEstat) {
                         mInput4.setEnabled(true);
                         mSw.setChecked(true);
@@ -299,24 +322,38 @@ public class AddCltFragment extends Fragment  implements View.OnClickListener, A
             }
 
             if (currSel1 == 0){
-                String cltId = ""+listCliente.size();
+                String cltId = "cltID"+listCliente.size();
                 Cliente objClt = null;
                 //Inicia la fecha actual
                 String currdate = "";
                 if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
                     currdate = LocalDate.now().toString();
                 }
+                //Datod basicos del cliente
                 objClt = new Cliente(
-                        "cltID"+cltId, nombre, alias, monto, 0,
+                        cltId, nombre, alias, monto, 0,
                         currdate, (swEstat?1:0),0, currdate, currSel2, "0"
                 );
                 appDBcliente.daoUser().insetUser(objClt);
+
+                //Datos de deudas y monto fijo
+                Deuda objDeb = new Deuda(
+                        cltId, Integer.toString(currtAcc), "0", 0, currdate,
+                        0, 0, currdate, 0,"0"
+                );
+                appDBdeuda.get(currtAcc).daoUser().insetUser(objDeb);
             }
             else {
-                DaoClt mDao = StartVar.appDBcliente.daoUser();
-                mDao.updateUser(
-                        mclt.cliente, nombre, alias, monto, 0,
-                        mclt.fecha, (swEstat ? 1 : 0), mclt.pagado, mclt.ulfech, currSel2, "0"
+                DaoClt mDaoClt = StartVar.appDBcliente.daoUser();
+                mDaoClt.updateUser(
+                        mClt.cliente, nombre, alias, monto, 0,
+                        mClt.fecha, (swEstat ? 1 : 0), mClt.pagado, mClt.ulfech, currSel2, "0"
+                );
+
+                DaoDeb mDaoDeb = StartVar.appDBdeuda.get(currtAcc).daoUser();
+                mDaoDeb.updateUser(
+                        mClt.cliente, mDeb.accidx, monto, 0, mDeb.fecha, (swEstat ? 1 : 0),
+                        mDeb.pagado, mDeb.ulfech, currSel2, "0"
                 );
             }
 
