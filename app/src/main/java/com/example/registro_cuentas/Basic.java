@@ -124,6 +124,8 @@ public class Basic {
     }
     public static Float floatFormat(String value) {
         String mValue = value.replaceAll("([^.;^0-9]+)", "");
+        mValue = mValue.replaceAll("^.$", "0.00");
+
         return mValue.isEmpty() ? (float)0 : Float.parseFloat(mValue);
     }
 
@@ -146,6 +148,8 @@ public class Basic {
 
     public static String setMask(String value, String sing) {
         value = value.replaceAll("([^.;^0-9]+)", "");
+        value = value.replaceAll("^.$", "0.");
+
         return value + " " + sing;
     }
 
@@ -182,4 +186,8 @@ public class Basic {
         mToast.setView(cardView);
         mToast.show();
     }
+    public static void checkClt(){
+
+    }
+
 }

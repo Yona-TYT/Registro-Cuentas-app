@@ -106,15 +106,16 @@ public class CalcCalendar {
                 //Inicia la fecha actual
                 LocalDate currdate = LocalDate.now();
                 //Para Dias
-                if (selec == 0) {
+                if (selec == 1) {
                     num = ChronoUnit.DAYS.between(date, currdate);
                 }
                 //Para meses
-                else if (selec == 1) {
-                    num = ChronoUnit.MONTHS.between(date, currdate);
+                else if (selec == 2) {
+                    LocalDate mDate = LocalDate.of(date.getYear(), date.getMonth(), 1);
+                    num = ChronoUnit.MONTHS.between(mDate, currdate);
                 }
                 //Para años
-                else if (selec == 2) {
+                else if (selec == 3) {
                     num = ChronoUnit.YEARS.between(date, currdate);
                 }
             }
@@ -130,16 +131,38 @@ public class CalcCalendar {
                 //Convierte Sting  a forrmato de fecha
                 LocalDate date = LocalDate.parse(txDate);
                 //Para Dias
-                if (selec == 0) {
+                if (selec == 1) {
                     newDate = date.plusDays(sum).toString();
                 }
                 //Para meses
-                else if (selec == 1) {
+                else if (selec == 2) {
                     newDate = date.plusMonths(sum).toString();
                 }
                 //Para años
-                else if (selec == 2) {
+                else if (selec == 3) {
                     newDate = date.plusYears(sum).toString();
+                }
+            }
+        }
+        return newDate;
+    }
+    public static String getDateMinus(String txDate, int minus, int selec) {
+        String newDate = "";
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+            if (!txDate.isEmpty()) {
+                //Convierte Sting  a forrmato de fecha
+                LocalDate date = LocalDate.parse(txDate);
+                //Para Dias
+                if (selec == 1) {
+                    newDate = date.minusDays(minus).toString();
+                }
+                //Para meses
+                else if (selec == 2) {
+                    newDate = date.minusMonths(minus).toString();
+                }
+                //Para años
+                else if (selec == 3) {
+                    newDate = date.minusYears(minus).toString();
                 }
             }
         }

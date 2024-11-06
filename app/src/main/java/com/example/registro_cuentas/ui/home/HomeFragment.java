@@ -67,12 +67,15 @@ public class HomeFragment extends Fragment implements View.OnClickListener, Adap
     private Spinner mSpin1;
     private Spinner mSpin2;
     private Spinner mSpin3;
+    private Spinner mSpin4;
 
     private int currSel1 = StartVar.mCurrency;
     private int currSel2 = StartVar.mCurrentAcc;
     private int currSel3 = StartVar.mCurreMes;
+    private int currSel4 = 0;
 
     private List<String> mSpinL1= Arrays.asList("Dolar", "Bolivar");
+    private List<String> mSpinL4= Arrays.asList("Pagos", "Clientes");
     private List<String> mCurrencyList= Arrays.asList("$", "Bs");
     //---------------------------------------------------------------------
 
@@ -110,6 +113,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener, Adap
         mSpin1 = binding.spinHome1;
         mSpin2 = binding.spinHome2;
         mSpin3 = binding.spinHome3;
+        mSpin4 = binding.spinHome4;
 
         mInput1 = binding.inputHome1;
         mButt1 = binding.buttHome1;
@@ -194,12 +198,14 @@ public class HomeFragment extends Fragment implements View.OnClickListener, Adap
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
                 currSel2 = i;
                 // Actualiza y guarda el estado del selector de cuentas-----------------------------
+                StartVar mVars = new StartVar(mContext);
                 int idx = i+1;
                 if(idx < listCuenta.size()) {
                     appDBcuenta.daoUser().updateCurrentAcc(StartVar.saveDataName, idx);
+                    mVars.setCurrentTyp(appDBcuenta.daoUser().getUsers().get(idx).acctipo);
                 }
-                StartVar mVars = new StartVar(mContext);
                 mVars.setCurrentAcc(i);
+
                 //----------------------------------------------------------------------------------
 
                 //Recarga la lista de pagos en funcion de la cuenta seleccionada--------------------
@@ -247,6 +253,21 @@ public class HomeFragment extends Fragment implements View.OnClickListener, Adap
         });
         //--------------------------------------------------------------------------------------------
 
+        //Para la lista del selector Tipo Moneda ----------------------------------------------------------------------------------------------
+        SelecAdapter adapt4 = new SelecAdapter(mContext, mSpinL4);
+        mSpin4.setAdapter(adapt4);
+        mSpin4.setSelection(currSel4); //Set La Moneda como default
+        mSpin4.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                currSel4 = i;
+            }
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+
+            }
+        });
+        //--------------------------------------------------------------------------------------------
 
         // Genera la lista de registros ---------------------------------------------------------
         setRegList();

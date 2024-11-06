@@ -50,6 +50,7 @@ public class AccDtailsActivity extends AppCompatActivity implements View.OnClick
     private TextView mText2;
     private TextView mText3;
     private TextView mText4;
+    private TextView mText5;
     private List<TextView> mTextList = new ArrayList<>();
     //---------------------------------------------------------------------
 
@@ -75,6 +76,9 @@ public class AccDtailsActivity extends AppCompatActivity implements View.OnClick
 
     private List<String> mCurrencyList= Arrays.asList("$", "Bs");
     private int mCindex = StartVar.mCurrency;
+
+    private List<String> accTypeL = Arrays.asList("Sin Cierre", "Cierre Por Dia", "Cierre Por Mes", "Cierre Por Año");
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -110,10 +114,11 @@ public class AccDtailsActivity extends AppCompatActivity implements View.OnClick
         //------------------------------------------------------------------------------------------
 
         mSpin1 = findViewById(R.id.spin_adts1);
-        mText1 = findViewById(R.id.txview_clt1);
+        mText1 = findViewById(R.id.txview_adts1);
         mText2 = findViewById(R.id.txview_adts2);
         mText3 = findViewById(R.id.txview_adts3);
         mText4 = findViewById(R.id.txview_adts4);
+        mText5 = findViewById(R.id.txview_adts5);
 
         mBtton1 = findViewById(R.id.butt_adts1);
         mBtton2  = findViewById(R.id.butt_adts2);
@@ -127,6 +132,7 @@ public class AccDtailsActivity extends AppCompatActivity implements View.OnClick
         mTextList.add(mText2);
         mTextList.add(mText3);
         mTextList.add(mText4);
+        mTextList.add(mText5);
 
         // Se llenan los textView
         setInputList();
@@ -239,6 +245,8 @@ public class AccDtailsActivity extends AppCompatActivity implements View.OnClick
             mTextList.get(i).setText("Total Credito: "+ totalCred);
             i++;
             mTextList.get(i).setText("Total Debito: " + (totalDeb!=0?"-":"") + totalDeb);
+            i++;
+            mTextList.get(i).setText("Tipo : (" + accTypeL.get(mCuenta.acctipo)+")");
 
         }
     }

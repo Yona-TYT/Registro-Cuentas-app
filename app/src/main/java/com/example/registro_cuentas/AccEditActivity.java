@@ -4,8 +4,10 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Spinner;
 
 import androidx.activity.EdgeToEdge;
 import androidx.activity.OnBackPressedCallback;
@@ -38,6 +40,12 @@ public class AccEditActivity extends AppCompatActivity implements View.OnClickLi
     private EditText mInput2;
     private EditText mInput3;
     private List<EditText> mInputList = new ArrayList<>();
+
+    //Todos los Spinner
+    private Spinner mSpin1;
+    private int currSel1 = 0;
+    private List<String> mSpinL1 = Arrays.asList("Sin Cierre", "Cierre Dia", "Cierre Mes", "Cierre Año");
+    //---------------------------------------------------------------------
 
     private ConstraintLayout mConstrain;
     private BottomNavigationView mNavBar = StartVar.mNavBar;
@@ -84,6 +92,8 @@ public class AccEditActivity extends AppCompatActivity implements View.OnClickLi
         mInput2 = findViewById(R.id.input_accedit2);
         mInput3 = findViewById(R.id.input_accedit3);
 
+        mSpin1 = findViewById(R.id.spin_accedit1);
+
         mButt1 = findViewById(R.id.butt_accedit1);
 
         mAcc = appDBcuenta.daoUser().getUsers().get(StartVar.mCurrentAcc+1);
@@ -102,6 +112,24 @@ public class AccEditActivity extends AppCompatActivity implements View.OnClickLi
         CurrencyInput mCInput = new CurrencyInput( this, mInput3,  mViewL1, curr, mOpt);
         mCInput.set();
         //----------------------------------------------------------------------------------------------------
+
+        //--------------------------------------------------------------------------------------------
+        //Para la lista del selector Tipo De Cuenta ----------------------------------------------------------------------------------------------
+        SelecAdapter adapt2 = new SelecAdapter(this, mSpinL1);
+        mSpin1.setAdapter(adapt2);
+        mSpin1.setSelection(mAcc.acctipo); //Set default ingreso
+
+        mSpin1.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                currSel1 = i;
+            }
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+
+            }
+        });
+        //--------------------------------------------------------------------------------------------
 
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
@@ -146,11 +174,12 @@ public class AccEditActivity extends AppCompatActivity implements View.OnClickLi
             }
 
             DaoAcc mDao = StartVar.appDBcuenta.daoUser();
-            mDao.updateAccount(mAcc.cuenta, nombre, desc, monto);
+            mDao.updateAccount(mAcc.cuenta, nombre, desc, monto, currSel1);
 
             //Recarga La lista de la DB ----------------------------
             StartVar mVars = new StartVar(BaseContext.getContext());
             mVars.getRegListDB();
+            mVars.setCurrentTyp(currSel1);
             //-------------------------------------------------------
 
             //Esto inicia las actividad Main despues de tiempo de espera del preloder

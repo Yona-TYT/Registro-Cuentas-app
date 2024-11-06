@@ -104,6 +104,21 @@
         tools:ignore="MissingConstraints" />
 
 
+    <TextView
+        android:id="@+id/txview_adts5"
+        android:layout_width="@dimen/txview_w1"
+        android:layout_height="@dimen/txview_h2"
+        android:background="@color/text_background"
+        android:padding="@dimen/txview_pad2"
+        android:text="Vacio"
+        android:textSize="@dimen/inner_text_2"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toStartOf="@+id/guideline4"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="@+id/guideline3"
+        app:layout_constraintTop_toBottomOf="@+id/txview_adts4"
+        tools:ignore="MissingConstraints" />
+
     <Switch
         android:id="@+id/sw_adts1"
         android:layout_width="@dimen/sw_ws"
@@ -116,7 +131,7 @@
         app:layout_constraintEnd_toStartOf="@+id/guideline4"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="@+id/guideline3"
-        app:layout_constraintTop_toBottomOf="@+id/txview_adts4"
+        app:layout_constraintTop_toBottomOf="@+id/txview_adts5"
         app:layout_constraintVertical_bias="0.0"
         tools:ignore="UseSwitchCompatOrMaterialXml" />
 

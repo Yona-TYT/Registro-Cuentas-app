@@ -105,7 +105,6 @@ public class MainActivity extends AppCompatActivity {
             }
         }
         //-------------------------------------------------------
-
         startVar.setAccListDB();
         startVar.setCltListDB();
         startVar.setFecListDB();
@@ -151,7 +150,9 @@ public class MainActivity extends AppCompatActivity {
             //--------------------------------
             int idx = 0;
             if(listCuenta.size() > 1) {
-                idx = appDBcuenta.daoUser().getSaveCurrentAcc(StartVar.saveDataName);
+                DaoAcc mDao = appDBcuenta.daoUser();
+                idx = mDao.getSaveCurrentAcc(StartVar.saveDataName);
+                startVar.setCurrentTyp(mDao.getUsers().get(idx).acctipo);
                 startVar.setCurrentAcc(idx);
 
                 idx = appDBcuenta.daoUser().getSaveCurrency(StartVar.saveDataName);

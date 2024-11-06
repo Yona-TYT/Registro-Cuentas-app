@@ -12,7 +12,6 @@ import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -68,14 +67,12 @@ public class AddCltFragment extends Fragment  implements View.OnClickListener, A
 
     private TextView mText1;
     private TextView mText2;
-    private List<String> mListFech = Arrays.asList("Dias", "Meses", "Años");
-    private int accType = 0;
+    private List<String> mListFech = Arrays.asList( "","Dias", "Meses", "Años");
 
     //Todos los Inputs
     private EditText mInput1;
     private EditText mInput2;
     private EditText mInput3;
-    private EditText mInput4;
     private List<EditText> mInputList = new ArrayList<>();
 
     //Botones
@@ -99,6 +96,7 @@ public class AddCltFragment extends Fragment  implements View.OnClickListener, A
     private boolean mPermiss = false;
     // Index de cuenta actual
     private int currtAcc = StartVar.mCurrentAcc;
+    private int currtTyp = StartVar.mCurrentTyp;
 
     private Basic mBasic = new Basic(BaseContext.getContext());
 
@@ -134,14 +132,12 @@ public class AddCltFragment extends Fragment  implements View.OnClickListener, A
 
         mInput1 = binding.inputClt1;
         mInput2 = binding.inputClt2;
-        mInput3 = binding.inputClt3;
-        mInput4 = binding.inputClt4;
+        mInput3 = binding.inputClt4;
 
         mButt1 = binding.buttClt1;
 
         mInput1.setOnFocusChangeListener(this);
         mInput2.setOnFocusChangeListener(this);
-        mInput3.setOnFocusChangeListener(this);
         mConstrain.setOnClickListener(this);
         mButt1.setOnClickListener(this);
         mSw.setOnClickListener(this);
@@ -153,16 +149,15 @@ public class AddCltFragment extends Fragment  implements View.OnClickListener, A
         mInputList.add(mInput1);
         mInputList.add(mInput2);
         mInputList.add(mInput3);
-        mInputList.add(mInput4);
 
         //Efecto moneda
         //-------------------------------------------------------------------------------------------------------
-        String curr = mCurrencyList.get(StartVar.mCurrency);
-        mInput4.setEnabled(false);
+        String mCurr = mCurrencyList.get(StartVar.mCurrency);
+        mInput3.setEnabled(false);
         List<View> mViewL1 = new ArrayList<>();
         mViewL1.add(mNavBar);
         int mOpt = 0;
-        CurrencyInput mCInput = new CurrencyInput( mContext, mInput4,  mViewL1, curr, mOpt);
+        CurrencyInput mCInput = new CurrencyInput( mContext, mInput3,  mViewL1, mCurr, mOpt);
         mCInput.set();
         //----------------------------------------------------------------------------------------------------
 
@@ -188,7 +183,7 @@ public class AddCltFragment extends Fragment  implements View.OnClickListener, A
                 mSw.setChecked(swEstat);
             }
             else {
-                mInput4.setText(Basic.setMask("0", curr));
+                mInput3.setText(Basic.setMask("0", mCurr));
             }
         }
         mSpin1.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
@@ -222,26 +217,33 @@ public class AddCltFragment extends Fragment  implements View.OnClickListener, A
                         //-------------------------------------------------------
                         appDBdeuda = StartVar.appDBdeuda;
                         mDeb = appDBdeuda.get(currtAcc).daoUser().getUsers(mClt.cliente);
+
+                        mVars.setDebListDB();
+                        mVars.getDebListDB();
                     }
 
-                    String curr = mCurrencyList.get(StartVar.mCurrency);
+                    if (currtTyp>0) {
+                        int mult = CalcCalendar.getRangeMultiple(mDeb.ulfech, currtTyp);
+                        float monto = Basic.getDebt(mult, mDeb.total, mDeb.debe);
+                        String tx = mDeb.pagado == 1 ? monto + " " + mCurr + " (" + mult + " " + mListFech.get(currtTyp) + ")" : "Pagado";
+                        mText1.setText("Deuda: " + tx);
+                        mText2.setText(mDeb.pagado == 0? "No hay Pagos Registrados" : mDeb.ulfech + " (Ultima Fecha Pagada)");
+                    }
+                    else {
+                        mText1.setText("Deuda: Cuenta Sin Cierre");
 
-                    int mult = CalcCalendar.getRangeMultiple(mDeb.ulfech,0);
-                    float monto = Basic.getDebt(mult, mDeb.total, mDeb.debe);
-                    String tx = mDeb.pagado == 0 ? monto +" "+curr+" ("+mult+" "+mListFech.get(accType)+")":"Pagado";
-                    mText1.setText("Deuda: "+tx);
-                    mText2.setText(mDeb.ulfech +" (Ultima Fecha Pagada)" );
+                    }
                     mInput1.setText(mClt.nombre.toUpperCase());
                     mInput2.setText(mClt.alias.toUpperCase());
-                    mInput4.setText(Basic.setMask(mDeb.total, curr));
+                    mInput3.setText(Basic.setMask(mDeb.total, mCurr));
 
                     swEstat = mDeb.estat==1;
                     if(swEstat) {
-                        mInput4.setEnabled(true);
+                        mInput3.setEnabled(true);
                         mSw.setChecked(true);
                     }
                     else {
-                        mInput4.setEnabled(false);
+                        mInput3.setEnabled(false);
                         mSw.setChecked(false);
                         mText1.setText("Deuda: NA");
                     }
@@ -290,13 +292,13 @@ public class AddCltFragment extends Fragment  implements View.OnClickListener, A
         if (itemId == R.id.sw_clt1){
             swEstat = !swEstat;
             if(swEstat){
-                mInput4.setEnabled(true);
+                mInput3.setEnabled(true);
                 mSpin2.setEnabled(true);
             }
             else{
-                mInput4.setText(Basic.setMask("0", mCurrencyList.get(StartVar.mCurrency)));
+                mInput3.setText(Basic.setMask("0", mCurrencyList.get(StartVar.mCurrency)));
                 mSpin2.setSelection(0);
-                mInput4.setEnabled(false);
+                mInput3.setEnabled(false);
                 mSpin2.setEnabled(false);
             }
         }
@@ -312,7 +314,7 @@ public class AddCltFragment extends Fragment  implements View.OnClickListener, A
             String alias = mInput2.getText().toString().toLowerCase();
             alias = Basic.inputProcessor(alias); //Elimina caracteres que afectan a los csv
 
-            String monto = Basic.setValue(mInput4.getText().toString());
+            String monto = Basic.setValue(mInput3.getText().toString());
             if(swEstat) {
                 if (monto.isEmpty() || Float.parseFloat(monto) <= 0.0) {
                     //MSG Para entrada de monto
@@ -338,8 +340,8 @@ public class AddCltFragment extends Fragment  implements View.OnClickListener, A
 
                 //Datos de deudas y monto fijo
                 Deuda objDeb = new Deuda(
-                        cltId, Integer.toString(currtAcc), "0", 0, currdate,
-                        0, 0, currdate, 0,"0"
+                        cltId, Integer.toString(currtAcc), monto, 0, currdate,
+                        (swEstat?1:0), 0, CalcCalendar.getDateMinus(currdate,1, currtTyp), 0,"0"
                 );
                 appDBdeuda.get(currtAcc).daoUser().insetUser(objDeb);
             }
@@ -350,6 +352,10 @@ public class AddCltFragment extends Fragment  implements View.OnClickListener, A
                         mClt.fecha, (swEstat ? 1 : 0), mClt.pagado, mClt.ulfech, currSel2, "0"
                 );
 
+                if(StartVar.appDBdeuda.isEmpty()) {
+                    Basic.msg("??");
+                    return;
+                }
                 DaoDeb mDaoDeb = StartVar.appDBdeuda.get(currtAcc).daoUser();
                 mDaoDeb.updateUser(
                         mClt.cliente, mDeb.accidx, monto, 0, mDeb.fecha, (swEstat ? 1 : 0),

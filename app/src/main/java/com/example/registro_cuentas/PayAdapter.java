@@ -90,11 +90,11 @@ public class PayAdapter extends BaseAdapter implements Filterable, View.OnClickL
         String txMont = (opt==0?"+ ":"- ")+Basic.getValue((String)textList.get(idx)[2]) + " "+ mCurrencyList.get(mCindex);
         String txFech = (String)textList.get(idx)[3];
         text1.setText( " "+txMont  +" " +txName  );
-        text1 = setTextView(text1);
+        text1 = setTextView(text1, R.dimen.txview_wm2, R.dimen.button_h1);
         layout.addView(text1);
 
         text2.setText( txFech  );
-        text2 = setTextView(text2);
+        text2 = setTextView(text2, R.dimen.txview_ws, R.dimen.button_h1);
         layout.addView(text2);
         //-----------------------------------------------------------------------
 
@@ -105,10 +105,10 @@ public class PayAdapter extends BaseAdapter implements Filterable, View.OnClickL
         return layout;
     }
 
-    public TextView setTextView(TextView view){
+    public TextView setTextView(TextView view, int w, int h){
         view.setTypeface(Typeface.DEFAULT_BOLD);
         view.setTextColor(ContextCompat.getColor(view.getContext(), R.color.text_color1));
-        LinearLayout.LayoutParams textParams = new LinearLayout.LayoutParams(mBasic.getPixelSiz(R.dimen.txview_ws), mBasic.getPixelSiz(R.dimen.button_h1));
+        LinearLayout.LayoutParams textParams = new LinearLayout.LayoutParams(mBasic.getPixelSiz(w), mBasic.getPixelSiz(h));
         textParams.gravity = Gravity.CENTER;
         view.setLayoutParams(textParams);
         view.setTextSize(mBasic.getFloatSiz(R.dimen.inner_text_2));

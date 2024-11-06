@@ -67,7 +67,7 @@
         android:layout_marginTop="50dp"
         android:hint="Nombre Cliente"
         android:inputType="textCapWords"
-        android:maxLength="20"
+        android:maxLength="10"
         android:padding="10dp"
         android:textSize="@dimen/inner_text_2"
         app:layout_constraintBottom_toBottomOf="parent"

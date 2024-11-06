@@ -56,12 +56,20 @@ public class CurrencyInput implements View.OnClickListener, View.OnFocusChangeLi
             public void beforeTextChanged(CharSequence s, int i, int i1, int i2) {}
             @Override
             public void onTextChanged(CharSequence s, int i, int i1, int i2) {
-                int siz = s.length();
-                if (s.toString().endsWith(" "+sing)) {
-                    int opt = 2; //mInput.setSelection( (siz - 3),0);
-                    setInputSelec(siz, opt);                }
-                if(i2 >= (siz-(sing.length()+1))){
-                    mInput.setCursorVisible(false);
+                if (s != null && s.length() > 2) {
+                    int siz = s.length();
+                    if (s.toString().startsWith(".")) {
+                        StringBuilder sb = new StringBuilder(s);
+                        sb.insert(0, "0");
+                        mInput.setText(sb.toString());
+                    }
+                    if (s.toString().endsWith(" " + sing)) {
+                        int opt = 2; //mInput.setSelection( (siz - 3),0);
+                        setInputSelec(siz, opt);
+                    }
+    //                if(i2 >= (siz-(sing.length()+1))){
+    //                    mInput.setCursorVisible(false);
+    //                }
                 }
             }
             @SuppressLint("SetTextI18n")
@@ -96,7 +104,7 @@ public class CurrencyInput implements View.OnClickListener, View.OnFocusChangeLi
             if (!value.endsWith(" "+sing)) {
                 mInput.setText(Basic.setMask(value, sing));
             }
-            mInput.setCursorVisible(false);
+//            mInput.setCursorVisible(false);
 
             for (View mView : mViewList) {
                 mView.setVisibility(View.INVISIBLE);
@@ -159,7 +167,7 @@ public class CurrencyInput implements View.OnClickListener, View.OnFocusChangeLi
                 mInput.setSelection(0);
             }
             else {
-                mInput.setCursorVisible(false);
+//                mInput.setCursorVisible(false);
                 //int opt = 2; //mInput.setSelection( (siz - 3),0);
                 setInputSelec(siz, opt);
             }
@@ -186,7 +194,7 @@ public class CurrencyInput implements View.OnClickListener, View.OnFocusChangeLi
             if(start != end){
                 mInput.clearFocus();
                 mInput.requestFocus();
-                mInput.setCursorVisible(false);
+//                mInput.setCursorVisible(false);
             }
             //Toast.makeText(mContext, "Aqui hayyyyyyyy  " + Basic.isDow+ "  " + isTouch, Toast.LENGTH_LONG).show();
 

@@ -10,6 +10,7 @@
     <dimen name="input_h1">45dp</dimen>
     <dimen name="txview_w1">340dp</dimen>
     <dimen name="txview_wm">150dp</dimen>
+    <dimen name="txview_wm2">165dp</dimen>
     <dimen name="txview_ws">120dp</dimen>
     <dimen name="txview_h1">22dp</dimen>
     <dimen name="txview_h2">40dp</dimen>

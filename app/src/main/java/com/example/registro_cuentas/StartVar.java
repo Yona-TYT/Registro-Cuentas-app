@@ -33,6 +33,7 @@ public class StartVar {
     // Var redundants
     public static boolean mPermiss = false;     //Permisos de gestion multimedia
     public static int mCurrentAcc = 0;      // Cuenta seleccionada
+    public static int mCurrentTyp = 0;      // Cuenta seleccionada
     public static int mCurrency = 0;        //Moneda seleccionada
     public static int mCurreMes = 0;        //Mes seleccionado
 
@@ -165,6 +166,9 @@ public class StartVar {
     }
     public void setCurrentAcc(int idx){
         mCurrentAcc = idx;
+    }
+    public void setCurrentTyp(int idx){
+        mCurrentTyp = idx;
     }
     public void setCurrency(int idx){
         mCurrency = idx;
