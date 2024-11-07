@@ -23,7 +23,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class PayAdapter extends BaseAdapter implements Filterable, View.OnClickListener{
+public class CltAdapter extends BaseAdapter implements Filterable, View.OnClickListener{
     //Test------------------------------------------------------------
     private Context mContex;
     private CalcCalendar cale = new CalcCalendar();
@@ -33,15 +33,18 @@ public class PayAdapter extends BaseAdapter implements Filterable, View.OnClickL
     private List<Object[]> currList = new ArrayList<>(); // Original Values
     private List<String> mCurrencyList= Arrays.asList("$", "Bs");
     private int mCindex = StartVar.mCurrency;
+    private String mCurr = "";
 
     private ArrayList<Integer> newList = new ArrayList<>();    // Values to be displayed
 
-    public  PayAdapter(Context mContex, List<Object[]> textList){
+    public  CltAdapter(Context mContex, List<Object[]> textList){
         this.mContex = mContex;
         this.textList = textList;
         this.currList = textList;
 
         mBasic = new Basic(mContex);
+
+        mCurr = mCurrencyList.get(mCindex);
     }
 
     @Override
@@ -72,7 +75,7 @@ public class PayAdapter extends BaseAdapter implements Filterable, View.OnClickL
         int idx = newList.get(pos);
 
         // Se ajustan los parametros del Boton ----------------------------------
-        butt.setId(R.id.butt_paylist);
+        butt.setId(R.id.butt_cltlist);
         butt.setTag(idx);
         butt.setText("+");
         butt.setTypeface(Typeface.DEFAULT_BOLD);
@@ -85,15 +88,17 @@ public class PayAdapter extends BaseAdapter implements Filterable, View.OnClickL
         layout.addView(butt);
         //-----------------------------------------------------------------------
         // Se ajustan los parametros del Texto ----------------------------------
-        Integer opt = (Integer)textList.get(idx)[4];
         String txName = (String)textList.get(idx)[1];
-        String txMont = (opt==0?"+":"-")+Basic.getValue((String)textList.get(idx)[2]) + " "+ mCurrencyList.get(mCindex);
-        String txFech = (String)textList.get(idx)[3];
-        text1.setText( " "+txMont  +" " +txName  );
+        //String txMont = (opt==0?"+ ":"- ")+Basic.getValue((String)textList.get(idx)[2]) + " "+ mCurrencyList.get(mCindex);
+
+        String txA = (String)textList.get(idx)[2];
+        String txB = (String)textList.get(idx)[3];
+
+        text1.setText( txName +txA );
         text1 = setTextView(text1, R.dimen.txview_wm2, R.dimen.button_h1);
         layout.addView(text1);
 
-        text2.setText( txFech  );
+        text2.setText( txB );
         text2 = setTextView(text2, R.dimen.txview_ws, R.dimen.button_h1);
         layout.addView(text2);
         //-----------------------------------------------------------------------
@@ -170,14 +175,14 @@ public class PayAdapter extends BaseAdapter implements Filterable, View.OnClickL
     public void onClick(View view) {
         int itemId = view.getId();
 
-        if(itemId == R.id.butt_paylist) {
-            StartVar startVar = new StartVar(mContex);
-            startVar.setPayIndex( (int)view.getTag());
-
-            Application application = (Application) mContex.getApplicationContext();
-            Intent mIntent = new Intent(mContex, RegDetailsActivity.class);
-            mIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            application.startActivity(mIntent);
+        if(itemId == R.id.butt_cltlist) {
+//            StartVar startVar = new StartVar(mContex);
+//            startVar.setPayIndex( (int)view.getTag());
+//
+//            Application application = (Application) mContex.getApplicationContext();
+//            Intent mIntent = new Intent(mContex, RegDetailsActivity.class);
+//            mIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+//            application.startActivity(mIntent);
         }
     }
 }

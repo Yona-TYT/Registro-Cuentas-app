@@ -132,7 +132,8 @@ public class StartVar {
             String name = StartVar.listacc.get(i).cuenta;
             AppDBdeb db = Room.databaseBuilder( mContex, AppDBdeb.class, saveDebName+name).allowMainThreadQueries().build();
             StartVar.appDBdeuda.add(db);
-            StartVar.listdeb.add(db.daoUser().getUsers());
+            List<Deuda> list = db.daoUser().getUsers();
+            StartVar.listdeb.add(list);
         }
     }
     //----------------------------------------------------------------------------------
@@ -200,3 +201,8 @@ public class StartVar {
         StartVar.morlist = list;
     }
 }
+
+//
+//            for (Deuda d : list) {
+//        if (d.)
+//        }

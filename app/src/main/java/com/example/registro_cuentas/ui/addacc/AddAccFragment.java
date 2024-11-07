@@ -27,6 +27,7 @@ import com.example.registro_cuentas.StartVar;
 import com.example.registro_cuentas.databinding.FragmentAddaccBinding;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -165,7 +166,12 @@ public class AddAccFragment extends Fragment implements View.OnClickListener, Vi
                     setMessage(msgIdx);
                     return;
                 }
-                Cuenta obj = new Cuenta(mList.get(0), mList.get(1), mList.get(2), monto, 0, 0, 0,0,"0");
+                String currdate = "";
+                if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+                    currdate = LocalDate.now().toString();
+                }
+
+                Cuenta obj = new Cuenta(mList.get(0), mList.get(1), mList.get(2), monto, 0, 0, 0,0,"0", currdate);
                 appDBcuenta.daoUser().insetUser(obj);
                 //SE Limpia la lista
                 mList.clear();

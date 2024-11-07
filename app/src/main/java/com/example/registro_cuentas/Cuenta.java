@@ -17,9 +17,9 @@ public class Cuenta {
     public Integer fecselc;
     public Integer moneda;
     public String dolar;
+    public String ultfec;
 
-
-    public Cuenta(@NonNull String cuenta, String nombre, String desc, String monto, Integer acctipo, Integer fecselc, Integer accselc, Integer moneda, String dolar) {
+    public Cuenta(@NonNull String cuenta, String nombre, String desc, String monto, Integer acctipo, Integer fecselc, Integer accselc, Integer moneda, String dolar, String ultfec) {
             this.cuenta = cuenta;
             this.nombre = nombre;
             this.desc = desc;
@@ -29,5 +29,6 @@ public class Cuenta {
             this.accselc = accselc;
             this.moneda = moneda;
             this.dolar = dolar;
+            this.ultfec = ultfec;
     }
 }

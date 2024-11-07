@@ -25,13 +25,18 @@ import androidx.lifecycle.ViewModelProvider;
 
 import com.example.registro_cuentas.AccDtailsActivity;
 import com.example.registro_cuentas.AppDBacc;
+import com.example.registro_cuentas.AppDBclt;
 import com.example.registro_cuentas.AppDBfec;
 import com.example.registro_cuentas.AppDBreg;
 import com.example.registro_cuentas.BaseContext;
 import com.example.registro_cuentas.Basic;
+import com.example.registro_cuentas.CalcCalendar;
+import com.example.registro_cuentas.Cliente;
+import com.example.registro_cuentas.CltAdapter;
 import com.example.registro_cuentas.Cuenta;
 import com.example.registro_cuentas.CurrencyInput;
 import com.example.registro_cuentas.DaoClt;
+import com.example.registro_cuentas.Deuda;
 import com.example.registro_cuentas.Fecha;
 import com.example.registro_cuentas.PayAdapter;
 import com.example.registro_cuentas.R;
@@ -55,6 +60,8 @@ public class HomeFragment extends Fragment implements View.OnClickListener, Adap
     // DB ----------------------------------------------------------------
     private AppDBacc appDBcuenta = StartVar.appDBcuenta;
     private AppDBfec appDBfecha = StartVar.appDBfecha;
+    private AppDBclt appDBcliente = StartVar.appDBcliente;
+
     private List<Cuenta> listCuenta;
     private List<AppDBreg> appDBregistro = StartVar.appDBregistro;
     private List<Registro> listRegistro = new ArrayList<>();
@@ -77,6 +84,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener, Adap
     private List<String> mSpinL1= Arrays.asList("Dolar", "Bolivar");
     private List<String> mSpinL4= Arrays.asList("Pagos", "Clientes");
     private List<String> mCurrencyList= Arrays.asList("$", "Bs");
+    private String mCurr = "";
     //---------------------------------------------------------------------
 
     private EditText mInput1;
@@ -87,6 +95,8 @@ public class HomeFragment extends Fragment implements View.OnClickListener, Adap
     private ArrayList<String> regdirList = new ArrayList<>();
     private List<String> accnameList = new ArrayList<>();
     //---------------------------------------------------------------------
+
+    private CltAdapter mCltadapter;
 
     //---------------------------------------------------------------------
     private SearchView mSearch1;
@@ -241,10 +251,17 @@ public class HomeFragment extends Fragment implements View.OnClickListener, Adap
                 appDBcuenta.daoUser().updateCurrentFec(StartVar.saveDataName, i);
                 StartVar mVars = new StartVar(mContext);
                 mVars.setCurrentMes(i);
-                //Recarga la lista de pagos en funcion de la cuenta seleccionada--------------------
-                if(!appDBregistro.isEmpty()) {
-                    setRegList();
+
+                if(currSel4 == 0) {
+                    //Recarga la lista de pagos en funcion de la cuenta seleccionada--------------------
+                    if (!appDBregistro.isEmpty()) {
+                        setRegList();
+                    }
                 }
+                else{
+                    setCltList();
+                }
+
             }
             @Override
             public void onNothingSelected(AdapterView<?> adapterView) {
@@ -253,14 +270,23 @@ public class HomeFragment extends Fragment implements View.OnClickListener, Adap
         });
         //--------------------------------------------------------------------------------------------
 
-        //Para la lista del selector Tipo Moneda ----------------------------------------------------------------------------------------------
+        //Para la lista del selector Tipo Lista ----------------------------------------------------------------------------------------------
         SelecAdapter adapt4 = new SelecAdapter(mContext, mSpinL4);
         mSpin4.setAdapter(adapt4);
-        mSpin4.setSelection(currSel4); //Set La Moneda como default
+        mSpin4.setSelection(currSel4); //Set La lista como default
         mSpin4.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
                 currSel4 = i;
+                mCurr = mCurrencyList.get(i);
+                //Lista de pagos
+                if(i==0){
+                    setRegList();
+                }
+                //Lista de Clientes
+                else {
+                    setCltList();
+                }
             }
             @Override
             public void onNothingSelected(AdapterView<?> adapterView) {
@@ -277,12 +303,22 @@ public class HomeFragment extends Fragment implements View.OnClickListener, Adap
         mSearch1.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
-                ArrayList<Integer> idxList = (ArrayList<Integer>)mPayadapter.getItem(0);
+                if(currSel4 == 0) {
+                    ArrayList<Integer> idxList = (ArrayList<Integer>) mPayadapter.getItem(0);
+                }
+                else{
+                    ArrayList<Integer> idxList = (ArrayList<Integer>) mCltadapter.getItem(0);
+                }
                 return false;
             }
             @Override
             public boolean onQueryTextChange(String newText) {
-                mPayadapter.getFilter().filter(newText);
+                if(currSel4 == 0) {
+                    mPayadapter.getFilter().filter(newText);
+                }
+                else{
+                    mCltadapter.getFilter().filter(newText);
+                }
                 return false;
             }
         });
@@ -369,6 +405,51 @@ public class HomeFragment extends Fragment implements View.OnClickListener, Adap
         else if(mLv1.getChildCount() > 0){
             mLv1.removeAllViews();
         }
+    }
+
+    public void setCltList(){
+        List<Cliente> listClt = appDBcliente.daoUser().getUsers();
+        List<Object[]> mregList = new ArrayList<>();
+        for (int i = 0; i < listClt.size(); i++) {
+            Cliente clt = listClt.get(i);
+            Deuda deb = StartVar.appDBdeuda.get(currSel2).daoUser().getUsers(clt.cliente);
+
+            Object[] stList = new Object[4];
+            stList[0] = Integer.toString(i);
+
+            String ultFec = deb.ulfech;
+            String debe = deb.debe;
+            String total = deb.total;
+            int isDeb = deb.pagado;
+
+            int mult = CalcCalendar.getRangeMultiple(ultFec, StartVar.mCurrentTyp);
+            float monto = Basic.getDebt(mult, total, debe);
+
+            String txA = "";
+            String txB = "";
+
+            if(isDeb==0){
+                txA = " [Sin Registros] ";
+                txB = "[NA]";
+            }
+            else if(isDeb == 1 || mult > 0) {
+                txA = " ["+(deb.oper==0?"+":"-")+ monto + " "+mCurr+"] ";
+                txB = " [PENDIENTE]";
+            }
+            else {
+                txA = " [Pagado] ";
+                txB = "Ult: "+ultFec;
+            }
+            stList[1] = clt.nombre;
+            stList[2] = txA;
+            stList[3] = txB;
+
+            mregList.add(stList);
+        }
+        //Para configurar la lista de pagos
+        mCltadapter = new CltAdapter(mContext, mregList);
+        mLv1.setAdapter(mCltadapter);
+        mCltadapter.getFilter().filter("");
     }
 
     public void empyLists(){

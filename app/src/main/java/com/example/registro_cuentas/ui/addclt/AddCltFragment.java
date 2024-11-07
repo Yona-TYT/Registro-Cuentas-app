@@ -225,9 +225,22 @@ public class AddCltFragment extends Fragment  implements View.OnClickListener, A
                     if (currtTyp>0) {
                         int mult = CalcCalendar.getRangeMultiple(mDeb.ulfech, currtTyp);
                         float monto = Basic.getDebt(mult, mDeb.total, mDeb.debe);
-                        String tx = mDeb.pagado == 1 ? monto + " " + mCurr + " (" + mult + " " + mListFech.get(currtTyp) + ")" : "Pagado";
+
+                        int isDeb = mDeb.pagado;
+                        String tx = "";
+                        if(isDeb==0){
+                            tx = " [Sin Registros] ";
+                        }
+                        else if(isDeb == 1 || mult > 0) {
+                            tx = " ["+(mDeb.oper==0?"+":"-")+ monto + " "+mCurr+"] ";
+                        }
+                        else {
+                            tx = " [Pagado] ";
+                        }
+
+                        //tx = mDeb.pagado == 1 ? monto + " " + mCurr + " (" + mult + " " + mListFech.get(currtTyp) + ")" : "Pagado";
                         mText1.setText("Deuda: " + tx);
-                        mText2.setText(mDeb.pagado == 0? "No hay Pagos Registrados" : mDeb.ulfech + " (Ultima Fecha Pagada)");
+                        mText2.setText(isDeb == 0? "No hay Pagos Registrados" : mDeb.ulfech + " (Ultima Fecha Pagada)");
                     }
                     else {
                         mText1.setText("Deuda: Cuenta Sin Cierre");

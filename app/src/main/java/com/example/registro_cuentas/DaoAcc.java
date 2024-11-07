@@ -27,6 +27,9 @@ public interface DaoAcc {
 
     @Query("SELECT dolar FROM cuenta WHERE cuenta= :user ")
     String getSaveDollar(String user);
+
+    @Query("SELECT ultfec FROM cuenta WHERE cuenta= :user ")
+    String getSaveDate(String user);
     //----------------------------------------------------------------------------------------------
 
     @Insert
@@ -38,8 +41,8 @@ public interface DaoAcc {
     @Query("UPDATE cuenta SET nombre= :nombre, desc= :desc, monto= :monto, acctipo= :acctipo WHERE cuenta= :user")
     void updateAccount(String user, String nombre, String desc, String monto, Integer acctipo);
 
-    @Query("UPDATE cuenta SET fecselc= :fecselc,  accselc= :accselc, moneda= :moneda, dolar= :dolar WHERE cuenta= :user")
-    void updateData(String user, Integer fecselc, Integer accselc, Integer moneda, String dolar );
+    @Query("UPDATE cuenta SET fecselc= :fecselc,  accselc= :accselc, moneda= :moneda, dolar= :dolar, ultfec= :ultfec WHERE cuenta= :user")
+    void updateData(String user, Integer fecselc, Integer accselc, Integer moneda, String dolar, String ultfec);
 
     // Para actualizar valores individuales --------------------------------------------------------
     @Query("UPDATE cuenta SET accselc= :accselc WHERE cuenta= :user")
@@ -53,6 +56,9 @@ public interface DaoAcc {
 
     @Query("UPDATE cuenta SET dolar= :dolar WHERE cuenta= :user")
     void updateDollar(String user, String dolar );
+
+    @Query("UPDATE cuenta SET ultfec= :ultfec WHERE cuenta= :user")
+    void updateDete(String user, String ultfec );
     //----------------------------------------------------------------------------------------------
 
     @Query("DELETE FROM cuenta WHERE  cuenta= :user")

@@ -118,7 +118,7 @@ public class MainActivity extends AppCompatActivity {
             if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
                LocalDate currdate = LocalDate.now();
                LocalTime currtime = LocalTime.now();
-               obj = new Fecha("dateID0", ""+currdate.getYear(), currdate.getMonth().toString(), ""+currdate.getDayOfMonth(), calen.getTime(currtime.toString()), currdate.toString());
+               obj = new Fecha("dateID0", ""+currdate.getYear(), currdate.getMonth().toString(), ""+currdate.getDayOfMonth(), CalcCalendar.getTime(currtime.toString()), currdate.toString());
             }
             else {
                 obj = new Fecha("dateID0", "0", "0", "0", "0", "0");
@@ -133,7 +133,12 @@ public class MainActivity extends AppCompatActivity {
         // Se agregan datos solo la primera vez en el primer elemento de la lista ---------------------------------------------
         listCuenta = appDBcuenta.daoUser().getUsers();
         if(listCuenta.isEmpty()) {
-            Cuenta obj = new Cuenta(StartVar.saveDataName, "0", "0", "0", 0, 0, 0,0, "");
+            //Inicia la fecha actual
+            String currdate = "";
+            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+                currdate = LocalDate.now().toString();
+            }
+            Cuenta obj = new Cuenta(StartVar.saveDataName, "0", "0", "0", 0, 0, 0,0, "", currdate);
             appDBcuenta.daoUser().insetUser(obj);
             //Recarga La lista de la DB ----------------------------
             startVar.getAccListDB();
@@ -229,7 +234,7 @@ public class MainActivity extends AppCompatActivity {
                 Cuenta arr = listCuenta.get(i);
                 //------------------------------------------------------
                 // Se crea la lista para esportar a csv  ---------------
-                String[] txList= new String[9];
+                String[] txList= new String[10];
                 txList[0]=arr.cuenta;
                 txList[1]=arr.nombre;
                 txList[2]=arr.desc;
@@ -239,6 +244,7 @@ public class MainActivity extends AppCompatActivity {
                 txList[6]=arr.accselc.toString();
                 txList[7]=arr.moneda.toString();
                 txList[8]=arr.dolar;
+                txList[9]="2024-11-01";
 
                 totalList.add(txList);
                 //--------------------------------------------------------
@@ -384,6 +390,7 @@ public class MainActivity extends AppCompatActivity {
             new ActivityResultContracts.OpenDocument(),
             uri -> {
                 if (uri != null) {
+                    StartVar mImpVar = new StartVar(this);
                     // call this to persist permission across decice reboots
                     getContentResolver().takePersistableUriPermission(uri, Intent.FLAG_GRANT_READ_URI_PERMISSION);
                     StringBuilder stringBuilder = new StringBuilder();
@@ -409,18 +416,25 @@ public class MainActivity extends AppCompatActivity {
                                 }
                                 else if(tx.equals(t[1])){
                                     t[1] = "";
-                                    startVar.getAccListDB();
+                                    //Recarga La lista de la DB ----------------------------
+                                    mImpVar.getAccListDB();
                                     opt = 1;
                                     stringBuilder.append(line);
                                     continue;
                                 }
                                 else if(tx.equals(t[2])){
+                                    //Recarga La lista de la DB ----------------------------
+                                    mImpVar.getRegListDB();
+                                    Basic.msg(":- "+StartVar.listreg.size());
                                     t[2] = "";
                                     opt = 2;
                                     stringBuilder.append(line);
                                     continue;
                                 }
                                 else if(tx.equals(t[3])){
+                                    //Recarga La lista de la DB ----------------------------
+                                    mImpVar.getDebListDB();
+                                    Basic.msg(":- "+StartVar.listdeb.size());
                                     t[3] = "";
                                     opt = 3;
                                     stringBuilder.append(line);
@@ -440,11 +454,11 @@ public class MainActivity extends AppCompatActivity {
                                 if(opt==0) {
                                     String id = spl[0];
                                     if(id.equals(StartVar.saveDataName)){
-                                        StartVar.appDBcuenta.daoUser().updateData(id, Integer.parseInt(spl[5]), Integer.parseInt(spl[6]), Integer.parseInt(spl[7]), spl[8]);
+                                        StartVar.appDBcuenta.daoUser().updateData(id, Integer.parseInt(spl[5]), Integer.parseInt(spl[6]), Integer.parseInt(spl[7]), spl[8], spl[9]);
                                     }
                                     else {
                                         Cuenta obj = new Cuenta(
-                                                id, spl[1], spl[2], spl[3], 0, 0, 0, 0, "0"
+                                                id, spl[1], spl[2], spl[3], Integer.parseInt(spl[4]), 0, 0, 0, "0","0"
                                         );
                                         StartVar.appDBcuenta.daoUser().insetUser(obj);
                                     }
@@ -454,6 +468,7 @@ public class MainActivity extends AppCompatActivity {
                                     String name = StartVar.listacc.get(Integer.parseInt(idx)).cuenta;
                                     AppDBreg db = Room.databaseBuilder( this, AppDBreg.class, StartVar.saveRegName+name).allowMainThreadQueries().build();
 
+                                    //Basic.msg(spl[10] +" "+name+" "+spl[1]);
                                     Registro obj = new Registro(
                                             spl[0], spl[1], spl[2], spl[3], Integer.parseInt(spl[4]), Integer.parseInt(spl[5]),
                                             spl[6], spl[7], spl[8], spl[9], spl[10], Integer.parseInt(spl[11]), spl[12]
@@ -497,7 +512,7 @@ public class MainActivity extends AppCompatActivity {
                            // }
                             stringBuilder.append(line);
                         }
-                        startVar.getFecListDB();
+                        mImpVar.getFecListDB();
 
                         Intent mIntent = new Intent(this, MainActivity.class);
                         startActivity(mIntent);
