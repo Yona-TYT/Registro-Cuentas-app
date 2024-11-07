@@ -2,6 +2,7 @@ package com.example.registro_cuentas;
 
 import static android.widget.GridLayout.spec;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Rect;
 import android.graphics.Typeface;
@@ -98,6 +99,7 @@ public class Basic {
         }
     }
 
+    @SuppressLint("DefaultLocale")
     public static String setValue(String value) {
         value = value.replaceAll("([^.;^0-9]+)", "");
         float precDoll = floatFormat(StartVar.mDollar);
@@ -107,10 +109,11 @@ public class Basic {
             if (StartVar.mCurrency == 1) {    //Selector en Bs
                 number = number / precDoll;
             }
-            return Float.toString(number);
+            return String.format("%.2f", number);
         } else return "";
     }
 
+    @SuppressLint("DefaultLocale")
     public static String getValue(String value) {
         value = value.replaceAll("([^.;^0-9]+)", "");
         float precDoll = floatFormat(StartVar.mDollar);
@@ -119,8 +122,8 @@ public class Basic {
             if (StartVar.mCurrency == 1) {    //Selector en Bs
                 number = number * precDoll;
             }
-            return Float.toString(number);
-        } else return "";
+            return String.format("%.2f", number);
+        } else return "0";
     }
     public static Float floatFormat(String value) {
         String mValue = value.replaceAll("([^.;^0-9]+)", "");

@@ -404,7 +404,7 @@ public class AddPayFragment extends Fragment implements View.OnClickListener, Vi
                     else {
                         //Log.d("PhotoPicker", "Aqi hayyyyyyyyyyyyy5555----------------------------------: ");
                         bitmap = MediaStore.Images.Media.getBitmap(mContext.getContentResolver(), currUri);
-                        sImage = mFileM.SavePhoto(bitmap, (mList.get(0)), oldFile, mContext, mContext.getContentResolver());
+                        sImage = mFileM.SavePhoto(bitmap, (mList.get(0)+StartVar.mCurrentAcc), oldFile, mContext, mContext.getContentResolver());
                     }
                 }
                 catch (IOException e) {
@@ -430,67 +430,74 @@ public class AddPayFragment extends Fragment implements View.OnClickListener, Vi
                }
                else {
                    Deuda mDeb = appDBdeuda.get(currtAcc).daoUser().getUsers(cltId);
-                   int pagado = 1;
-                   String debe =  mDeb.debe;
-                   String ulFech = mDeb.ulfech;
-                   if(mDeb.estat==1) {
-                       int mult = CalcCalendar.getRangeMultiple(ulFech, currtTyp);
-                       float alldeb = Basic.getDebt(mult, mDeb.total, mDeb.debe);
-                       if(alldeb > 0) {
-                           float debt = Float.parseFloat(debe);
-                           float currMnt = Float.parseFloat(monto);
-                           float total = Float.parseFloat(mDeb.total);
+                   if (mDeb != null) {
+                       int pagado = 1;
+                       String debe = mDeb.debe;
+                       String ulFech = mDeb.ulfech;
+                       if (mDeb.estat == 1) {
+                           int mult = CalcCalendar.getRangeMultiple(ulFech, currtTyp);
+                           float alldeb = Basic.getDebt(mult, mDeb.total, mDeb.debe);
+                           if (alldeb > 0) {
+                               float debt = Float.parseFloat(debe);
+                               float currMnt = Float.parseFloat(monto);
+                               float total = Float.parseFloat(mDeb.total);
 
-                           currMnt += debt;
+                               currMnt += debt;
 
-                           int i = 1;
-                           //Basic.msg(total+" : "+currMnt);
-                           for (; i <= mult; i++) {
-                               if (currMnt < total) {
-                                   debe = Float.toString(currMnt);
-                                   i--;
-                                   break;
-                               } else {
-                                   currMnt -= total;
-                                   debt -= total;
+                               int i = 1;
+                               //Basic.msg(total+" : "+currMnt);
+                               for (; i <= mult; i++) {
+                                   if (currMnt < total) {
+                                       debe = Float.toString(currMnt);
+                                       i--;
+                                       break;
+                                   } else {
+                                       currMnt -= total;
+                                       debt -= total;
+                                   }
+                                   //La deuda no fue pagada
+                                   if (currMnt == 0) {
+                                       debe = Float.toString(0);
+                                       break;
+                                   }
                                }
-                               //La deuda no fue pagada
-                               if (currMnt == 0) {
-                                   debe = Float.toString(0);
-                                   break;
-                               }
-                           }
-                           //Deuda fue saldada
-                           if (i == mult) {
-                               debe = "0";
-                               pagado = 2;
-                               ulFech = currdate;
-                           } else if (i < 0) {
-                               Basic.msg("El MONTO es mayor a la deuda!");
-                               debe = Float.toString(currMnt);
-                               pagado = 2;
-                               ulFech = currdate;
-                               return;
-                           } else {
-                               ulFech = CalcCalendar.getDatePlus(mDeb.ulfech, i, currtTyp);
-                               if (CalcCalendar.getRangeMultiple(ulFech, currtTyp) < 0) {
+                               //Deuda fue saldada
+                               if (i == mult) {
+                                   debe = "0";
+                                   pagado = 2;
+                                   ulFech = currdate;
+                               } else if (i < 0) {
                                    Basic.msg("El MONTO es mayor a la deuda!");
-                                   mInput4.setText(Basic.setMask(Float.toString(debt), mCurr));
+                                   debe = Float.toString(currMnt);
+                                   pagado = 2;
+                                   ulFech = currdate;
                                    return;
+                               } else {
+                                   ulFech = CalcCalendar.getDatePlus(mDeb.ulfech, i, currtTyp);
+                                   if (CalcCalendar.getRangeMultiple(ulFech, currtTyp) < 0) {
+                                       Basic.msg("El MONTO es mayor a la deuda!");
+                                       mInput4.setText(Basic.setMask(Float.toString(debt), mCurr));
+                                       return;
+                                   }
                                }
+                           } else {
+                               Basic.msg("Cliente sin deudas!");
+                               pagado = 2;
+                               StartVar.appDBdeuda.get(currtAcc).daoUser().updateDebt(cltId, pagado, ulFech, debe);
+                               return;
                            }
+                           //   Basic.msg(ulFech+" : "+  CalcCalendar.getRangeMultiple(ulFech, 0)+" : "+i );
                        }
-                       else {
-                           Basic.msg("Cliente sin deudas!");
-                           pagado = 2;
-                           StartVar.appDBdeuda.get(currtAcc).daoUser().updateDebt(cltId, pagado, ulFech, debe);
-                           return;
-                       }
-                    //   Basic.msg(ulFech+" : "+  CalcCalendar.getRangeMultiple(ulFech, 0)+" : "+i );
+                       StartVar.appDBdeuda.get(currtAcc).daoUser().updateDebt(cltId, pagado, ulFech, debe);
                    }
-                   StartVar.appDBdeuda.get(currtAcc).daoUser().updateDebt(cltId, pagado, ulFech, debe);
+                   else {
+                       Deuda objDeb = new Deuda(
+                               "cltID"+cltId, Integer.toString(currtAcc), "0", 0, currdate,
+                               0, 0, CalcCalendar.getDateMinus(currdate,1, currtTyp), 0,"0"
+                       );
+                       appDBdeuda.get(currtAcc).daoUser().insetUser(objDeb);
+                   }
                }
-
                 Registro obj = new Registro(
                         mList.get(0), mList.get(1), mList.get(3), monto, currSel2, (swPorc?1:0),
                         sImage, currdate, currtime, (newClt?"cltID"+listCliente.size():cltId), Integer.toString(currtAcc), 0, "0"

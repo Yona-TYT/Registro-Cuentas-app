@@ -51,6 +51,7 @@ public class AccDtailsActivity extends AppCompatActivity implements View.OnClick
     private TextView mText3;
     private TextView mText4;
     private TextView mText5;
+    private TextView mText6;
     private List<TextView> mTextList = new ArrayList<>();
     //---------------------------------------------------------------------
 
@@ -78,7 +79,6 @@ public class AccDtailsActivity extends AppCompatActivity implements View.OnClick
     private int mCindex = StartVar.mCurrency;
 
     private List<String> accTypeL = Arrays.asList("Sin Cierre", "Cierre Por Dia", "Cierre Por Mes", "Cierre Por Año");
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -119,6 +119,7 @@ public class AccDtailsActivity extends AppCompatActivity implements View.OnClick
         mText3 = findViewById(R.id.txview_adts3);
         mText4 = findViewById(R.id.txview_adts4);
         mText5 = findViewById(R.id.txview_adts5);
+        mText6 = findViewById(R.id.txview_adts6);
 
         mBtton1 = findViewById(R.id.butt_adts1);
         mBtton2  = findViewById(R.id.butt_adts2);
@@ -133,6 +134,7 @@ public class AccDtailsActivity extends AppCompatActivity implements View.OnClick
         mTextList.add(mText3);
         mTextList.add(mText4);
         mTextList.add(mText5);
+        mTextList.add(mText6);
 
         // Se llenan los textView
         setInputList();
@@ -206,14 +208,13 @@ public class AccDtailsActivity extends AppCompatActivity implements View.OnClick
             for(int i = 0; i<listRegistro.size(); i++){
                 Registro reg = listRegistro.get(i);
                 String fecha = reg.fecha;
+                String mon = Basic.getValue(reg.monto);
 
                 if(currSel1 == 0) {
                     if (reg.oper == 0) {
-                        String mon = reg.monto;
                         totalCred += mon.isEmpty() ? 0 : Float.parseFloat(mon);
                     } else {
-                        String mon = reg.monto;
-                        totalDeb += mon.isEmpty() ? 0 : Float.parseFloat(mon);
+                        totalDeb -= mon.isEmpty() ? 0 : Float.parseFloat(mon);
                     }
                 }
                 else{
@@ -221,11 +222,9 @@ public class AccDtailsActivity extends AppCompatActivity implements View.OnClick
                         LocalDate date = LocalDate.parse(fecha);
                         if(date.getMonth().toString().equals(selFecha.mes)){
                             if (reg.oper == 0) {
-                                String mon = reg.monto;
                                 totalCred += mon.isEmpty() ? 0 : Float.parseFloat(mon);
                             } else {
-                                String mon = reg.monto;
-                                totalDeb += mon.isEmpty() ? 0 : Float.parseFloat(mon);
+                                totalDeb -= mon.isEmpty() ? 0 : Float.parseFloat(mon);
                             }
                         }
                     }
@@ -235,16 +234,18 @@ public class AccDtailsActivity extends AppCompatActivity implements View.OnClick
 
             String txName = mCuenta.nombre;
             String txDesc = mCuenta.desc;
-            String txMont = mCuenta.monto;
+            String txMont = Basic.setMask(Basic.getValue(mCuenta.monto),  mCurrencyList.get(mCindex));
 
             int i = 0;
             mTextList.get(i).setText("Cuenta: " + txName + " ("+txDesc+")");
             i++;
-            mTextList.get(i).setText("Monto Estimado: " + txMont);
+            mTextList.get(i).setText("Monto Estimado: "+txMont);
             i++;
-            mTextList.get(i).setText("Total Credito: "+ totalCred);
+            mTextList.get(i).setText("Total Credito: "+ totalCred+" "+mCurrencyList.get(mCindex));
             i++;
-            mTextList.get(i).setText("Total Debito: " + (totalDeb!=0?"-":"") + totalDeb);
+            mTextList.get(i).setText("Total Debito: " + totalDeb + " "+ mCurrencyList.get(mCindex));
+            i++;
+            mTextList.get(i).setText("Saldo Disponible: " + (totalCred + totalDeb) + " "+ mCurrencyList.get(mCindex));
             i++;
             mTextList.get(i).setText("Tipo : (" + accTypeL.get(mCuenta.acctipo)+")");
 

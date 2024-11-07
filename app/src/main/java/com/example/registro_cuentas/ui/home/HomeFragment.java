@@ -413,7 +413,9 @@ public class HomeFragment extends Fragment implements View.OnClickListener, Adap
         for (int i = 0; i < listClt.size(); i++) {
             Cliente clt = listClt.get(i);
             Deuda deb = StartVar.appDBdeuda.get(currSel2).daoUser().getUsers(clt.cliente);
-
+            if(deb==null){
+                continue;
+            }
             Object[] stList = new Object[4];
             stList[0] = Integer.toString(i);
 
@@ -421,24 +423,27 @@ public class HomeFragment extends Fragment implements View.OnClickListener, Adap
             String debe = deb.debe;
             String total = deb.total;
             int isDeb = deb.pagado;
-
-            int mult = CalcCalendar.getRangeMultiple(ultFec, StartVar.mCurrentTyp);
+            int mTyp =  StartVar.mCurrentTyp;
+            int mult = CalcCalendar.getRangeMultiple(ultFec, mTyp);
             float monto = Basic.getDebt(mult, total, debe);
 
             String txA = "";
             String txB = "";
-
-            if(isDeb==0){
-                txA = " [Sin Registros] ";
-                txB = "[NA]";
-            }
-            else if(isDeb == 1 || mult > 0) {
-                txA = " ["+(deb.oper==0?"+":"-")+ monto + " "+mCurr+"] ";
-                txB = " [PENDIENTE]";
+            if(mTyp != 0) {
+                if (isDeb == 0) {
+                    txA = " [Sin Registros] ";
+                    txB = "[NA]";
+                } else if (isDeb == 1 || mult > 0) {
+                    txA = " [" + (deb.oper == 0 ? "+" : "-") + monto + " " + mCurr + "] ";
+                    txB = " [PENDIENTE]";
+                } else {
+                    txA = " [Pagado] ";
+                    txB = "Ult: " + ultFec;
+                }
             }
             else {
-                txA = " [Pagado] ";
-                txB = "Ult: "+ultFec;
+                txA = "[Sin Cierres]";
+                txB = "Ult: " + ultFec;
             }
             stList[1] = clt.nombre;
             stList[2] = txA;

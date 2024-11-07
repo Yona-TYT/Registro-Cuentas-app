@@ -130,7 +130,7 @@ public class PayEditActivity extends AppCompatActivity implements View.OnClickLi
         //Efecto moneda
         //-------------------------------------------------------------------------------------------------------
         String curr = mCurrencyList.get(StartVar.mCurrency);
-        mInput2.setText(Basic.setMask(mpay.monto, curr));
+        mInput2.setText(Basic.setMask(Basic.getValue(mpay.monto), curr));
         List<View> mViewL1 = new ArrayList<>();
         int mOpt = 0;
         CurrencyInput mCInput = new CurrencyInput( this, mInput2,  mViewL1, curr, mOpt);
@@ -222,7 +222,7 @@ public class PayEditActivity extends AppCompatActivity implements View.OnClickLi
                 else {
                     //Log.d("PhotoPicker", "Aqi hayyyyyyyyyyyyy5555----------------------------------: ");
                     bitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), currUri);
-                    sImage = mFileM.SavePhoto(bitmap, mpay.registro, oldFile, this, this.getContentResolver());
+                    sImage = mFileM.SavePhoto(bitmap, mpay.registro+StartVar.mCurrentAcc, oldFile, this, this.getContentResolver());
                 }
             }
             catch (IOException e) {

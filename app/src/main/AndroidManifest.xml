@@ -39,6 +39,12 @@
         android:theme="@style/Theme.RegistroCuentas"
         tools:targetApi="31">
         <activity
+            android:name=".ImageActivity"
+            android:configChanges="orientation|keyboardHidden|screenSize"
+            android:exported="false"
+            android:label="@string/title_activity_image"
+            android:theme="@style/Theme.RegistroCuentas.Fullscreen" />
+        <activity
             android:name=".PayEditActivity"
             android:exported="false"
             android:theme="@style/Theme.RegistroCuentas.NoActionBar" />

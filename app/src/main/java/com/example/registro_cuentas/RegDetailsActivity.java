@@ -113,6 +113,7 @@ public class RegDetailsActivity extends AppCompatActivity implements View.OnClic
 
         mBtton1.setOnClickListener(this);
         mBtton2.setOnClickListener(this);
+        mImage1.setOnClickListener(this);
         mSw.setOnClickListener(this);
 
         mTextList.add(mText1);
@@ -162,7 +163,7 @@ public class RegDetailsActivity extends AppCompatActivity implements View.OnClic
             String txMont = reg.monto;
             String txOpt = (reg.oper==0?"+ ":"- ");
             String txFech = reg.fecha;
-            String txHora = cale.getTime(reg.time);
+            String txHora = CalcCalendar.getTime(reg.time);
 
             int i = 0;
             mTextList.get(i).setText("Cliente: " + txName + " ("+txAlias+")");
@@ -208,6 +209,10 @@ public class RegDetailsActivity extends AppCompatActivity implements View.OnClic
         if (itemId == R.id.butt_dts2){
             Intent mIntent = new Intent(this, PayEditActivity.class);
             this.finish();
+            startActivity(mIntent);
+        }
+        if(itemId == R.id.image_dts1) {
+            Intent mIntent = new Intent(this, ImageActivity.class);
             startActivity(mIntent);
         }
     }
