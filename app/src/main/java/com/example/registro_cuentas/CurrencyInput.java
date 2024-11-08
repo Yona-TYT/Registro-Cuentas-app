@@ -48,6 +48,7 @@ public class CurrencyInput implements View.OnClickListener, View.OnFocusChangeLi
         mInput.setOnTouchListener(this);
         mInput.setSelectAllOnFocus(false);
 
+        mInput.clearFocus();
         mInput.setSelection(0); // After initialization keep cursor on right side
         mInput.setCursorVisible(true);// Disable the cursor.
         mInput.addTextChangedListener(new TextWatcher() {
@@ -96,16 +97,64 @@ public class CurrencyInput implements View.OnClickListener, View.OnFocusChangeLi
     }
 
     @Override
+    public boolean onTouch(View view, MotionEvent motionEvent) {
+
+        if (MotionEvent.ACTION_UP == motionEvent.getAction()) {
+            String value = mInput.getText().toString().trim();
+            if (mInput.hasSelection() && !Basic.isDow) {
+                allSelec = true;
+                return false;
+            }
+
+            int start =mInput.getSelectionStart();
+            int end = mInput.getSelectionEnd();
+
+
+            if(start != end){
+                mInput.requestFocus();
+                mInput.setSelection(0);
+                int opt = 2; //mInput.setSelection((value.length() - 3), 0);
+                setInputSelec(value.length(), opt);
+                return false;
+
+//                mInput.setCursorVisible(false);
+            }
+            //Toast.makeText(mContext, "Aqui hayyyyyyyy  " + Basic.isDow+ "  " + isTouch, Toast.LENGTH_LONG).show();
+
+            if (isTouch){
+                //Toast.makeText(mContext, "Aqui hayyyyyyyy  " + isDow+ "  " + start, Toast.LENGTH_LONG).show();
+                if (value.endsWith(" " + sing)) {
+                    mInput.clearFocus();
+                    mInput.requestFocus();
+                    int opt = 2; //mInput.setSelection((value.length() - 3), 0);
+                    setInputSelec(value.length(), opt);
+                }
+                isTouch = false;
+            }
+        }
+        else {
+            String value = mInput.getText().toString().trim();
+
+            int start =mInput.getSelectionStart();
+            int end = mInput.getSelectionEnd();
+            mInput.requestFocus();
+            if(start != end){
+                return false;
+            }
+        }
+        return false;
+    }
+
+    @Override
     public void onFocusChange(View view, boolean b) {
         //Toast.makeText(mContext, "Siz is "+b, Toast.LENGTH_LONG).show();
-        TransitionValues MaskedEditText;
         if(b) {
+            mInput.setCursorVisible(false);
+
             String value = mInput.getText().toString();
             if (!value.endsWith(" "+sing)) {
                 mInput.setText(Basic.setMask(value, sing));
             }
-//            mInput.setCursorVisible(false);
-
             for (View mView : mViewList) {
                 mView.setVisibility(View.INVISIBLE);
             }
@@ -114,8 +163,9 @@ public class CurrencyInput implements View.OnClickListener, View.OnFocusChangeLi
             //Toast.makeText(mContext, "Aqui hayyyyyyyy?  " , Toast.LENGTH_LONG).show();
             if (Basic.isDow){
                 mInput.setSelection(0);
-                isTouch = true;
             }
+            isTouch = true;
+
             for (View mView : mViewList) {
                 mView.setVisibility(View.VISIBLE);
             }
@@ -176,42 +226,6 @@ public class CurrencyInput implements View.OnClickListener, View.OnFocusChangeLi
             int opt = 1; //mInput.setSelection(value.length() - 2);
             setInputSelec(value.length(), opt);
         }
-    }
-
-    @Override
-    public boolean onTouch(View view, MotionEvent motionEvent) {
-
-        if (MotionEvent.ACTION_UP == motionEvent.getAction()) {
-            String value = mInput.getText().toString().trim();
-            if (mInput.hasSelection()) {
-                allSelec = true;
-                return false;
-            }
-
-            int start =mInput.getSelectionStart();
-            int end = mInput.getSelectionEnd();
-
-            if(start != end){
-                mInput.clearFocus();
-                mInput.requestFocus();
-//                mInput.setCursorVisible(false);
-            }
-            //Toast.makeText(mContext, "Aqui hayyyyyyyy  " + Basic.isDow+ "  " + isTouch, Toast.LENGTH_LONG).show();
-
-            if (isTouch){
-                //Toast.makeText(mContext, "Aqui hayyyyyyyy  " + isDow+ "  " + start, Toast.LENGTH_LONG).show();
-
-                if (value.endsWith(" " + sing)) {
-                    mInput.clearFocus();
-                    mInput.requestFocus();
-                    int opt = 2; //mInput.setSelection((value.length() - 3), 0);
-                    setInputSelec(value.length(), opt);
-                    mInput.setCursorVisible(false);
-                }
-                isTouch = false;
-            }
-        }
-        return false;
     }
 
     void setInputSelec(int siz, int opt) {

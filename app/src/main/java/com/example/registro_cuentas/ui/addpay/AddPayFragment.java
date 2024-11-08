@@ -241,7 +241,7 @@ public class AddPayFragment extends Fragment implements View.OnClickListener, Vi
                     mInput2.setText("");
                     mInput2.setEnabled(true);
 
-                    mInput4.setText(Basic.setMask("0.00", mCurr));
+                    mInput4.setText(Basic.setMask("0", mCurr));
 
                 }
             }

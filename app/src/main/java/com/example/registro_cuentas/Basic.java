@@ -45,10 +45,9 @@ public class Basic {
         mConstrain.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
             @Override
             public void onGlobalLayout() {
-
                 // on below line we are creating a variable for rect
                 Rect rect = new Rect();
-                ConstraintLayout contain = mConstrain;
+                View contain = StartVar.mRootView;
                 // on below line getting frame for our relative layout.
                 contain.getWindowVisibleDisplayFrame(rect);
                 // on below line getting screen height for relative layout.
@@ -56,7 +55,6 @@ public class Basic {
                 // on below line getting keypad height.
                 int keypadHeight = screenHeight - rect.bottom;
                 if (keypadHeight > screenHeight * 0.15) {
-
                     isDow = false;
                     isUp = true;
                     //Toast.makeText(MainActivity.this, "Keyboard is +", Toast.LENGTH_LONG).show();

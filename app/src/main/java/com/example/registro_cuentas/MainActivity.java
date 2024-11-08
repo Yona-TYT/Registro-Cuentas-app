@@ -18,6 +18,7 @@ import android.text.style.ForegroundColorSpan;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.Toast;
 
 import com.example.registro_cuentas.databinding.ActivityMainBinding;
@@ -187,6 +188,8 @@ public class MainActivity extends AppCompatActivity {
         NavigationUI.setupWithNavController(binding.navView, navController);
 
         startVar.setNavBar(navView);
+        View rootView = this.findViewById(android.R.id.content);
+        startVar.setRootView(rootView);
     }
 
     public void setBottomNavigationVisibility(int visibility) {

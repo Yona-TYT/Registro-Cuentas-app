@@ -1,6 +1,7 @@
 package com.example.registro_cuentas;
 
 import android.content.Context;
+import android.view.View;
 
 import androidx.room.Room;
 
@@ -56,6 +57,9 @@ public class StartVar {
 
     //Barra de navegacion
     public static BottomNavigationView mNavBar;
+    //Root View
+    public static View mRootView;
+
 
     private Context mContex;
     public StartVar(Context mContex){
@@ -187,6 +191,7 @@ public class StartVar {
         mDollar = idx;
     }
     public void setNavBar(BottomNavigationView view){mNavBar = view;}
+    public void setRootView(View view){mRootView = view;}
 
     public void setArrayList(ArrayList<String> listA, ArrayList<String> listB, ArrayList<String> listC){
         StartVar.textList = listA;
