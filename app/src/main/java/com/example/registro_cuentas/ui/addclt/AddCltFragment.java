@@ -193,7 +193,7 @@ public class AddCltFragment extends Fragment  implements View.OnClickListener, A
                 currSel1 = i;
                 if (i > 0) {
                     mClt = listCliente.get(i-1);
-                    mDeb = appDBdeuda.get(currtAcc).daoUser().getUsers(mClt.cliente);
+                    mDeb = appDBdeuda.size() > currtAcc? appDBdeuda.get(currtAcc).daoUser().getUsers(mClt.cliente) : null;
                     //Log.d("PhotoPicker", "-->>>>>>>>>>>>>>>>>>>>>>>>>>>> year: "+mDeb );
                     if (mDeb == null){
                         //Inicia la fecha actual
