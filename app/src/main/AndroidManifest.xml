@@ -39,6 +39,10 @@
         android:theme="@style/Theme.RegistroCuentas"
         tools:targetApi="31">
         <activity
+            android:name=".CltDetailsActivity"
+            android:exported="false"
+            android:theme="@style/Theme.RegistroCuentas.NoActionBar" />
+        <activity
             android:name=".ImageActivity"
             android:configChanges="orientation|keyboardHidden|screenSize"
             android:exported="false"

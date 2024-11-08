@@ -176,13 +176,13 @@ public class CltAdapter extends BaseAdapter implements Filterable, View.OnClickL
         int itemId = view.getId();
 
         if(itemId == R.id.butt_cltlist) {
-//            StartVar startVar = new StartVar(mContex);
-//            startVar.setPayIndex( (int)view.getTag());
-//
-//            Application application = (Application) mContex.getApplicationContext();
-//            Intent mIntent = new Intent(mContex, RegDetailsActivity.class);
-//            mIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-//            application.startActivity(mIntent);
+            StartVar startVar = new StartVar(mContex);
+            startVar.setCltIndex( (int)view.getTag());
+
+            Application application = (Application) mContex.getApplicationContext();
+            Intent mIntent = new Intent(mContex, CltDetailsActivity.class);
+            mIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            application.startActivity(mIntent);
         }
     }
 }

@@ -48,6 +48,8 @@ public class StartVar {
 
     public static int currSel2 = 0;
     public static int payIndex = 0;
+    public static int cltIndex = 0;
+
     public static String saveDataName = "savedataID0";
     public static String saveRegName = "reg";
     public static String saveDebName = "deb";
@@ -194,6 +196,9 @@ public class StartVar {
     }
     public void setPayIndex(int value){
         StartVar.payIndex = value;
+    }
+    public void setCltIndex(int value){
+        StartVar.cltIndex = value;
     }
 
     public void setMorlist(ArrayList<String> list){
