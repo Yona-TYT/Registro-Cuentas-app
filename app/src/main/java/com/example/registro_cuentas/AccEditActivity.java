@@ -96,7 +96,7 @@ public class AccEditActivity extends AppCompatActivity implements View.OnClickLi
 
         mButt1 = findViewById(R.id.butt_accedit1);
 
-        mAcc = appDBcuenta.daoUser().getUsers().get(StartVar.mCurrentAcc+1);
+        mAcc = appDBcuenta.daoUser().getUsers().get(StartVar.mCurrAcc +1);
 
         mInput1.setText(mAcc.nombre);
         mInput2.setText(mAcc.desc);

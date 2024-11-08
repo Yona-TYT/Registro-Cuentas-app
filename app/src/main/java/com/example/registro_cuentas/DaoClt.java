@@ -30,6 +30,8 @@ public interface DaoClt {
     @Query("UPDATE cliente SET  pagado= :pagado, ulfech= :ulfech, debe= :debe WHERE cliente= :user")
     void updateDebt(String user, Integer pagado, String ulfech, String debe);
 
+    @Query("UPDATE cliente SET  ulfech= :ulfech WHERE cliente= :user")
+    void updateUltfech(String user, String ulfech);
 
     @Query("DELETE FROM cliente WHERE  cliente= :user")
     void removerUser(String user);

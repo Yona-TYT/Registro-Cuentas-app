@@ -61,8 +61,8 @@ public class AccDtailsActivity extends AppCompatActivity implements View.OnClick
     private Spinner mSpin3;
 
     private int currSel1 = StartVar.mCurrency;
-    private int currSel2 = StartVar.mCurrentAcc;
-    private int currSel3 = StartVar.mCurreMes;
+    private int currSel2 = StartVar.mCurrAcc;
+    private int currSel3 = StartVar.mCurrMes;
 
     //---------------------------------------------------------------------
 
@@ -73,7 +73,7 @@ public class AccDtailsActivity extends AppCompatActivity implements View.OnClick
     private Button mBtton2;
 
     public int payIndex = StartVar.payIndex;
-    public int accIndex = StartVar.mCurrentAcc;
+    public int accIndex = StartVar.mCurrAcc;
 
     private List<String> mCurrencyList= Arrays.asList("$", "Bs");
     private int mCindex = StartVar.mCurrency;

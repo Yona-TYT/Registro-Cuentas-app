@@ -122,7 +122,7 @@ public class ImageActivity extends AppCompatActivity {
 
         mVisible = true;
 
-        listRegistro = appDBregistro.get(StartVar.mCurrentAcc).daoUser().getUsers();
+        listRegistro = appDBregistro.get(StartVar.mCurrAcc).daoUser().getUsers();
         Registro mpay = listRegistro.get(StartVar.payIndex);
 
         FilesManager mFileM = new FilesManager(this);

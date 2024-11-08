@@ -77,9 +77,9 @@ public class HomeFragment extends Fragment implements View.OnClickListener, Adap
     private Spinner mSpin4;
 
     private int currSel1 = StartVar.mCurrency;
-    private int currSel2 = StartVar.mCurrentAcc;
-    private int currSel3 = StartVar.mCurreMes;
-    private int currSel4 = 0;
+    private int currSel2 = StartVar.mCurrAcc;
+    private int currSel3 = StartVar.mCurrMes;
+    private int currSel4 = StartVar.currSel4;
 
     private List<String> mSpinL1= Arrays.asList("Dolar", "Bolivar");
     private List<String> mSpinL4= Arrays.asList("Pagos", "Clientes");
@@ -177,8 +177,6 @@ public class HomeFragment extends Fragment implements View.OnClickListener, Adap
             }
         });
         //--------------------------------------------------------------------------------------------
-
-
         //Para la lista del selector Cuentas ----------------------------------------------------------------------------------------------
         // Genera la lista de cuentas ---------------------------------------------------------
         listCuenta = appDBcuenta.daoUser().getUsers();
@@ -218,9 +216,15 @@ public class HomeFragment extends Fragment implements View.OnClickListener, Adap
 
                 //----------------------------------------------------------------------------------
 
-                //Recarga la lista de pagos en funcion de la cuenta seleccionada--------------------
-                if(!appDBregistro.isEmpty()) {
+                //Recarga la lista de pagos y clientes en funcion de la cuenta seleccionada--------------------
+
+                //Lista de pagos
+                if(currSel4==0){
                     setRegList();
+                }
+                //Lista de Clientes
+                else {
+                    setCltList();
                 }
                 //----------------------------------------------------------------------------------
             }
@@ -287,6 +291,8 @@ public class HomeFragment extends Fragment implements View.OnClickListener, Adap
                 else {
                     setCltList();
                 }
+                StartVar mVars = new StartVar(mContext);
+                mVars.setCurrSel4(i);
             }
             @Override
             public void onNothingSelected(AdapterView<?> adapterView) {
@@ -423,7 +429,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener, Adap
             String debe = deb.debe;
             String total = deb.total;
             int isDeb = deb.pagado;
-            int mTyp =  StartVar.mCurrentTyp;
+            int mTyp =  StartVar.mCurrTyp;
             int mult = CalcCalendar.getRangeMultiple(ultFec, mTyp);
             float monto = Basic.getDebt(mult, total, debe);
 

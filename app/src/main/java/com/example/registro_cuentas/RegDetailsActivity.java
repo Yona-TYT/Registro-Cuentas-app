@@ -58,7 +58,7 @@ public class RegDetailsActivity extends AppCompatActivity implements View.OnClic
     private Button mBtton2;
 
     public int payIndex = StartVar.payIndex;
-    public int accIndex = StartVar.mCurrentAcc;
+    public int accIndex = StartVar.mCurrAcc;
 
     private List<String> mCurrencyList= Arrays.asList("$", "Bs");
     private int mCindex = StartVar.mCurrency;

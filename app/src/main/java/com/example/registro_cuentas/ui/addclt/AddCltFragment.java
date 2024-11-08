@@ -95,8 +95,8 @@ public class AddCltFragment extends Fragment  implements View.OnClickListener, A
     // Para guardar los permisos de app comprobados en main
     private boolean mPermiss = false;
     // Index de cuenta actual
-    private int currtAcc = StartVar.mCurrentAcc;
-    private int currtTyp = StartVar.mCurrentTyp;
+    private int currtAcc = StartVar.mCurrAcc;
+    private int currtTyp = StartVar.mCurrTyp;
 
     private Basic mBasic = new Basic(BaseContext.getContext());
 
@@ -194,72 +194,75 @@ public class AddCltFragment extends Fragment  implements View.OnClickListener, A
                 if (i > 0) {
                     mClt = listCliente.get(i-1);
                     mDeb = appDBdeuda.size() > currtAcc? appDBdeuda.get(currtAcc).daoUser().getUsers(mClt.cliente) : null;
+                    String total = "0";
                     //Log.d("PhotoPicker", "-->>>>>>>>>>>>>>>>>>>>>>>>>>>> year: "+mDeb );
-                    if (mDeb == null){
-                        //Inicia la fecha actual
-                        String currdate = "";
-                        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
-                            currdate = LocalDate.now().toString();
+                    if (mDeb != null) {
+//                        //Inicia la fecha actual
+//                        String currdate = "";
+//                        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+//                            currdate = LocalDate.now().toString();
+//                        }
+//                        //Datos de deudas y monto fijo
+//                        Deuda objDeb = new Deuda(
+//                                mClt.cliente, Integer.toString(currtAcc), "0", 0, currdate,
+//                                0, 0, currdate, 0,"0"
+//                        );
+//                        appDBdeuda.get(currtAcc).daoUser().insetUser(objDeb);
+//
+//                        //Actualisza la lista de fechas
+//                        CalcCalendar.startCalList(mContext);
+//
+//                        StartVar mVars = new StartVar(mContext);
+//                        //Recarga La lista de la DB ----------------------------
+//                        mVars.getCltListDB();
+//                        //-------------------------------------------------------
+//                        appDBdeuda = StartVar.appDBdeuda;
+//                        mDeb = appDBdeuda.get(currtAcc).daoUser().getUsers(mClt.cliente);
+//
+//                        mVars.setDebListDB();
+//                        mVars.getDebListDB();
+                        //}
+                        total = mDeb.total;
+                        if (currtTyp > 0) {
+                            int mult = CalcCalendar.getRangeMultiple(mDeb.ulfech, currtTyp);
+                            float monto = Basic.getDebt(mult, mDeb.total, mDeb.debe);
+
+                            int isDeb = mDeb.pagado;
+                            String tx = "";
+                            if (isDeb == 0) {
+                                tx = " [Sin Registros] ";
+                            } else if (isDeb == 1 || mult > 0) {
+                                tx = " [" + (mDeb.oper == 0 ? "+" : "-") + monto + " " + mCurr + "] ";
+                            } else {
+                                tx = " [Pagado] ";
+                            }
+
+                            //tx = mDeb.pagado == 1 ? monto + " " + mCurr + " (" + mult + " " + mListFech.get(currtTyp) + ")" : "Pagado";
+                            mText1.setText("Deuda: " + tx);
+                            mText2.setText(isDeb == 0 ? "No hay Pagos Registrados" : mDeb.ulfech + " (Ultima Fecha Pagada)");
+                        } else {
+                            mText1.setText("Deuda: Cuenta Sin Cierre");
                         }
-                        //Datos de deudas y monto fijo
-                        Deuda objDeb = new Deuda(
-                                mClt.cliente, Integer.toString(currtAcc), "0", 0, currdate,
-                                0, 0, currdate, 0,"0"
-                        );
-                        appDBdeuda.get(currtAcc).daoUser().insetUser(objDeb);
-
-                        //Actualisza la lista de fechas
-                        CalcCalendar.startCalList(mContext);
-
-                        StartVar mVars = new StartVar(mContext);
-                        //Recarga La lista de la DB ----------------------------
-                        mVars.getCltListDB();
-                        //-------------------------------------------------------
-                        appDBdeuda = StartVar.appDBdeuda;
-                        mDeb = appDBdeuda.get(currtAcc).daoUser().getUsers(mClt.cliente);
-
-                        mVars.setDebListDB();
-                        mVars.getDebListDB();
-                    }
-
-                    if (currtTyp>0) {
-                        int mult = CalcCalendar.getRangeMultiple(mDeb.ulfech, currtTyp);
-                        float monto = Basic.getDebt(mult, mDeb.total, mDeb.debe);
-
-                        int isDeb = mDeb.pagado;
-                        String tx = "";
-                        if(isDeb==0){
-                            tx = " [Sin Registros] ";
-                        }
-                        else if(isDeb == 1 || mult > 0) {
-                            tx = " ["+(mDeb.oper==0?"+":"-")+ monto + " "+mCurr+"] ";
+                        swEstat = mDeb.estat == 1;
+                        if (swEstat) {
+                            mInput3.setEnabled(true);
+                            mSw.setChecked(true);
                         }
                         else {
-                            tx = " [Pagado] ";
+                            mInput3.setEnabled(false);
+                            mSw.setChecked(false);
+                            mText1.setText("Deuda: NA");
                         }
-
-                        //tx = mDeb.pagado == 1 ? monto + " " + mCurr + " (" + mult + " " + mListFech.get(currtTyp) + ")" : "Pagado";
-                        mText1.setText("Deuda: " + tx);
-                        mText2.setText(isDeb == 0? "No hay Pagos Registrados" : mDeb.ulfech + " (Ultima Fecha Pagada)");
-                    }
-                    else {
-                        mText1.setText("Deuda: Cuenta Sin Cierre");
-
-                    }
-                    mInput1.setText(mClt.nombre.toUpperCase());
-                    mInput2.setText(mClt.alias.toUpperCase());
-                    mInput3.setText(Basic.setMask(mDeb.total, mCurr));
-
-                    swEstat = mDeb.estat==1;
-                    if(swEstat) {
-                        mInput3.setEnabled(true);
-                        mSw.setChecked(true);
                     }
                     else {
                         mInput3.setEnabled(false);
                         mSw.setChecked(false);
                         mText1.setText("Deuda: NA");
+                        mText2.setText("Uiltimo Pago: NA");
                     }
+                    mInput1.setText(mClt.nombre.toUpperCase());
+                    mInput2.setText(mClt.alias.toUpperCase());
+                    mInput3.setText(Basic.setMask(total, mCurr));
                 }
                 else{
                     mInput1.setText("");

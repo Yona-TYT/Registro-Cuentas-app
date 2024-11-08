@@ -117,7 +117,7 @@ public class PayEditActivity extends AppCompatActivity implements View.OnClickLi
         mBtnImg1 = findViewById(R.id.butt_payedit2);
         imageView1 = findViewById(R.id.image_payedit1);
 
-        listRegistro = appDBregistro.get(StartVar.mCurrentAcc).daoUser().getUsers();
+        listRegistro = appDBregistro.get(StartVar.mCurrAcc).daoUser().getUsers();
         mpay = listRegistro.get(StartVar.payIndex);
 
         mInput1.setText(mpay.concep);
@@ -222,7 +222,7 @@ public class PayEditActivity extends AppCompatActivity implements View.OnClickLi
                 else {
                     //Log.d("PhotoPicker", "Aqi hayyyyyyyyyyyyy5555----------------------------------: ");
                     bitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), currUri);
-                    sImage = mFileM.SavePhoto(bitmap, mpay.registro+StartVar.mCurrentAcc, oldFile, this, this.getContentResolver());
+                    sImage = mFileM.SavePhoto(bitmap, mpay.registro+StartVar.mCurrAcc, oldFile, this, this.getContentResolver());
                 }
             }
             catch (IOException e) {
@@ -234,7 +234,7 @@ public class PayEditActivity extends AppCompatActivity implements View.OnClickLi
             if(sImage.isEmpty()){
                 sImage = currDir;
             }
-            DaoReg mDao = StartVar.appDBregistro.get(StartVar.mCurrentAcc).daoUser();
+            DaoReg mDao = StartVar.appDBregistro.get(StartVar.mCurrAcc).daoUser();
             mDao.updatePay(mpay.registro, concep, monto, currSel1, (swPorc?1:0), sImage);
 
             //Recarga La lista de la DB ----------------------------

@@ -32,10 +32,10 @@ public class StartVar {
 
     // Var redundants
     public static boolean mPermiss = false;     //Permisos de gestion multimedia
-    public static int mCurrentAcc = 0;      // Cuenta seleccionada
-    public static int mCurrentTyp = 0;      // Cuenta seleccionada
+    public static int mCurrAcc = 0;      // Cuenta seleccionada
+    public static int mCurrTyp = 0;      // Cuenta seleccionada
     public static int mCurrency = 0;        //Moneda seleccionada
-    public static int mCurreMes = 0;        //Mes seleccionado
+    public static int mCurrMes = 0;        //Mes seleccionado
 
     public static String mDollar = "";       //Precio del dolar
 
@@ -46,7 +46,7 @@ public class StartVar {
     public static ArrayList<String> morlist = new ArrayList<>();
 
 
-    public static int currSel2 = 0;
+    public static int currSel4 = 0;
     public static int payIndex = 0;
     public static int cltIndex = 0;
 
@@ -168,16 +168,19 @@ public class StartVar {
         mPermiss = permiss;
     }
     public void setCurrentAcc(int idx){
-        mCurrentAcc = idx;
+        mCurrAcc = idx;
     }
     public void setCurrentTyp(int idx){
-        mCurrentTyp = idx;
+        mCurrTyp = idx;
     }
     public void setCurrency(int idx){
         mCurrency = idx;
     }
     public void setCurrentMes(int idx){
-        mCurreMes = idx;
+        mCurrMes = idx;
+    }
+    public void setCurrentClt(int idx){
+        mCurrMes = idx;
     }
 
     public void setDollar(String idx){
@@ -191,8 +194,8 @@ public class StartVar {
         StartVar.typeList = listC;
     }
 
-    public void setCurrSel2(int value){
-        StartVar.currSel2 = value;
+    public void setCurrSel4(int value){
+        StartVar.currSel4 = value;
     }
     public void setPayIndex(int value){
         StartVar.payIndex = value;

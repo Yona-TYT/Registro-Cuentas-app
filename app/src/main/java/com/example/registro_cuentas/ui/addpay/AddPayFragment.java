@@ -36,6 +36,7 @@ import com.example.registro_cuentas.Basic;
 import com.example.registro_cuentas.CalcCalendar;
 import com.example.registro_cuentas.Cliente;
 import com.example.registro_cuentas.CurrencyInput;
+import com.example.registro_cuentas.DaoClt;
 import com.example.registro_cuentas.Deuda;
 import com.example.registro_cuentas.FilesManager;
 import com.example.registro_cuentas.MainActivity;
@@ -99,8 +100,8 @@ public class AddPayFragment extends Fragment implements View.OnClickListener, Vi
     // Para guardar los permisos de app comprobados en main
     private boolean mPermiss = false;
     // Index de cuenta actual
-    private int currtAcc = StartVar.mCurrentAcc;
-    private int currtTyp = StartVar.mCurrentTyp;
+    private int currtAcc = StartVar.mCurrAcc;
+    private int currtTyp = StartVar.mCurrTyp;
 
     private String mCurr = mCurrencyList.get(StartVar.mCurrency);
 
@@ -206,6 +207,7 @@ public class AddPayFragment extends Fragment implements View.OnClickListener, Vi
                     mButt1.setEnabled(true);
 
                     Cliente mClt = listCliente.get(i - 1);
+
                     mInput1.setText(mClt.nombre.toUpperCase());
                     mInput1.setEnabled(false);
 
@@ -214,12 +216,18 @@ public class AddPayFragment extends Fragment implements View.OnClickListener, Vi
                         mInput2.setText(alias);
                         mInput2.setEnabled(false);
                     }
-                    if (mClt.estat == 1) {
-                        mInput4.setText(Basic.setMask(mClt.total, mCurr));
+                    Deuda mDeb = appDBdeuda.size() > currtAcc? appDBdeuda.get(currtAcc).daoUser().getUsers(mClt.cliente) : null;
+                    if(mDeb != null) {
+                        if (mDeb.estat == 1) {
+                            mInput4.setText(Basic.setMask(mDeb.total, mCurr));
 
-                        if (mClt.pagado == 1) {
-                            mButt1.setEnabled(false);
-                            Basic.msg("Este cliente no Tine DEUDAS!");
+                            int mult = CalcCalendar.getRangeMultiple(mDeb.ulfech, currtTyp);
+                            float monto = Basic.getDebt(mult, mDeb.total, mDeb.debe);
+
+                            if (mDeb.pagado == 2 && monto <=0) {
+                                mButt1.setEnabled(false);
+                                Basic.msg("Este cliente no Tine DEUDAS!");
+                            }
                         }
                     }
                 }
@@ -404,7 +412,7 @@ public class AddPayFragment extends Fragment implements View.OnClickListener, Vi
                     else {
                         //Log.d("PhotoPicker", "Aqi hayyyyyyyyyyyyy5555----------------------------------: ");
                         bitmap = MediaStore.Images.Media.getBitmap(mContext.getContentResolver(), currUri);
-                        sImage = mFileM.SavePhoto(bitmap, (mList.get(0)+StartVar.mCurrentAcc), oldFile, mContext, mContext.getContentResolver());
+                        sImage = mFileM.SavePhoto(bitmap, (mList.get(0)+StartVar.mCurrAcc), oldFile, mContext, mContext.getContentResolver());
                     }
                 }
                 catch (IOException e) {
@@ -429,6 +437,9 @@ public class AddPayFragment extends Fragment implements View.OnClickListener, Vi
                    appDBdeuda.get(currtAcc).daoUser().insetUser(objDeb);
                }
                else {
+                   //Actualiza la fecha del ultimo pago
+                   StartVar.appDBcliente.daoUser().updateUltfech(cltId, currdate);
+
                    Deuda mDeb = appDBdeuda.get(currtAcc).daoUser().getUsers(cltId);
                    if (mDeb != null) {
                        int pagado = 1;
