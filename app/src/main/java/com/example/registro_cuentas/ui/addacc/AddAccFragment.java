@@ -6,8 +6,10 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Spinner;
 
 import androidx.activity.OnBackPressedCallback;
 import androidx.activity.OnBackPressedDispatcher;
@@ -23,6 +25,7 @@ import com.example.registro_cuentas.Cuenta;
 import com.example.registro_cuentas.CurrencyInput;
 import com.example.registro_cuentas.MainActivity;
 import com.example.registro_cuentas.R;
+import com.example.registro_cuentas.SelecAdapter;
 import com.example.registro_cuentas.StartVar;
 import com.example.registro_cuentas.databinding.FragmentAddaccBinding;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
@@ -46,6 +49,13 @@ public class AddAccFragment extends Fragment implements View.OnClickListener, Vi
     private EditText mInput2;
     private EditText mInput3;
     private List<EditText> mInputList = new ArrayList<>();
+
+    //Todos los Spinner
+    private Spinner mSpin1;
+    private int currSel1 = 0;
+    private List<String> mSpinL1 = Arrays.asList("Sin Cierre", "Cierre Dia", "Cierre Mes", "Cierre Año");
+    //---------------------------------------------------------------------
+
 
     private ConstraintLayout mConstrain;
     private BottomNavigationView mNavBar = StartVar.mNavBar;
@@ -86,6 +96,7 @@ public class AddAccFragment extends Fragment implements View.OnClickListener, Vi
         mInput1 = binding.inputAdd1;
         mInput2 = binding.inputAdd2;
         mInput3 = binding.inputAdd3;
+        mSpin1 = binding.spinAdd1;
         mButt1 = binding.buttAdd1;
 
         mButt1.setOnClickListener(this);
@@ -110,6 +121,24 @@ public class AddAccFragment extends Fragment implements View.OnClickListener, Vi
         // Para eventos al mostrar o ocultar el teclado-----
         mBasic.steAllKeyEvent(mConstrain, mInputList);
         //-----------------------------------------------
+
+        //--------------------------------------------------------------------------------------------
+        //Para la lista del selector Tipo De Cuenta ----------------------------------------------------------------------------------------------
+        SelecAdapter adapt1 = new SelecAdapter(mContext, mSpinL1);
+        mSpin1.setAdapter(adapt1);
+        //mSpin1.setSelection(mAcc.acctipo); //Set default ingreso
+
+        mSpin1.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                currSel1 = i;
+            }
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+
+            }
+        });
+        //--------------------------------------------------------------------------------------------
 
         mPermiss = StartVar.mPermiss;
         mIndex = "" + appDBcuenta.daoUser().getUsers().size();
@@ -160,18 +189,19 @@ public class AddAccFragment extends Fragment implements View.OnClickListener, Vi
                     mInput.clearFocus();
                 }
                 String monto = Basic.setValue(mList.get(3));
-                if(monto.isEmpty() || Float.parseFloat(monto) <= 0.0){
+                if(monto.isEmpty() || Basic.parseFloat(monto) <= 0.0){
                     //MSG Para entrada de monto
                     msgIdx = 2;
                     setMessage(msgIdx);
                     return;
                 }
+
                 String currdate = "";
                 if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
                     currdate = LocalDate.now().toString();
                 }
 
-                Cuenta obj = new Cuenta(mList.get(0), mList.get(1), mList.get(2), monto, 0, 0, 0,0,"0", currdate);
+                Cuenta obj = new Cuenta(mList.get(0), mList.get(1), mList.get(2), monto, currSel1, 0, 0,0,"0", currdate);
                 appDBcuenta.daoUser().insetUser(obj);
                 //SE Limpia la lista
                 mList.clear();
@@ -188,6 +218,8 @@ public class AddAccFragment extends Fragment implements View.OnClickListener, Vi
                 //Esto inicia las actividad Main despues de tiempo de espera del preloder
                 startActivity(new Intent(mContext, MainActivity.class));
                 //finish(); //Finaliza la actividad y ya no se accede mas
+
+                return;
             }
         }
     }

@@ -208,7 +208,7 @@ public class PayEditActivity extends AppCompatActivity implements View.OnClickLi
             concep = Basic.inputProcessor(concep); //Elimina caracteres que afectan a los csv
 
             String monto = Basic.setValue(mInput2.getText().toString());
-            if(monto.isEmpty() || Float.parseFloat(monto) <= 0.0){
+            if(monto.isEmpty() || Basic.parseFloat(monto) <= 0.0){
                 //MSG Para entrada de monto
                 Basic.msg("Ingrese un MONTO Valido!.");
                 return;

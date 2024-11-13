@@ -29,6 +29,7 @@ import com.example.registro_cuentas.BaseContext;
 import com.example.registro_cuentas.Basic;
 import com.example.registro_cuentas.CalcCalendar;
 import com.example.registro_cuentas.Cliente;
+import com.example.registro_cuentas.Cuenta;
 import com.example.registro_cuentas.CurrencyInput;
 import com.example.registro_cuentas.DaoClt;
 import com.example.registro_cuentas.DaoDeb;
@@ -67,6 +68,8 @@ public class AddCltFragment extends Fragment  implements View.OnClickListener, A
 
     private TextView mText1;
     private TextView mText2;
+    private TextView mText3;
+
     private List<String> mListFech = Arrays.asList( "","Dias", "Meses", "Años");
 
     //Todos los Inputs
@@ -100,6 +103,7 @@ public class AddCltFragment extends Fragment  implements View.OnClickListener, A
 
     private Basic mBasic = new Basic(BaseContext.getContext());
 
+    @SuppressLint("SetTextI18n")
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
     {
         //Se configura el Boton nav Back -----------------------------------------------
@@ -129,6 +133,7 @@ public class AddCltFragment extends Fragment  implements View.OnClickListener, A
 
         mText1 = binding.txviewClt1;
         mText2 = binding.txviewClt2;
+        mText3 = binding.txviewClt3;
 
         mInput1 = binding.inputClt1;
         mInput2 = binding.inputClt2;
@@ -165,9 +170,14 @@ public class AddCltFragment extends Fragment  implements View.OnClickListener, A
         mBasic.steAllKeyEvent(mConstrain, mInputList);
         //-----------------------------------------------
 
-        listCliente = appDBcliente.daoUser().getUsers();
-        //Para la lista del selector Cliente ----------------------------------------------------------------------------------------------
+        List<Cuenta> mAccList = StartVar.appDBcuenta.daoUser().getUsers();
+        if (mAccList.size() > 1) {
+            Cuenta mAcc = mAccList.get(currtAcc+1);
+            mText1.setText("Cuenta: " + mAcc.nombre + " (" + mAcc.desc + ")");
+        }
 
+        //Para la lista del selector Cliente ----------------------------------------------------------------------------------------------
+        listCliente = appDBcliente.daoUser().getUsers();
         List<String> mCltList = new ArrayList<>();
         mCltList.add("Agregar");
         for(int i = 0; i < listCliente.size(); i++){
@@ -238,10 +248,10 @@ public class AddCltFragment extends Fragment  implements View.OnClickListener, A
                             }
 
                             //tx = mDeb.pagado == 1 ? monto + " " + mCurr + " (" + mult + " " + mListFech.get(currtTyp) + ")" : "Pagado";
-                            mText1.setText("Deuda: " + tx);
-                            mText2.setText(isDeb == 0 ? "No hay Pagos Registrados" : mDeb.ulfech + " (Ultima Fecha Pagada)");
+                            mText2.setText("Deuda: " + tx);
+                            mText3.setText(isDeb == 0 ? "No hay Pagos Registrados" : mDeb.ulfech + " (Ultima Fecha Pagada)");
                         } else {
-                            mText1.setText("Deuda: Cuenta Sin Cierre");
+                            mText2.setText("Deuda: Cuenta Sin Cierre");
                         }
                         swEstat = mDeb.estat == 1;
                         if (swEstat) {
@@ -251,14 +261,14 @@ public class AddCltFragment extends Fragment  implements View.OnClickListener, A
                         else {
                             mInput3.setEnabled(false);
                             mSw.setChecked(false);
-                            mText1.setText("Deuda: NA");
+                            mText2.setText("Deuda: NA");
                         }
                     }
                     else {
                         mInput3.setEnabled(false);
                         mSw.setChecked(false);
-                        mText1.setText("Deuda: NA");
-                        mText2.setText("Uiltimo Pago: NA");
+                        mText2.setText("Deuda: NA");
+                        mText3.setText("Uiltimo Pago: NA");
                     }
                     mInput1.setText(mClt.nombre.toUpperCase());
                     mInput2.setText(mClt.alias.toUpperCase());
@@ -267,8 +277,8 @@ public class AddCltFragment extends Fragment  implements View.OnClickListener, A
                 else{
                     mInput1.setText("");
                     mInput2.setText("");
-                    mText1.setText("Deuda: NA");
-                    mText2.setText("Uiltimo Pago: NA");
+                    mText2.setText("Deuda: NA");
+                    mText3.setText("Uiltimo Pago: NA");
                 }
             }
             @Override
@@ -332,7 +342,7 @@ public class AddCltFragment extends Fragment  implements View.OnClickListener, A
 
             String monto = Basic.setValue(mInput3.getText().toString());
             if(swEstat) {
-                if (monto.isEmpty() || Float.parseFloat(monto) <= 0.0) {
+                if (monto.isEmpty() || Basic.parseFloat(monto) <= 0.0) {
                     //MSG Para entrada de monto
                     Basic.msg("Ingrese un MONTO Valido!.");
                     return;

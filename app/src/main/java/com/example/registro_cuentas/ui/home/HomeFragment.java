@@ -423,7 +423,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener, Adap
                 continue;
             }
             Object[] stList = new Object[4];
-            stList[0] = Integer.toString(i);
+            stList[0] = i;
 
             String ultFec = deb.ulfech;
             String debe = deb.debe;
@@ -448,8 +448,8 @@ public class HomeFragment extends Fragment implements View.OnClickListener, Adap
                 }
             }
             else {
-                txA = "[Sin Cierres]";
-                txB = "Ult: " + ultFec;
+                txA = "  ";
+                txB = " Ult: " + ultFec;
             }
             stList[1] = clt.nombre;
             stList[2] = txA;

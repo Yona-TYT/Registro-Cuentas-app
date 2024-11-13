@@ -403,7 +403,7 @@ public class AddPayFragment extends Fragment implements View.OnClickListener, Vi
 
                 String monto = Basic.setValue(mList.get(4));
 
-                if(monto.isEmpty() || Float.parseFloat(monto) <= 0.0){
+                if(monto.isEmpty() || Basic.parseFloat(monto) <= 0.0){
                     //MSG Para entrada de monto
                     msgIdx = 2;
                     setMessage(msgIdx);
@@ -455,9 +455,9 @@ public class AddPayFragment extends Fragment implements View.OnClickListener, Vi
                            int mult = CalcCalendar.getRangeMultiple(ulFech, currtTyp);
                            float alldeb = Basic.getDebt(mult, mDeb.total, mDeb.debe);
                            if (alldeb > 0) {
-                               float debt = Float.parseFloat(debe);
-                               float currMnt = Float.parseFloat(monto);
-                               float total = Float.parseFloat(mDeb.total);
+                               float debt = Basic.parseFloat(debe);
+                               float currMnt = Basic.parseFloat(monto);
+                               float total = Basic.parseFloat(mDeb.total);
 
                                currMnt += debt;
 

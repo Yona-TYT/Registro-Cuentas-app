@@ -212,9 +212,9 @@ public class AccDtailsActivity extends AppCompatActivity implements View.OnClick
 
                 if(currSel1 == 0) {
                     if (reg.oper == 0) {
-                        totalCred += mon.isEmpty() ? 0 : Float.parseFloat(mon);
+                        totalCred += mon.isEmpty() ? 0 : Basic.parseFloat(mon);
                     } else {
-                        totalDeb -= mon.isEmpty() ? 0 : Float.parseFloat(mon);
+                        totalDeb -= mon.isEmpty() ? 0 : Basic.parseFloat(mon);
                     }
                 }
                 else{
@@ -222,9 +222,9 @@ public class AccDtailsActivity extends AppCompatActivity implements View.OnClick
                         LocalDate date = LocalDate.parse(fecha);
                         if(date.getMonth().toString().equals(selFecha.mes)){
                             if (reg.oper == 0) {
-                                totalCred += mon.isEmpty() ? 0 : Float.parseFloat(mon);
+                                totalCred += mon.isEmpty() ? 0 : Basic.parseFloat(mon);
                             } else {
-                                totalDeb -= mon.isEmpty() ? 0 : Float.parseFloat(mon);
+                                totalDeb -= mon.isEmpty() ? 0 : Basic.parseFloat(mon);
                             }
                         }
                     }

@@ -106,7 +106,7 @@ public class AccEditActivity extends AppCompatActivity implements View.OnClickLi
         //Efecto moneda
         //-------------------------------------------------------------------------------------------------------
         String curr = mCurrencyList.get(StartVar.mCurrency);
-        mInput3.setText(Basic.setMask(mAcc.monto, curr));
+        mInput3.setText(Basic.setMask(Basic.getValue(mAcc.monto), curr));
         List<View> mViewL1 = new ArrayList<>();
         int mOpt = 0;
         CurrencyInput mCInput = new CurrencyInput( this, mInput3,  mViewL1, curr, mOpt);
@@ -115,8 +115,8 @@ public class AccEditActivity extends AppCompatActivity implements View.OnClickLi
 
         //--------------------------------------------------------------------------------------------
         //Para la lista del selector Tipo De Cuenta ----------------------------------------------------------------------------------------------
-        SelecAdapter adapt2 = new SelecAdapter(this, mSpinL1);
-        mSpin1.setAdapter(adapt2);
+        SelecAdapter adapt1 = new SelecAdapter(this, mSpinL1);
+        mSpin1.setAdapter(adapt1);
         mSpin1.setSelection(mAcc.acctipo); //Set default ingreso
 
         mSpin1.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
@@ -167,7 +167,7 @@ public class AccEditActivity extends AppCompatActivity implements View.OnClickLi
             }
 
             String monto = Basic.setValue(mInput3.getText().toString());
-            if(monto.isEmpty() || Float.parseFloat(monto) <= 0.0){
+            if(monto.isEmpty() || Basic.parseFloat(monto) <= 0.0){
                 //MSG Para entrada de monto
                 Basic.msg("Ingrese un MONTO Valido!.");
                 return;

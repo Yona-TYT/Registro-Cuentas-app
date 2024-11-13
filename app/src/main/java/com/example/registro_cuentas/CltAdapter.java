@@ -76,7 +76,7 @@ public class CltAdapter extends BaseAdapter implements Filterable, View.OnClickL
 
         // Se ajustan los parametros del Boton ----------------------------------
         butt.setId(R.id.butt_cltlist);
-        butt.setTag(idx);
+        butt.setTag(textList.get(idx)[0]);
         butt.setText("+");
         butt.setTypeface(Typeface.DEFAULT_BOLD);
         LinearLayout.LayoutParams buttParams = new LinearLayout.LayoutParams(mBasic.getPixelSiz(R.dimen.button_wss), mBasic.getPixelSiz(R.dimen.button_h1));

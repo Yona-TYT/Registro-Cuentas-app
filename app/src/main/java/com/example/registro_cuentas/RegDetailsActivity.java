@@ -123,7 +123,7 @@ public class RegDetailsActivity extends AppCompatActivity implements View.OnClic
         mTextList.add(mText5);
 
         // Se llenan los textView
-        setInputList();
+        setTextViewList();
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             mSw.setFocusedByDefault(false);
@@ -148,7 +148,7 @@ public class RegDetailsActivity extends AppCompatActivity implements View.OnClic
     //------------------------------------------------------------
 
     @SuppressLint("SetTextI18n")
-    public void setInputList(){
+    public void setTextViewList(){
         if(!appDBregistro.isEmpty()) {
             CalcCalendar cale = new CalcCalendar();
             listRegistro = appDBregistro.get(accIndex).daoUser().getUsers();
@@ -170,7 +170,7 @@ public class RegDetailsActivity extends AppCompatActivity implements View.OnClic
             i++;
             mTextList.get(i).setText("Concepto: " + txConc);
             i++;
-            mTextList.get(i).setText("Monto: "+txOpt+ Basic.getValue(txMont)+ " "+mCurrencyList.get(mCindex));
+            mTextList.get(i).setText("Monto: "+txOpt+ Basic.getValue(txMont)+mCurrencyList.get(mCindex));
             i++;
             mTextList.get(i).setText("Fecha: "+ txFech);
             i++;

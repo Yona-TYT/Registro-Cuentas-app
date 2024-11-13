@@ -19,6 +19,9 @@ import androidx.cardview.widget.CardView;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.content.ContextCompat;
 
+import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
+import java.text.ParseException;
 import java.util.List;
 
 public class Basic {
@@ -97,6 +100,36 @@ public class Basic {
         }
     }
 
+    public static Float parseFloat(String value){
+        DecimalFormatSymbols symbols = new DecimalFormatSymbols();
+        symbols.setDecimalSeparator('.');
+        DecimalFormat format = new DecimalFormat("0.##");
+        format.setDecimalFormatSymbols(symbols);
+
+        try {
+            return format.parse(value).floatValue();
+        }
+        catch (ParseException e) {
+            e.printStackTrace();
+        }
+        return (float)0.00;
+    }
+
+    public static String setDecimal(Float value){
+        DecimalFormatSymbols symbols = new DecimalFormatSymbols();
+        symbols.setDecimalSeparator('.');
+        DecimalFormat format = new DecimalFormat("0.##");
+        format.setDecimalFormatSymbols(symbols);
+
+        try {
+            return format.parse(Float.toString(value)).toString();
+        }
+        catch (ParseException e) {
+            e.printStackTrace();
+        }
+        return "0.00";
+    }
+
     @SuppressLint("DefaultLocale")
     public static String setValue(String value) {
         value = value.replaceAll("([^.;^0-9]+)", "");
@@ -107,7 +140,7 @@ public class Basic {
             if (StartVar.mCurrency == 1) {    //Selector en Bs
                 number = number / precDoll;
             }
-            return String.format("%.2f", number);
+            return setDecimal(number);
         } else return "";
     }
 
@@ -120,7 +153,7 @@ public class Basic {
             if (StartVar.mCurrency == 1) {    //Selector en Bs
                 number = number * precDoll;
             }
-            return String.format("%.2f", number);
+            return setDecimal(number);
         } else return "0";
     }
     public static Float floatFormat(String value) {

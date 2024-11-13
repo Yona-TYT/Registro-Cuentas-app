@@ -7,6 +7,7 @@
     android:layout_height="match_parent"
     tools:context=".ui.addclt.AddCltFragment">
 
+
     <TextView
         android:id="@+id/txview_clt1"
         android:layout_width="@dimen/txview_w1"
@@ -14,7 +15,7 @@
         android:layout_marginTop="80dp"
         android:background="@color/text_background"
         android:padding="@dimen/txview_pad2"
-        android:text="Deuda: No Apliaca"
+        android:text="Cuenta: NA"
         android:textSize="@dimen/inner_text_2"
         android:textStyle="bold"
         app:layout_constraintEnd_toStartOf="@+id/guideline2"
@@ -29,13 +30,28 @@
         android:layout_height="@dimen/txview_h2"
         android:background="@color/text_background"
         android:padding="@dimen/txview_pad2"
-        android:text="Ultimo Pago: NA"
+        android:text="Deuda: No Apliaca"
         android:textSize="@dimen/inner_text_2"
         android:textStyle="bold"
         app:layout_constraintEnd_toStartOf="@+id/guideline2"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="@+id/guideline"
         app:layout_constraintTop_toBottomOf="@+id/txview_clt1"
+        tools:ignore="MissingConstraints" />
+
+    <TextView
+        android:id="@+id/txview_clt3"
+        android:layout_width="@dimen/txview_w1"
+        android:layout_height="@dimen/txview_h2"
+        android:background="@color/text_background"
+        android:padding="@dimen/txview_pad2"
+        android:text="Ultimo Pago: NA"
+        android:textSize="@dimen/inner_text_2"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toStartOf="@+id/guideline2"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="@+id/guideline"
+        app:layout_constraintTop_toBottomOf="@+id/txview_clt2"
         tools:ignore="MissingConstraints" />
 
     <Spinner
@@ -48,7 +64,7 @@
         app:layout_constraintEnd_toStartOf="@+id/guideline2"
         app:layout_constraintHorizontal_bias="0.576"
         app:layout_constraintStart_toEndOf="@+id/input_clt1"
-        app:layout_constraintTop_toBottomOf="@+id/txview_clt2"
+        app:layout_constraintTop_toBottomOf="@+id/txview_clt3"
         app:layout_constraintVertical_bias="0.0" />
 
     <Spinner
@@ -76,7 +92,7 @@
         app:layout_constraintEnd_toStartOf="@+id/guideline2"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="@+id/guideline"
-        app:layout_constraintTop_toBottomOf="@+id/txview_clt2"
+        app:layout_constraintTop_toBottomOf="@+id/txview_clt3"
         app:layout_constraintVertical_bias="0.0"
         tools:ignore="MissingConstraints" />
 
@@ -140,7 +156,7 @@
         app:layout_constraintHorizontal_bias="0.476"
         app:layout_constraintStart_toStartOf="@+id/guideline"
         app:layout_constraintTop_toBottomOf="@+id/input_clt4"
-        app:layout_constraintVertical_bias="0.607" />
+        app:layout_constraintVertical_bias="0.507" />
 
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/guideline"
