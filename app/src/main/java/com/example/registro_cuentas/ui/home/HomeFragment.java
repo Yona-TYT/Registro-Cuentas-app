@@ -239,11 +239,21 @@ public class HomeFragment extends Fragment implements View.OnClickListener, Adap
         // Genera la lista de fechas ---------------------------------------------------------
         List<String> fechaList = new ArrayList<>();
         fechaList.add("Todos");
+        String curM = "";
+        String curY = "";
         List<Fecha> listFecha = appDBfecha.daoUser().getUsers();
-        for (int i = 0; i < listFecha.size(); i++){
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+            LocalDate currdate = LocalDate.now();
+            curM = currdate.getMonth().toString();
+            curY = Integer.toString(currdate.getYear());
+        }
+        for (int i = (listFecha.size()-1); i >=0 ; i--){
             String mes = listFecha.get(i).mes;
             String year = listFecha.get(i).year;
             fechaList.add(mes+" ("+year+")");
+            if(curM.equals(mes) && curY.equals(year)){
+                currSel3 = i;
+            }
         }
         SelecAdapter adapt3 = new SelecAdapter(mContext, fechaList);
         mSpin3.setAdapter(adapt3);
