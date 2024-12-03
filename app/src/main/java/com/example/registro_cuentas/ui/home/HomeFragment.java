@@ -261,10 +261,11 @@ public class HomeFragment extends Fragment implements View.OnClickListener, Adap
         mSpin3.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                currSel3 = i;
-                appDBcuenta.daoUser().updateCurrentFec(StartVar.saveDataName, i);
+                int count = i==0?0 :adapterView.getCount();
+                currSel3 = (count - i);
+                appDBcuenta.daoUser().updateCurrentFec(StartVar.saveDataName, (count - i));
                 StartVar mVars = new StartVar(mContext);
-                mVars.setCurrentMes(i);
+                mVars.setCurrentMes((count - i));
 
                 if(currSel4 == 0) {
                     //Recarga la lista de pagos en funcion de la cuenta seleccionada--------------------
@@ -391,7 +392,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener, Adap
                 String fecha = reg.fecha;
                 if(currSel3 == 0) {
                     Object[] stList = new Object[5];
-                    stList[0] = Integer.toString(i);
+                    stList[0] = i;
                     stList[1] = name;
                     stList[2] = reg.monto;
                     stList[3] = fecha;
@@ -403,7 +404,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener, Adap
                         LocalDate date = LocalDate.parse(fecha);
                         if(date.getMonth().toString().equals(selFecha.mes)){
                             Object[] stList = new Object[5];
-                            stList[0] = Integer.toString(i);
+                            stList[0] = i;
                             stList[1] = name;
                             stList[2] = reg.monto;
                             stList[3] = fecha;

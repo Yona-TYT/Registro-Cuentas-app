@@ -182,8 +182,7 @@ public class Basic {
 
     public static String setMask(String value, String sing) {
         value = value.replaceAll("([^.;^0-9]+)", "");
-        value = value.replaceAll("^.$", "0.");
-
+        value = value.replaceAll("(^\\.$)", "0.");
         return value + " " + sing;
     }
 
