@@ -1,5 +1,6 @@
 package com.example.registro_cuentas.ui.addpay;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -112,6 +113,7 @@ public class AddPayFragment extends Fragment implements View.OnClickListener, Vi
     private Uri oldFile = null;
     private Uri currUri = null;
 
+    @SuppressLint("DefaultLocale")
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
     {
         //Se configura el Boton nav Back -----------------------------------------------
@@ -191,8 +193,28 @@ public class AddPayFragment extends Fragment implements View.OnClickListener, Vi
         //Para la lista del selector Cliente ----------------------------------------------------------------------------------------------
         List<String> mCltList = new ArrayList<>();
         mCltList.add("Agregar");
+        int x = currtAcc;
+        int siz = 0;
         for(int i = 0; i < listCliente.size(); i++){
-            mCltList.add(listCliente.get(i).nombre);
+            List<Integer> bitList = Basic.getBits(listCliente.get(i).bits);
+            int mByte = bitList.get(0);
+            if(x == 32){
+                x = 0;
+                siz ++;
+                if(siz < bitList.size()){
+                    mByte = bitList.get(siz);
+                }
+                else{
+                    mByte = 0x0;
+                }
+            }
+
+            if(Basic.bitR(mByte, x) == 1) {
+                mCltList.add(listCliente.get(i).nombre);
+            }
+//            else {
+//                Basic.msg(String.format("%s - %x - %s - %d",listCliente.get(i).nombre, bitList.size(), Basic.bitR(mByte, x) == 1, currtAcc));
+//            }
         }
         SelecAdapter adapt1 = new SelecAdapter(mContext, mCltList);
         mSpin1.setAdapter(adapt1);
@@ -242,12 +264,10 @@ public class AddPayFragment extends Fragment implements View.OnClickListener, Vi
                     mInput2.setEnabled(true);
 
                     mInput4.setText(Basic.setMask("0", mCurr));
-
                 }
             }
             @Override
             public void onNothingSelected(AdapterView<?> adapterView) {
-
             }
         });
         //--------------------------------------------------------------------------------------------
@@ -432,7 +452,8 @@ public class AddPayFragment extends Fragment implements View.OnClickListener, Vi
                    Cliente objClt = null;
                    objClt = new Cliente(
                            "cltID"+cltId, mList.get(1), mList.get(2),"0",
-                           (swPorc?1:0), currdate, 0,0, currdate, 0, "0"
+                           (swPorc?1:0), currdate, 0,0, currdate, 0,
+                           "0", Basic.saveNewBit(StartVar.mCurrAcc)
                    );
                    appDBcliente.daoUser().insetUser(objClt);
 

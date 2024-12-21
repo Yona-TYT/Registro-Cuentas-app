@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".CltEditActivity">
+
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/toolbar_cltedit1"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:background="?attr/colorPrimary"
+        android:elevation="4dp"
+        android:theme="@style/ThemeOverlay.AppCompat.Dark"
+        android:popupTheme="@style/ThemeOverlay.AppCompat.Dark"
+        tools:ignore="MissingConstraints" />
+
+    <TextView
+        android:id="@+id/txview1"
+        android:layout_width="@dimen/txview_wm"
+        android:layout_height="@dimen/txview_h1"
+        android:layout_marginEnd="156dp"
+        android:padding="5dp"
+        android:text="Para las Cuentas:"
+        android:textSize="@dimen/inner_text_1"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toStartOf="@+id/guideline2"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="@+id/guideline"
+        app:layout_constraintTop_toBottomOf="@+id/input_cltedit3"
+        tools:ignore="MissingConstraints" />
+
+    <Spinner
+        android:id="@+id/spin_cltedit1"
+        android:layout_width="@dimen/spinner_w1"
+        android:layout_height="@dimen/spinner_h1"
+        android:layout_marginEnd="144dp"
+        android:textSize="@dimen/selec_text"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toStartOf="@+id/guideline2"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="@+id/guideline"
+        app:layout_constraintTop_toBottomOf="@+id/txview1" />
+
+    <com.google.android.material.textfield.TextInputEditText
+        android:id="@+id/input_cltedit1"
+        android:layout_width="@dimen/input_wm"
+        android:layout_height="@dimen/input_h1"
+        android:layout_marginTop="200dp"
+        android:hint="Nombre Cliente"
+        android:inputType="textCapWords"
+        android:maxLength="20"
+        android:padding="10dp"
+        android:textSize="@dimen/inner_text_2"
+        app:layout_constraintEnd_toStartOf="@+id/guideline2"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="@+id/guideline"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:ignore="MissingConstraints" />
+
+    <com.google.android.material.textfield.TextInputEditText
+        android:id="@+id/input_cltedit2"
+        android:layout_width="@dimen/input_wm"
+        android:layout_height="@dimen/input_h1"
+        android:hint="Alias"
+        android:inputType="textCapWords"
+        android:maxLength="20"
+        android:padding="10dp"
+        android:textSize="@dimen/inner_text_2"
+        app:layout_constraintEnd_toStartOf="@+id/guideline2"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="@+id/guideline"
+        app:layout_constraintTop_toBottomOf="@+id/input_cltedit1"
+        tools:ignore="MissingConstraints" />
+
+    <com.google.android.material.textfield.TextInputEditText
+        android:id="@+id/input_cltedit3"
+        android:layout_width="@dimen/input_wm"
+        android:layout_height="@dimen/input_h1"
+        android:cursorVisible="false"
+        android:ems="10"
+        android:hint="Monto Estimado"
+        android:imeOptions="actionDone"
+        android:inputType="numberDecimal"
+        android:maxLength="20"
+        android:padding="10dp"
+        android:textSize="@dimen/inner_text_2"
+        app:layout_constraintEnd_toStartOf="@+id/guideline2"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="@+id/guideline"
+        app:layout_constraintTop_toBottomOf="@+id/input_cltedit2"
+        tools:ignore="MissingConstraints" />
+
+    <Button
+        android:id="@+id/butt_cltedit1"
+        android:layout_width="@dimen/button_w1"
+        android:layout_height="@dimen/button_h1"
+        android:layout_marginBottom="248dp"
+        android:padding="2dp"
+        android:text="Guardar"
+        android:textSize="@dimen/inner_text_2"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/guideline2"
+        app:layout_constraintHorizontal_bias="0.476"
+        app:layout_constraintStart_toStartOf="@+id/guideline"
+        app:layout_constraintTop_toBottomOf="@+id/spin_cltedit1"
+        app:layout_constraintVertical_bias="0.196" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_begin="30dp" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_end="30dp" />
+
+    <CheckBox
+        android:id="@+id/checkBox"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="CheckBox"
+        tools:layout_editor_absoluteX="70dp"
+        tools:layout_editor_absoluteY="488dp" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

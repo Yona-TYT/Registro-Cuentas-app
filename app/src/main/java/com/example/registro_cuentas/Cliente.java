@@ -19,8 +19,12 @@ public class Cliente {
     public String ulfech;
     public Integer oper;
     public String debe;
+    public String bits;
 
-    public Cliente(@NonNull String cliente, String nombre, String alias, String total, Integer porc, String fecha, Integer estat, Integer pagado, String ulfech, Integer oper, String debe)
+    public Cliente(@NonNull String cliente, String nombre, String alias, String total,
+                   Integer porc, String fecha, Integer estat, Integer pagado, String ulfech,
+                   Integer oper, String debe, String bits
+            )
     {
         this.cliente = cliente;
         this.nombre = nombre;
@@ -32,6 +36,6 @@ public class Cliente {
         this.pagado = pagado;
         this.ulfech = ulfech;
         this.oper = oper;
-        this.debe = debe;
+        this.bits = bits;
     }
 }

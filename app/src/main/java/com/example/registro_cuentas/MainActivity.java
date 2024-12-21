@@ -261,7 +261,7 @@ public class MainActivity extends AppCompatActivity {
                     Registro arr = list.get(j);
 
                     //------------------------------------------------------
-                    // Se crea la lista para esportar a csv  ---------------
+                    // Se crea la lista para exportar a csv  ---------------
                     String[] txList= new String[13];
 
                     txList[0]=arr.registro;
@@ -316,7 +316,7 @@ public class MainActivity extends AppCompatActivity {
                 Cliente arr = listCliente.get(i);
                 //------------------------------------------------------
                 // Se crea la lista para exportar a csv  ---------------
-                String[] txList= new String[11];
+                String[] txList= new String[12];
 
                 txList[0]=arr.cliente;
                 txList[1]=arr.nombre;
@@ -329,6 +329,7 @@ public class MainActivity extends AppCompatActivity {
                 txList[8]=arr.ulfech;
                 txList[9]=arr.oper.toString();
                 txList[10]=arr.debe;
+                txList[11]="0xffff";
 
                 totalList.add(txList);
                 //--------------------------------------------------------
@@ -496,7 +497,7 @@ public class MainActivity extends AppCompatActivity {
                                 else if(opt==3){
                                     Cliente obj = new Cliente(
                                             spl[0], spl[1], spl[2], spl[3], Integer.parseInt(spl[4]), spl[5], Integer.parseInt(spl[6]),
-                                            Integer.parseInt(spl[7]), spl[8], Integer.parseInt(spl[9]), spl[10]
+                                            Integer.parseInt(spl[7]), spl[8], Integer.parseInt(spl[9]), spl[10], spl[11]
                                     );
                                     StartVar.appDBcliente.daoUser().insetUser(obj);
                                 }

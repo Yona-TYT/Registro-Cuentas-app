@@ -99,6 +99,12 @@ public class CltDetailsActivity extends AppCompatActivity implements View.OnClic
         mText5 = findViewById(R.id.txview_cdts5);
         mText6 = findViewById(R.id.txview_cdts6);
 
+        mBtton1 = findViewById(R.id.butt_cdts1);
+        mBtton2  = findViewById(R.id.butt_cdts2);
+
+        //mBtton1.setOnClickListener(this);
+        mBtton2.setOnClickListener(this);
+
         mTextList.add(mText1);
         mTextList.add(mText2);
         mTextList.add(mText3);
@@ -136,7 +142,6 @@ public class CltDetailsActivity extends AppCompatActivity implements View.OnClic
             mAccName = mAcc.nombre + " (" + mAcc.desc + ")";
         }
 
-        CalcCalendar cale = new CalcCalendar();
         List<Cliente> mCltList = appDBcliente.daoUser().getUsers();
         Cliente mClt = mCltList.get(cltIndex);
 
@@ -204,8 +209,8 @@ public class CltDetailsActivity extends AppCompatActivity implements View.OnClic
             startActivity(mIntent);
             finish(); //Finaliza la actividad y ya no se accede mas
         }
-        if (itemId == R.id.butt_dts2){
-            Intent mIntent = new Intent(this, PayEditActivity.class);
+        if (itemId == R.id.butt_cdts2){
+            Intent mIntent = new Intent(this, CltEditActivity.class);
             this.finish();
             startActivity(mIntent);
         }

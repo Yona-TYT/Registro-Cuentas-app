@@ -22,6 +22,8 @@ import androidx.core.content.ContextCompat;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.text.ParseException;
+import java.util.ArrayList;
+import java.util.HexFormat;
 import java.util.List;
 
 public class Basic {
@@ -223,4 +225,55 @@ public class Basic {
 
     }
 
+    public static int bitL(int val, int rota) {
+        return val << rota;
+    }
+
+    public static int bitR(int val, int rota) {
+        return (val >> rota) & 1;
+    }
+
+    public static int toHex(String value) {
+        return Integer.decode(value);
+    }
+
+    public static List<Integer> getBits(int n) {
+        List<Integer> list = new ArrayList<>();
+        while (true) {
+            if(n < 32){
+                list.add(bitL(0x1, n));
+                break;
+            }
+            else{
+                list.add(0);
+                n -= 32;
+            }
+        }
+        return list;
+    }
+
+    public static List<Integer> getBits(String text) {
+        String[] sList = text.split(";");
+        int n = 0;
+        List<Integer> list = new ArrayList<>();
+        for (String val: sList){
+            list.add(Integer.decode(val));
+        }
+        return list;
+    }
+
+    public static String saveBits(List<Integer> list) {
+        String text = "";
+        for (Integer val: list){
+            text = String.format("%x",val);
+           if(!text.startsWith("0x")){
+               text = "0x"+text;
+           }
+           //msg(text);
+        }
+        return text;
+    }
+    public static String saveNewBit(int r){
+       return String.format("0x%x",Basic.bitL(0x1, r));
+    }
 }
