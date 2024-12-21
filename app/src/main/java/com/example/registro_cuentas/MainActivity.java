@@ -329,7 +329,7 @@ public class MainActivity extends AppCompatActivity {
                 txList[8]=arr.ulfech;
                 txList[9]=arr.oper.toString();
                 txList[10]=arr.debe;
-                txList[11]="0xffff";
+                txList[11]=arr.bits;
 
                 totalList.add(txList);
                 //--------------------------------------------------------
