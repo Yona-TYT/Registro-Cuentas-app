@@ -253,7 +253,7 @@ public class Basic {
     }
 
     public static List<Integer> getBits(String text) {
-        String[] sList = text.split(";");
+        String[] sList = text.split("'");
         int n = 0;
         List<Integer> list = new ArrayList<>();
         for (String val: sList){
@@ -274,6 +274,15 @@ public class Basic {
         return text;
     }
     public static String saveNewBit(int r){
-       return String.format("0x%x",Basic.bitL(0x1, r));
+        String bit = "";
+        for(int i = 0 ; i < r; i += 32) {
+            if(r < 32) {
+                bit = String.format("0x%x", Basic.bitL(0x1, r))+"'";
+            }
+            else{
+                r -= 32;
+            }
+        }
+        return bit;
     }
 }

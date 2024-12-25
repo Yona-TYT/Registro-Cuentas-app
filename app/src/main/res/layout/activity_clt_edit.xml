@@ -34,6 +34,7 @@
 
     <Spinner
         android:id="@+id/spin_cltedit1"
+        android:focusable="true"
         android:layout_width="@dimen/spinner_w1"
         android:layout_height="@dimen/spinner_h1"
         android:layout_marginEnd="144dp"
@@ -128,6 +129,7 @@
         android:layout_height="wrap_content"
         android:text="CheckBox"
         tools:layout_editor_absoluteX="70dp"
-        tools:layout_editor_absoluteY="488dp" />
+        tools:layout_editor_absoluteY="488dp"
+        tools:ignore="MissingConstraints" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

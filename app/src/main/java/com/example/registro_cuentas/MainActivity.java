@@ -105,6 +105,7 @@ public class MainActivity extends AppCompatActivity {
                 startVar.setmPermiss(checkStoragePermissions());
             }
         }
+
         //-------------------------------------------------------
         startVar.setAccListDB();
         startVar.setCltListDB();
@@ -328,7 +329,7 @@ public class MainActivity extends AppCompatActivity {
                 txList[7]=arr.pagado.toString();
                 txList[8]=arr.ulfech;
                 txList[9]=arr.oper.toString();
-                txList[10]=arr.debe;
+                txList[10]=arr.debe == null? "0" : arr.debe;
                 txList[11]=arr.bits;
 
                 totalList.add(txList);
@@ -355,6 +356,7 @@ public class MainActivity extends AppCompatActivity {
             }
             try {
                 File file = mFile.csvExport(totalList);
+                Log.d("PhotoPicker", " Aquiiiiiiiiii Hayyyyyy ------------------------: "+ StartVar.mPermiss);
                 if(file != null) {
                     Intent intent = new Intent(Intent.ACTION_SEND);
                     intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);

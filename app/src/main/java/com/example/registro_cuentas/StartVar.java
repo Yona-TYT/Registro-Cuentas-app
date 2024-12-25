@@ -50,6 +50,8 @@ public class StartVar {
     public static int currSel4 = 0;
     public static int payIndex = 0;
     public static int cltIndex = 0;
+    public static String cltBit = "0x0";
+
 
     public static String saveDataName = "savedataID0";
     public static String saveRegName = "reg";
@@ -208,14 +210,12 @@ public class StartVar {
     public void setCltIndex(int value){
         StartVar.cltIndex = value;
     }
+    public void setCltBit(String value){
+        StartVar.cltBit = value;
+    }
 
     public void setMorlist(ArrayList<String> list){
         StartVar.morlist.clear();
         StartVar.morlist = list;
     }
 }
-
-//
-//            for (Deuda d : list) {
-//        if (d.)
-//        }

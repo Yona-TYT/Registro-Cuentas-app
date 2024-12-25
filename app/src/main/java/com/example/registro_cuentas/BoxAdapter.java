@@ -1,8 +1,6 @@
 package com.example.registro_cuentas;
 
-import android.app.Application;
 import android.content.Context;
-import android.content.Intent;
 import android.graphics.Typeface;
 import android.util.Log;
 import android.view.Gravity;
@@ -10,8 +8,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.CheckBox;
-import android.widget.Filterable;
 import android.widget.LinearLayout;
+import android.widget.Spinner;
 
 import androidx.core.content.ContextCompat;
 
@@ -23,11 +21,14 @@ public class BoxAdapter extends BaseAdapter implements View.OnClickListener{
 
     private List<Object[]> textList = new ArrayList<>();
 
+    Spinner mSpin;
+
     private ArrayList<Integer> newList = new ArrayList<>();    // Values to be displayed
 
-    public BoxAdapter(Context mContex, List<Object[]> textList){
+    public BoxAdapter(Context mContex, List<Object[]> textList, Spinner mSpin){
         this.mContex = mContex;
         this.textList = textList;
+        this.mSpin = mSpin;
     }
 
     @Override
@@ -47,7 +48,6 @@ public class BoxAdapter extends BaseAdapter implements View.OnClickListener{
 
     @Override
     public View getView(int pos, View convertView, ViewGroup parent){
-
         Log.d("PhotoPicker", "Ya hay ? 11111------------------------: "+ textList.size());
         CheckBox check = new CheckBox(mContex);
         check.setChecked((Boolean)textList.get(pos)[1]);
@@ -105,7 +105,9 @@ public class BoxAdapter extends BaseAdapter implements View.OnClickListener{
                         //Basic.msg(String.format("- %x ", mByte ^ currBit));
                         bitList.set(siz, (mByte ^ currBit));
                     }
-                    daoClt.updateBits(mClt.cliente, Basic.saveBits(bitList));
+                    StartVar startVar = new StartVar(mContex);
+                    startVar.setCltBit(Basic.saveBits(bitList));
+                    daoClt.updateBits(mClt.cliente, StartVar.cltBit);
                 }
 
 

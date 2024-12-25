@@ -1,5 +1,7 @@
 package com.example.registro_cuentas;
 
+import android.util.Log;
+
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
@@ -47,6 +49,7 @@ public class CsvWriterSimple {
     private String formatCsvField(final String field, final boolean quote) {
 
         String result = field;
+        //Log.d("PhotoPicker", " malayaaa!!------------------------: "+ field);
 
         if (result.contains(COMMA)
                 || result.contains(DOUBLE_QUOTES)
