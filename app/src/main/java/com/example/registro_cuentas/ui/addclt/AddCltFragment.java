@@ -179,7 +179,11 @@ public class AddCltFragment extends Fragment  implements View.OnClickListener, A
         //Para la lista del selector Cliente ----------------------------------------------------------------------------------------------
         listCliente = appDBcliente.daoUser().getUsers();
         List<String> mCltList = new ArrayList<>();
+        List<String> mAliList = new ArrayList<>();
+        List<String> mIdList = new ArrayList<>();
         mCltList.add("Agregar");
+        mAliList.add("");
+        mIdList.add("");
         int x = currtAcc;
         int siz = 0;
         for(int i = 0; i < listCliente.size(); i++){
@@ -198,6 +202,8 @@ public class AddCltFragment extends Fragment  implements View.OnClickListener, A
 
             if(Basic.bitR(mByte, x) == 1) {
                 mCltList.add(listCliente.get(i).nombre);
+                mAliList.add(listCliente.get(i).alias);
+                mIdList.add(listCliente.get(i).cliente);
             }
 //            else {
 //                Basic.msg(String.format("%s - %x - %s - %d",listCliente.get(i).nombre, bitList.size(), Basic.bitR(mByte, x) == 1, currtAcc));
@@ -222,36 +228,11 @@ public class AddCltFragment extends Fragment  implements View.OnClickListener, A
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
                 currSel1 = i;
                 if (i > 0) {
-                    mClt = listCliente.get(i-1);
-                    mDeb = appDBdeuda.size() > currtAcc? appDBdeuda.get(currtAcc).daoUser().getUsers(mClt.cliente) : null;
+
+                    mDeb = appDBdeuda.size() > currtAcc? appDBdeuda.get(currtAcc).daoUser().getUsers(mIdList.get(i)) : null;
                     String total = "0";
                     //Log.d("PhotoPicker", "-->>>>>>>>>>>>>>>>>>>>>>>>>>>> year: "+mDeb );
                     if (mDeb != null) {
-//                        //Inicia la fecha actual
-//                        String currdate = "";
-//                        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
-//                            currdate = LocalDate.now().toString();
-//                        }
-//                        //Datos de deudas y monto fijo
-//                        Deuda objDeb = new Deuda(
-//                                mClt.cliente, Integer.toString(currtAcc), "0", 0, currdate,
-//                                0, 0, currdate, 0,"0"
-//                        );
-//                        appDBdeuda.get(currtAcc).daoUser().insetUser(objDeb);
-//
-//                        //Actualisza la lista de fechas
-//                        CalcCalendar.startCalList(mContext);
-//
-//                        StartVar mVars = new StartVar(mContext);
-//                        //Recarga La lista de la DB ----------------------------
-//                        mVars.getCltListDB();
-//                        //-------------------------------------------------------
-//                        appDBdeuda = StartVar.appDBdeuda;
-//                        mDeb = appDBdeuda.get(currtAcc).daoUser().getUsers(mClt.cliente);
-//
-//                        mVars.setDebListDB();
-//                        mVars.getDebListDB();
-                        //}
                         total = mDeb.total;
                         if (currtTyp > 0) {
                             int mult = CalcCalendar.getRangeMultiple(mDeb.ulfech, currtTyp);
@@ -290,8 +271,8 @@ public class AddCltFragment extends Fragment  implements View.OnClickListener, A
                         mText2.setText("Deuda: NA");
                         mText3.setText("Uiltimo Pago: NA");
                     }
-                    mInput1.setText(mClt.nombre.toUpperCase());
-                    mInput2.setText(mClt.alias.toUpperCase());
+                    mInput1.setText(mCltList.get(i).toUpperCase());
+                    mInput2.setText(mAliList.get(i).toUpperCase());
                     mInput3.setText(Basic.setMask(total, mCurr));
                 }
                 else{

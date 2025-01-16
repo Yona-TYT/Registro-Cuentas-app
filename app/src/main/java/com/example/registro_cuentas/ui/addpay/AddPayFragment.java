@@ -192,7 +192,11 @@ public class AddPayFragment extends Fragment implements View.OnClickListener, Vi
 
         //Para la lista del selector Cliente ----------------------------------------------------------------------------------------------
         List<String> mCltList = new ArrayList<>();
+        List<String> mAliList = new ArrayList<>();
+        List<String> mIdList = new ArrayList<>();
         mCltList.add("Agregar");
+        mAliList.add("");
+        mIdList.add("");
         int x = currtAcc;
         int siz = 0;
         for(int i = 0; i < listCliente.size(); i++){
@@ -211,6 +215,8 @@ public class AddPayFragment extends Fragment implements View.OnClickListener, Vi
 
             if(Basic.bitR(mByte, x) == 1) {
                 mCltList.add(listCliente.get(i).nombre);
+                mAliList.add(listCliente.get(i).alias);
+                mIdList.add(listCliente.get(i).cliente);
             }
 //            else {
 //                Basic.msg(String.format("%s - %x - %s - %d",listCliente.get(i).nombre, bitList.size(), Basic.bitR(mByte, x) == 1, currtAcc));
@@ -227,18 +233,15 @@ public class AddPayFragment extends Fragment implements View.OnClickListener, Vi
                 currSel1 = i;
                 if (i > 0) {
                     mButt1.setEnabled(true);
-
-                    Cliente mClt = listCliente.get(i - 1);
-
-                    mInput1.setText(mClt.nombre.toUpperCase());
+                    mInput1.setText(mCltList.get(i).toUpperCase());
                     mInput1.setEnabled(false);
 
-                    String alias = mClt.alias.toUpperCase();
+                    String alias = mAliList.get(i).toUpperCase();
                     if (!alias.isEmpty()) {
                         mInput2.setText(alias);
                         mInput2.setEnabled(false);
                     }
-                    Deuda mDeb = appDBdeuda.size() > currtAcc? appDBdeuda.get(currtAcc).daoUser().getUsers(mClt.cliente) : null;
+                    Deuda mDeb = appDBdeuda.size() > currtAcc? appDBdeuda.get(currtAcc).daoUser().getUsers(mIdList.get(i)) : null;
                     if(mDeb != null) {
                         if (mDeb.estat == 1) {
                             mInput4.setText(Basic.setMask(mDeb.total, mCurr));
