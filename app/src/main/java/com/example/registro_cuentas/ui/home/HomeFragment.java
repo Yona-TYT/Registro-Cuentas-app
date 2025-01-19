@@ -155,19 +155,27 @@ public class HomeFragment extends Fragment implements View.OnClickListener, Adap
         SelecAdapter adapt1 = new SelecAdapter(mContext, mSpinL1);
         mSpin1.setAdapter(adapt1);
         mSpin1.setSelection(currSel1); //Set La Moneda como default
+        mCurr = mCurrencyList.get(currSel1);
         mSpin1.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
                 currSel1 = i;
+                mCurr = mCurrencyList.get(i);
+
                 // Actualiza y guarda el estado del selector tipo de moneda ------------------------
                 appDBcuenta.daoUser().updateCurrency(StartVar.saveDataName, i);
 
                 StartVar mVars = new StartVar(mContext);
                 mVars.setCurrency(i);
                 //----------------------------------------------------------------------------------
-                //Recarga la lista de pagos en funcion de la cuenta seleccionada--------------------
-                if(!appDBregistro.isEmpty()) {
+                //Recarga la lista de pagos o lista dwe clientes -----------------------------------
+                //Lista de pagos
+                if(currSel4==0){
                     setRegList();
+                }
+                //Lista de Clientes
+                else {
+                    setCltList();
                 }
                 //----------------------------------------------------------------------------------
             }
@@ -293,7 +301,6 @@ public class HomeFragment extends Fragment implements View.OnClickListener, Adap
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
                 currSel4 = i;
-                mCurr = mCurrencyList.get(i);
                 //Lista de pagos
                 if(i==0){
                     setRegList();
@@ -302,8 +309,6 @@ public class HomeFragment extends Fragment implements View.OnClickListener, Adap
                 else {
                     setCltList();
                 }
-                StartVar mVars = new StartVar(mContext);
-                mVars.setCurrSel4(i);
             }
             @Override
             public void onNothingSelected(AdapterView<?> adapterView) {
