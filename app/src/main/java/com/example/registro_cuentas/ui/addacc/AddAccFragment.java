@@ -22,6 +22,7 @@ import com.example.registro_cuentas.AppDBacc;
 import com.example.registro_cuentas.BaseContext;
 import com.example.registro_cuentas.Basic;
 import com.example.registro_cuentas.Cuenta;
+import com.example.registro_cuentas.CurrencyEditText;
 import com.example.registro_cuentas.CurrencyInput;
 import com.example.registro_cuentas.MainActivity;
 import com.example.registro_cuentas.R;
@@ -47,7 +48,7 @@ public class AddAccFragment extends Fragment implements View.OnClickListener, Vi
     //Todos los Inputs
     private EditText mInput1;
     private EditText mInput2;
-    private EditText mInput3;
+    private CurrencyEditText mInput3;
     private List<EditText> mInputList = new ArrayList<>();
 
     //Todos los Spinner
@@ -55,7 +56,6 @@ public class AddAccFragment extends Fragment implements View.OnClickListener, Vi
     private int currSel1 = 0;
     private List<String> mSpinL1 = Arrays.asList("Sin Cierre", "Cierre Dia", "Cierre Mes", "Cierre Año");
     //---------------------------------------------------------------------
-
 
     private ConstraintLayout mConstrain;
     private BottomNavigationView mNavBar = StartVar.mNavBar;
@@ -71,6 +71,8 @@ public class AddAccFragment extends Fragment implements View.OnClickListener, Vi
     private boolean mPermiss = false;
 
     private Basic mBasic = new Basic(BaseContext.getContext());
+
+    private String mCurr = mCurrencyList.get(StartVar.mCurrency);
 
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         AddAccViewModel addAccViewModel = new ViewModelProvider(this).get(AddAccViewModel.class);
@@ -109,18 +111,14 @@ public class AddAccFragment extends Fragment implements View.OnClickListener, Vi
 
         //Efecto moneda
         //-------------------------------------------------------------------------------------------------------
-        String curr = mCurrencyList.get(StartVar.mCurrency);
-        mInput3.setText(Basic.setMask("0", curr));
+        mInput3.setCurrencySymbol(mCurr, true);
+        mInput3.setText(Basic.setFormatter("0"));
         List<View> mViewL1 = new ArrayList<>();
         mViewL1.add(mNavBar);
-        int mOpt = 0;
-        CurrencyInput mCInput = new CurrencyInput( mContext, mInput3,  mViewL1, curr, mOpt);
-        mCInput.set();
-        //----------------------------------------------------------------------------------------------------
-
-        // Para eventos al mostrar o ocultar el teclado-----
-        mBasic.steAllKeyEvent(mConstrain, mInputList);
-        //-----------------------------------------------
+        // Para eventos al mostrar o ocultar el teclado
+        Basic mKeyBoardEvent = new Basic(mContext);
+        mKeyBoardEvent.keyboardEvent(mConstrain, mInput1, mViewL1, 0); //opt = 0 is clear elm focus
+        //-------------------------------------------------------------------------------------
 
         //--------------------------------------------------------------------------------------------
         //Para la lista del selector Tipo De Cuenta ----------------------------------------------------------------------------------------------
@@ -188,7 +186,7 @@ public class AddAccFragment extends Fragment implements View.OnClickListener, Vi
                     mInput.setSelection(0);
                     mInput.clearFocus();
                 }
-                String monto = Basic.setValue(mList.get(3));
+                String monto = Basic.setValue(Double.toString(mInput3.getNumericValue()));
                 if(monto.isEmpty() || Basic.parseFloat(monto) <= 0.0){
                     //MSG Para entrada de monto
                     msgIdx = 2;

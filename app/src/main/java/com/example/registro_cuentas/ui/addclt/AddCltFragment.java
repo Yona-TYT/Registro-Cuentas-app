@@ -30,6 +30,7 @@ import com.example.registro_cuentas.Basic;
 import com.example.registro_cuentas.CalcCalendar;
 import com.example.registro_cuentas.Cliente;
 import com.example.registro_cuentas.Cuenta;
+import com.example.registro_cuentas.CurrencyEditText;
 import com.example.registro_cuentas.CurrencyInput;
 import com.example.registro_cuentas.DaoClt;
 import com.example.registro_cuentas.DaoDeb;
@@ -75,7 +76,7 @@ public class AddCltFragment extends Fragment  implements View.OnClickListener, A
     //Todos los Inputs
     private EditText mInput1;
     private EditText mInput2;
-    private EditText mInput3;
+    private CurrencyEditText mInput3;
     private List<EditText> mInputList = new ArrayList<>();
 
     //Botones
@@ -100,6 +101,8 @@ public class AddCltFragment extends Fragment  implements View.OnClickListener, A
     // Index de cuenta actual
     private int currtAcc = StartVar.mCurrAcc;
     private int currtTyp = StartVar.mCurrTyp;
+
+    private String mCurr = mCurrencyList.get(StartVar.mCurrency);
 
     private Basic mBasic = new Basic(BaseContext.getContext());
 
@@ -157,14 +160,14 @@ public class AddCltFragment extends Fragment  implements View.OnClickListener, A
 
         //Efecto moneda
         //-------------------------------------------------------------------------------------------------------
-        String mCurr = mCurrencyList.get(StartVar.mCurrency);
-        mInput3.setEnabled(false);
+        mInput3.setCurrencySymbol(mCurr, true);
+        mInput3.setText("0");
         List<View> mViewL1 = new ArrayList<>();
         mViewL1.add(mNavBar);
-        int mOpt = 0;
-        CurrencyInput mCInput = new CurrencyInput( mContext, mInput3,  mViewL1, mCurr, mOpt);
-        mCInput.set();
-        //----------------------------------------------------------------------------------------------------
+        // Para eventos al mostrar o ocultar el teclado
+        Basic mKeyBoardEvent = new Basic(mContext);
+        mKeyBoardEvent.keyboardEvent(mConstrain, mInput1, mViewL1, 0); //opt = 0 is clear elm focus
+        //-------------------------------------------------------------------------------------
 
         // Para eventos al mostrar o ocultar el teclado-----
         mBasic.steAllKeyEvent(mConstrain, mInputList);
@@ -219,7 +222,7 @@ public class AddCltFragment extends Fragment  implements View.OnClickListener, A
                 mSw.setChecked(swEstat);
             }
             else {
-                mInput3.setText(Basic.setMask("0", mCurr));
+                mInput3.setText(Basic.setFormatter("0"));
             }
         }
         mSpin1.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
@@ -273,7 +276,7 @@ public class AddCltFragment extends Fragment  implements View.OnClickListener, A
                     }
                     mInput1.setText(mCltList.get(i).toUpperCase());
                     mInput2.setText(mAliList.get(i).toUpperCase());
-                    mInput3.setText(Basic.setMask(total, mCurr));
+                    mInput3.setText(Basic.getValueFormatter(total));
                 }
                 else{
                     mInput1.setText("");
@@ -323,7 +326,7 @@ public class AddCltFragment extends Fragment  implements View.OnClickListener, A
                 mSpin2.setEnabled(true);
             }
             else{
-                mInput3.setText(Basic.setMask("0", mCurrencyList.get(StartVar.mCurrency)));
+                mInput3.setText(Basic.setFormatter("0"));
                 mSpin2.setSelection(0);
                 mInput3.setEnabled(false);
                 mSpin2.setEnabled(false);
@@ -341,7 +344,7 @@ public class AddCltFragment extends Fragment  implements View.OnClickListener, A
             String alias = mInput2.getText().toString().toLowerCase();
             alias = Basic.inputProcessor(alias); //Elimina caracteres que afectan a los csv
 
-            String monto = Basic.setValue(mInput3.getText().toString());
+            String monto = Basic.setValue(Double.toString(mInput3.getNumericValue()));
             if(swEstat) {
                 if (monto.isEmpty() || Basic.parseFloat(monto) <= 0.0) {
                     //MSG Para entrada de monto

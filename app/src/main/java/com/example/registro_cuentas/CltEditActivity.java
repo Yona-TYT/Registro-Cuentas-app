@@ -203,6 +203,7 @@ public class CltEditActivity extends AppCompatActivity implements View.OnClickLi
             alias = Basic.inputProcessor(alias); //Elimina caracteres que afectan a los csv
 
             String monto = Basic.setValue(mInput3.getText().toString());
+
             if(monto.isEmpty() || Basic.parseFloat(monto) <= 0.0){
                 //MSG Para entrada de monto
                 Basic.msg("Ingrese un MONTO Valido!.");

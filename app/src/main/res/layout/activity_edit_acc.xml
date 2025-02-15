@@ -75,18 +75,19 @@
         app:layout_constraintTop_toBottomOf="@+id/input_accedit1"
         tools:ignore="MissingConstraints" />
 
-    <com.google.android.material.textfield.TextInputEditText
+    <com.example.registro_cuentas.CurrencyEditText
         android:id="@+id/input_accedit3"
         android:layout_width="@dimen/input_wm"
         android:layout_height="@dimen/input_h1"
-        android:cursorVisible="false"
         android:ems="10"
         android:hint="Monto Estimado"
         android:imeOptions="actionDone"
-        android:inputType="numberDecimal"
         android:maxLength="20"
         android:padding="10dp"
         android:textSize="@dimen/inner_text_2"
+        app:localeTag="ES"
+        app:maxNumberOfDecimalDigits="2"
+        app:useCurrencySymbolAsHint="true"
         app:layout_constraintEnd_toStartOf="@+id/guideline2"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="@+id/guideline"

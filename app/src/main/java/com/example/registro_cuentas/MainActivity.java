@@ -178,17 +178,18 @@ public class MainActivity extends AppCompatActivity {
 
         BottomNavigationView navView = findViewById(R.id.nav_view);
         navView.setLabelVisibilityMode(NavigationBarView.LABEL_VISIBILITY_LABELED);
+        startVar.setNavBar(navView);
 
         // Passing each menu ID as a set of Ids because each
         // menu should be considered as top level destinations.
         AppBarConfiguration appBarConfiguration = new AppBarConfiguration.Builder(
                 R.id.navigation_home, R.id.navigation_pay, R.id.navigation_acc, R.id.navigation_clt)
                 .build();
+
         NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment_activity_main);
         NavigationUI.setupActionBarWithNavController(this, navController, appBarConfiguration);
         NavigationUI.setupWithNavController(binding.navView, navController);
 
-        startVar.setNavBar(navView);
         View rootView = this.findViewById(android.R.id.content);
         startVar.setRootView(rootView);
     }

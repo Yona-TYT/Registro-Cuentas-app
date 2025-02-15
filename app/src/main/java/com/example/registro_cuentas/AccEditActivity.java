@@ -38,7 +38,7 @@ public class AccEditActivity extends AppCompatActivity implements View.OnClickLi
     //Todos los Inputs
     private EditText mInput1;
     private EditText mInput2;
-    private EditText mInput3;
+    private CurrencyEditText mInput3;
     private List<EditText> mInputList = new ArrayList<>();
 
     //Todos los Spinner
@@ -56,6 +56,9 @@ public class AccEditActivity extends AppCompatActivity implements View.OnClickLi
     private String mIndex = "";
 
     private List<String> mCurrencyList= Arrays.asList("$", "Bs");
+
+    private String mCurr = mCurrencyList.get(StartVar.mCurrency);
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -105,12 +108,9 @@ public class AccEditActivity extends AppCompatActivity implements View.OnClickLi
 
         //Efecto moneda
         //-------------------------------------------------------------------------------------------------------
-        String curr = mCurrencyList.get(StartVar.mCurrency);
-        mInput3.setText(Basic.setMask(Basic.getValue(mAcc.monto), curr));
-        List<View> mViewL1 = new ArrayList<>();
-        int mOpt = 0;
-        CurrencyInput mCInput = new CurrencyInput( this, mInput3,  mViewL1, curr, mOpt);
-        mCInput.set();
+        mInput3.setCurrencySymbol(mCurr, true);
+        mInput3.setText(Basic.getValue(mAcc.monto));
+
         //----------------------------------------------------------------------------------------------------
 
         //--------------------------------------------------------------------------------------------
@@ -166,7 +166,7 @@ public class AccEditActivity extends AppCompatActivity implements View.OnClickLi
                 return;
             }
 
-            String monto = Basic.setValue(mInput3.getText().toString());
+            String monto = Basic.setValue(Double.toString(mInput3.getNumericValue()));
             if(monto.isEmpty() || Basic.parseFloat(monto) <= 0.0){
                 //MSG Para entrada de monto
                 Basic.msg("Ingrese un MONTO Valido!.");

@@ -6,6 +6,7 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Rect;
 import android.graphics.Typeface;
+import android.os.Build;
 import android.util.DisplayMetrics;
 import android.view.Gravity;
 import android.view.View;
@@ -21,10 +22,12 @@ import androidx.core.content.ContextCompat;
 
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
+import java.text.NumberFormat;
 import java.text.ParseException;
 import java.util.ArrayList;
-import java.util.HexFormat;
+import java.util.IllformedLocaleException;
 import java.util.List;
+import java.util.Locale;
 
 public class Basic {
     private static Context mContex;
@@ -45,7 +48,7 @@ public class Basic {
         return getPixelSiz(id) / scaledDensity;
     }
 
-    public void keyboardEvent(ConstraintLayout mConstrain, View elm, int opt) {
+    public void keyboardEvent(ConstraintLayout mConstrain, View elm,  List<View> mViewList, int opt) {
         // Para eventos al mostrar o ocultar el teclado
         mConstrain.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
             @Override
@@ -62,6 +65,12 @@ public class Basic {
                 if (keypadHeight > screenHeight * 0.15) {
                     isDow = false;
                     isUp = true;
+
+                    for (View mView : mViewList) {
+                        if(mView != null) {
+                            mView.setVisibility(View.INVISIBLE);
+                        }
+                    }
                     //Toast.makeText(MainActivity.this, "Keyboard is +", Toast.LENGTH_LONG).show();
                 }
                 else {
@@ -73,6 +82,12 @@ public class Basic {
                         //Toast.makeText(mContex, "Aqui hayyyyyyyy?  " , Toast.LENGTH_LONG).show();
                         elm.clearFocus();
                     }
+
+                    for (View mView : mViewList) {
+                        if(mView != null) {
+                            mView.setVisibility(View.VISIBLE);
+                        }
+                    }
                 }
             }
         });
@@ -81,7 +96,7 @@ public class Basic {
     public void steAllKeyEvent(ConstraintLayout mConstrain, List<EditText> mInputList) {
         for (int i = 0; i < mInputList.size(); i++) {
             // Para eventos al mostrar o ocultar el teclado
-            keyboardEvent(mConstrain, mInputList.get(i), 0); //opt = 0 is clear elm focus
+            keyboardEvent(mConstrain, mInputList.get(i), new ArrayList<>(), 0); //opt = 0 is clear elm focus
             //-------------------------------------------------------------------------------------
         }
     }
@@ -117,57 +132,61 @@ public class Basic {
         return (float)0.00;
     }
 
-    public static String setDecimal(Float value){
-        DecimalFormatSymbols symbols = new DecimalFormatSymbols();
-        symbols.setDecimalSeparator('.');
-        DecimalFormat format = new DecimalFormat("0.##");
-        format.setDecimalFormatSymbols(symbols);
-
-        try {
-            return format.parse(Float.toString(value)).toString();
+    public static String setFormatter(String value){
+        value = value.replaceAll("([^\\d.,-])","");
+        if (value.isEmpty()){
+            value = "0";
         }
-        catch (ParseException e) {
-            e.printStackTrace();
-        }
-        return "0.00";
+        NumberFormat nf = NumberFormat.getNumberInstance(Locale.forLanguageTag("ES"));
+        DecimalFormat formatter = (DecimalFormat) nf;
+        formatter.applyPattern("###,##0.00");
+        return formatter.format(Float.parseFloat(value));
     }
 
     @SuppressLint("DefaultLocale")
     public static String setValue(String value) {
-        value = value.replaceAll("([^.;^0-9]+)", "");
+        value = value.replaceAll("([^\\d.,])","");
+        if (value.isEmpty()){
+            value = "0";
+        }
         float precDoll = floatFormat(StartVar.mDollar);
-        if (!value.isEmpty()) {
-            float number = Float.parseFloat(value);
-
-            if (StartVar.mCurrency == 1) {    //Selector en Bs
-                number = number / precDoll;
-            }
-            return setDecimal(number);
-        } else return "";
+        float number = Float.parseFloat(value);
+        if (StartVar.mCurrency == 1) {    //Selector en Bs
+            number = number / precDoll;
+        }
+        return Float.toString(number);
     }
 
     @SuppressLint("DefaultLocale")
     public static String getValue(String value) {
-        value = value.replaceAll("([^.;^0-9]+)", "");
+        value = value.replaceAll("([^\\d.,])","");
+        value = value.replaceAll(",",".");
+
+        if (value.isEmpty()){
+            value = "0";
+        }
         float precDoll = floatFormat(StartVar.mDollar);
-        if (!value.isEmpty()) {
-            float number = Float.parseFloat(value);
-            if (StartVar.mCurrency == 1) {    //Selector en Bs
-                number = number * precDoll;
-            }
-            return setDecimal(number);
-        } else return "0";
+        float number = Float.parseFloat(value);
+        if (StartVar.mCurrency == 1) {    //Selector en Bs
+            number = number * precDoll;
+        }
+        return Float.toString(number);
+    }
+
+    @SuppressLint("DefaultLocale")
+    public static String getValueFormatter(String value) {
+        return setFormatter(getValue(value));
     }
     public static Float floatFormat(String value) {
-        String mValue = value.replaceAll("([^.;^0-9]+)", "");
+        String mValue = value.replaceAll("([^.\\d])", "");
         mValue = mValue.replaceAll("^.$", "0.00");
 
         return mValue.isEmpty() ? (float)0 : Float.parseFloat(mValue);
     }
 
     public static float getDebt(int mult, String mont, String debt) {
-        mont = mont.replaceAll("([^.;^0-9]+)", "");
-        debt = debt.replaceAll("([^.;^0-9]+)", "");
+        mont = mont.replaceAll("([^.0-9]+)", "");
+        debt = debt.replaceAll("([^.0-9]+)", "");
 
         float precDoll = Basic.floatFormat(StartVar.mDollar);
         if (!mont.isEmpty() && !debt.isEmpty()) {
@@ -183,13 +202,13 @@ public class Basic {
     }
 
     public static String setMask(String value, String sing) {
-        value = value.replaceAll("([^.;^0-9]+)", "");
-        value = value.replaceAll("(^\\.$)", "0.");
-        return value + " " + sing;
+        value = setFormatter(value);
+
+        return value;
     }
 
     public static String nameProcessor(String value){
-        String text = value.replaceAll("([^\\s;^0-9a-zA-Z]+)", "");
+        String text = value.replaceAll("([^\\s0-9a-zA-Z]+)", "");
         text = text.replaceAll("(\\s{2,})", " ");
         text = text.replaceAll("(^\\s)|(\\s$)", "");
         return text;
@@ -285,4 +304,31 @@ public class Basic {
         }
         return bit;
     }
+
+
+    public static String parseMoneyValue(String value, String groupingSeparator, String currencySymbol) {
+        return value.replace(groupingSeparator, "").replace(currencySymbol, "");
+    }
+
+    public static Number parseMoneyValueWithLocale(Locale locale, String value, String groupingSeparator, String currencySymbol) {
+        String valueWithoutSeparator = parseMoneyValue(value, groupingSeparator, currencySymbol);
+        try {
+            return NumberFormat.getInstance(locale).parse(valueWithoutSeparator);
+        } catch (ParseException exception) {
+            return 0;
+        }
+    }
+
+    public static Locale getLocaleFromTag(String localeTag) {
+        try {
+            return new Locale.Builder().setLanguageTag(localeTag).build();
+        } catch (IllformedLocaleException e) {
+            return Locale.getDefault();
+        }
+    }
+
+    public static boolean isLollipopAndAbove() {
+        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP;
+    }
+
 }

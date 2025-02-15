@@ -170,7 +170,7 @@ public class RegDetailsActivity extends AppCompatActivity implements View.OnClic
             i++;
             mTextList.get(i).setText("Concepto: " + txConc);
             i++;
-            mTextList.get(i).setText("Monto: "+txOpt+ Basic.getValue(txMont)+mCurrencyList.get(mCindex));
+            mTextList.get(i).setText("Monto: "+txOpt+ Basic.getValueFormatter(txMont)+mCurrencyList.get(mCindex));
             i++;
             mTextList.get(i).setText("Fecha: "+ txFech);
             i++;

@@ -36,6 +36,7 @@ import com.example.registro_cuentas.BaseContext;
 import com.example.registro_cuentas.Basic;
 import com.example.registro_cuentas.CalcCalendar;
 import com.example.registro_cuentas.Cliente;
+import com.example.registro_cuentas.CurrencyEditText;
 import com.example.registro_cuentas.CurrencyInput;
 import com.example.registro_cuentas.DaoClt;
 import com.example.registro_cuentas.Deuda;
@@ -75,7 +76,7 @@ public class AddPayFragment extends Fragment implements View.OnClickListener, Vi
     private EditText mInput1;
     private EditText mInput2;
     private EditText mInput3;
-    private EditText mInput4;
+    private CurrencyEditText mInput4;
     private List<EditText> mInputList = new ArrayList<>();
 
     //Botones
@@ -165,21 +166,18 @@ public class AddPayFragment extends Fragment implements View.OnClickListener, Vi
         mInputList.add(mInput1);
         mInputList.add(mInput2);
         mInputList.add(mInput3);
-        mInputList.add(mInput4);
+        //mInputList.add(mInput4);
 
         //Efecto moneda
         //-------------------------------------------------------------------------------------------------------
-        mInput4.setText(Basic.setMask("0", mCurr));
+        mInput4.setCurrencySymbol(mCurr, true);
+        mInput4.setText(Basic.setFormatter("0"));
         List<View> mViewL1 = new ArrayList<>();
         mViewL1.add(mNavBar);
-        int mOpt = 0;
-        CurrencyInput mCInput = new CurrencyInput( mContext, mInput4,  mViewL1, mCurr, mOpt);
-        mCInput.set();
-        //----------------------------------------------------------------------------------------------------
-
-        // Para eventos al mostrar o ocultar el teclado-----
-        mBasic.steAllKeyEvent(mConstrain, mInputList);
-        //-----------------------------------------------
+        // Para eventos al mostrar o ocultar el teclado
+        Basic mKeyBoardEvent = new Basic(mContext);
+        mKeyBoardEvent.keyboardEvent(mConstrain, mInput1, mViewL1, 0); //opt = 0 is clear elm focus
+        //-------------------------------------------------------------------------------------
 
         mPermiss = StartVar.mPermiss;
         if(!appDBregistro.isEmpty()) {
@@ -244,8 +242,7 @@ public class AddPayFragment extends Fragment implements View.OnClickListener, Vi
                     Deuda mDeb = appDBdeuda.size() > currtAcc? appDBdeuda.get(currtAcc).daoUser().getUsers(mIdList.get(i)) : null;
                     if(mDeb != null) {
                         if (mDeb.estat == 1) {
-                            mInput4.setText(Basic.setMask(mDeb.total, mCurr));
-
+                            mInput4.setText(Basic.getValueFormatter(mDeb.total));
                             int mult = CalcCalendar.getRangeMultiple(mDeb.ulfech, currtTyp);
                             float monto = Basic.getDebt(mult, mDeb.total, mDeb.debe);
 
@@ -256,7 +253,7 @@ public class AddPayFragment extends Fragment implements View.OnClickListener, Vi
                         }
                     }
                     else {
-                        mInput4.setText(Basic.setMask("0.00", mCurr));
+                        mInput4.setText(Basic.setFormatter("0"));
                     }
                 }
                 else{
@@ -266,7 +263,7 @@ public class AddPayFragment extends Fragment implements View.OnClickListener, Vi
                     mInput2.setText("");
                     mInput2.setEnabled(true);
 
-                    mInput4.setText(Basic.setMask("0", mCurr));
+                    mInput4.setText(Basic.setFormatter("0"));
                 }
             }
             @Override
@@ -299,19 +296,6 @@ public class AddPayFragment extends Fragment implements View.OnClickListener, Vi
         binding = null;
     }
 
-//    @Override
-//    public void onViewCreated(View view, Bundle savedInstanceState) {
-//        super.onViewCreated(view, savedInstanceState);
-//        cameraLauncher = new CameraLauncher(requireActivity().getActivityResultRegistry(), mContext, result -> {
-//            // TODO :: use the captured result
-//        });
-//        mBtnImg1.setOnClickListener(v -> cameraLauncher.launch());
-//    }
-
-
-//    public void startActivityForResult(Intent intent, int requestCode, ActivityLauncher.OnActivityResult onActivityResult) {
-//        activityLauncher.launch(intent, result -> onActivityResult.onActivityResultCallback(requestCode, result.getResultCode(), result.getData()));
-//    }
 
 
     // Registers a photo picker activity launcher in single-select mode.
@@ -424,7 +408,7 @@ public class AddPayFragment extends Fragment implements View.OnClickListener, Vi
                     currdate = LocalDate.now().toString();
                 }
 
-                String monto = Basic.setValue(mList.get(4));
+                String monto = Basic.setValue(Double.toString(mInput4.getNumericValue()));
 
                 if(monto.isEmpty() || Basic.parseFloat(monto) <= 0.0){
                     //MSG Para entrada de monto
@@ -432,6 +416,7 @@ public class AddPayFragment extends Fragment implements View.OnClickListener, Vi
                     setMessage(msgIdx);
                     return;
                 }
+
                 //Se guarda la foto en un nuevo directorio --------------------------------
                 Bitmap bitmap = null;
                 try {
@@ -517,7 +502,7 @@ public class AddPayFragment extends Fragment implements View.OnClickListener, Vi
                                    ulFech = CalcCalendar.getDatePlus(mDeb.ulfech, i, currtTyp);
                                    if (CalcCalendar.getRangeMultiple(ulFech, currtTyp) < 0) {
                                        Basic.msg("El MONTO es mayor a la deuda!");
-                                       mInput4.setText(Basic.setMask(Float.toString(debt), mCurr));
+                                       mInput4.setText(Basic.getValueFormatter(Float.toString(debt)));
                                        return;
                                    }
                                }

@@ -49,7 +49,7 @@ public class PayEditActivity extends AppCompatActivity implements View.OnClickLi
 
     //Todos los Inputs
     private EditText mInput1;
-    private EditText mInput2;
+    private CurrencyEditText mInput2;
 
     //Botones
     private Button mButt1;
@@ -74,6 +74,8 @@ public class PayEditActivity extends AppCompatActivity implements View.OnClickLi
     private String sImage = "";
     private Uri oldFile = null;
     private Uri currUri = null;
+
+    private String mCurr = mCurrencyList.get(StartVar.mCurrency);
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -129,12 +131,9 @@ public class PayEditActivity extends AppCompatActivity implements View.OnClickLi
 
         //Efecto moneda
         //-------------------------------------------------------------------------------------------------------
-        String curr = mCurrencyList.get(StartVar.mCurrency);
-        mInput2.setText(Basic.setMask(Basic.getValue(mpay.monto), curr));
-        List<View> mViewL1 = new ArrayList<>();
-        int mOpt = 0;
-        CurrencyInput mCInput = new CurrencyInput( this, mInput2,  mViewL1, curr, mOpt);
-        mCInput.set();
+        mInput2.setCurrencySymbol(mCurr, true);
+        mInput2.setText(Basic.getValue(mpay.monto));
+
         //----------------------------------------------------------------------------------------------------
 
         //--------------------------------------------------------------------------------------------
@@ -207,7 +206,7 @@ public class PayEditActivity extends AppCompatActivity implements View.OnClickLi
             String concep = mInput1.getText().toString();
             concep = Basic.inputProcessor(concep); //Elimina caracteres que afectan a los csv
 
-            String monto = Basic.setValue(mInput2.getText().toString());
+            String monto = Basic.setValue(Double.toString(mInput2.getNumericValue()));
             if(monto.isEmpty() || Basic.parseFloat(monto) <= 0.0){
                 //MSG Para entrada de monto
                 Basic.msg("Ingrese un MONTO Valido!.");

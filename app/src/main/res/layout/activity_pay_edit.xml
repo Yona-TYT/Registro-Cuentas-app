@@ -56,18 +56,19 @@
         app:layout_constraintStart_toEndOf="@+id/image_payedit1"
         app:layout_constraintTop_toBottomOf="@+id/txview_payedit1" />
 
-    <com.google.android.material.textfield.TextInputEditText
+    <com.example.registro_cuentas.CurrencyEditText
         android:id="@+id/input_payedit2"
         android:layout_width="@dimen/input_wm"
         android:layout_height="@dimen/input_h1"
         android:layout_marginTop="5dp"
         android:hint="Monto"
-        android:inputType="numberDecimal"
         android:maxLength="20"
         android:padding="10dp"
-        android:cursorVisible="false"
         android:imeOptions="actionDone"
         android:textSize="@dimen/inner_text_2"
+        app:localeTag="ES"
+        app:maxNumberOfDecimalDigits="2"
+        app:useCurrencySymbolAsHint="true"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/guideline2"
         app:layout_constraintHorizontal_bias="0.0"

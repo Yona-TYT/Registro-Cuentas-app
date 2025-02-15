@@ -6,18 +6,20 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Spinner;
 
 import androidx.annotation.NonNull;
 import android.widget.SearchView;
+import android.widget.Toast;
 
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
@@ -34,7 +36,7 @@ import com.example.registro_cuentas.CalcCalendar;
 import com.example.registro_cuentas.Cliente;
 import com.example.registro_cuentas.CltAdapter;
 import com.example.registro_cuentas.Cuenta;
-import com.example.registro_cuentas.CurrencyInput;
+import com.example.registro_cuentas.CurrencyEditText;
 import com.example.registro_cuentas.DaoClt;
 import com.example.registro_cuentas.Deuda;
 import com.example.registro_cuentas.Fecha;
@@ -87,7 +89,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener, Adap
     private String mCurr = "";
     //---------------------------------------------------------------------
 
-    private EditText mInput1;
+    private CurrencyEditText mInput1;
     private Button mButt1;
 
     //---------------------------------------------------------------------
@@ -105,8 +107,9 @@ public class HomeFragment extends Fragment implements View.OnClickListener, Adap
 
     private int currIdx = 0;
 
-   public String glValue = "";
+    public String glValue = "";
 
+    @SuppressLint("SetTextI18n")
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         //Para limpiar todas las listas
         empyLists();
@@ -136,19 +139,48 @@ public class HomeFragment extends Fragment implements View.OnClickListener, Adap
         mConstrain.setOnClickListener(this);
         mSearch1.setOnFocusChangeListener(this);
 
+        //Para guardar el precio del dolar
+        mInput1.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View view, boolean b) {
+                if(!b){
+                    String value = Double.toString(mInput1.getNumericValue());
+                    // Actualiza y guarda el Precio del dolar ------------------------
+                    StartVar.appDBcuenta.daoUser().updateDollar(StartVar.saveDataName, value);
+                    StartVar mVars = new StartVar(mContext);
+                    mVars.setDollar(value);
+                    //----------------------------------------------------------------------------------
+
+                    //Recarga la lista de pagos o lista dwe clientes -----------------------------------
+                    //Lista de pagos
+                    if(currSel4==0){
+                        setRegList();
+                    }
+                    //Lista de Clientes
+                    else {
+                        setCltList();
+                    }
+                    //----------------------------------------------------------------------------------
+                }
+            }
+        });
+
         //Efecto moneda
         //-------------------------------------------------------------------------------------------------------
-        mInput1.setText(StartVar.mDollar);
+        //Basic.msg(""+StartVar.mDollar);
+        //Toast.makeText(mContext, "Siz is "+Basic.setFormatter(StartVar.mDollar), Toast.LENGTH_LONG).show();
+        mInput1.setText(Basic.setFormatter(StartVar.mDollar));
         List<View> mViewL1 = new ArrayList<>();
         mViewL1.add(mSearch1);
         mViewL1.add(mLv1);
-        int mOpt = 1; // Opcion para guardar el precio del dolar
-        CurrencyInput mCInput = new CurrencyInput( mContext, mInput1,  mViewL1, "Bs", mOpt);
-        mCInput.set();
+        mViewL1.add(mNavBar);
+//        int mOpt = 1; // Opcion para guardar el precio del dolar
+//        CurrencyInput mCInput = new CurrencyInput( mContext, mInput1,  mViewL1, "Bs", mOpt);
+//        mCInput.set();
         //----------------------------------------------------------------------------------------------------
         // Para eventos al mostrar o ocultar el teclado
         Basic mKeyBoardEvent = new Basic(mContext);
-        mKeyBoardEvent.keyboardEvent(mConstrain, mInput1, 0); //opt = 0 is clear elm focus
+        mKeyBoardEvent.keyboardEvent(mConstrain, mInput1, mViewL1, 0); //opt = 0 is clear elm focus
         //-------------------------------------------------------------------------------------
 
         //Para la lista del selector Tipo Moneda ----------------------------------------------------------------------------------------------
@@ -250,7 +282,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener, Adap
         String curM = "";
         String curY = "";
         List<Fecha> listFecha = appDBfecha.daoUser().getUsers();
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             LocalDate currdate = LocalDate.now();
             curM = currdate.getMonth().toString();
             curY = Integer.toString(currdate.getYear());
@@ -284,7 +316,6 @@ public class HomeFragment extends Fragment implements View.OnClickListener, Adap
                 else{
                     setCltList();
                 }
-
             }
             @Override
             public void onNothingSelected(AdapterView<?> adapterView) {
@@ -442,12 +473,12 @@ public class HomeFragment extends Fragment implements View.OnClickListener, Adap
             stList[0] = i;
 
             String ultFec = deb.ulfech;
-            String debe = deb.debe;
-            String total = deb.total;
+            String debe = Basic.getValue(deb.debe);
+            String total = Basic.getValue(deb.total);
             int isDeb = deb.pagado;
             int mTyp =  StartVar.mCurrTyp;
             int mult = CalcCalendar.getRangeMultiple(ultFec, mTyp);
-            float monto = Basic.getDebt(mult, total, debe);
+            String monto = Float.toString(Basic.getDebt(mult, total, debe));
 
             String txA = "";
             String txB = "";
@@ -456,7 +487,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener, Adap
                     txA = " [Sin Registros] ";
                     txB = "[NA]";
                 } else if (isDeb == 1 || mult > 0) {
-                    txA = " [" + (deb.oper == 0 ? "+" : "-") + monto + " " + mCurr + "] ";
+                    txA = " [" + (deb.oper == 0 ? "+" : "-") + Basic.setFormatter(monto) + " " + mCurr + "] ";
                     txB = " [PENDIENTE]";
                 } else {
                     txA = " [Pagado] ";

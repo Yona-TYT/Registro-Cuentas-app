@@ -208,7 +208,7 @@ public class AccDtailsActivity extends AppCompatActivity implements View.OnClick
             for(int i = 0; i<listRegistro.size(); i++){
                 Registro reg = listRegistro.get(i);
                 String fecha = reg.fecha;
-                String mon = Basic.getValue(reg.monto);
+                String mon = Basic.getValueFormatter(reg.monto);
 
                 if(currSel1 == 0) {
                     if (reg.oper == 0) {
@@ -241,11 +241,11 @@ public class AccDtailsActivity extends AppCompatActivity implements View.OnClick
             i++;
             mTextList.get(i).setText("Monto Estimado: "+txMont);
             i++;
-            mTextList.get(i).setText("Total Credito: "+ totalCred+" "+mCurrencyList.get(mCindex));
+            mTextList.get(i).setText("Total Credito: "+ Basic.setFormatter(Float.toString(totalCred))+" "+mCurrencyList.get(mCindex));
             i++;
-            mTextList.get(i).setText("Total Debito: " + totalDeb + " "+ mCurrencyList.get(mCindex));
+            mTextList.get(i).setText("Total Debito: " + Basic.setFormatter(Float.toString(totalDeb)) + " "+ mCurrencyList.get(mCindex));
             i++;
-            mTextList.get(i).setText("Saldo Disponible: " + (totalCred + totalDeb) + " "+ mCurrencyList.get(mCindex));
+            mTextList.get(i).setText("Saldo Disponible: " + Basic.setFormatter(Float.toString((totalCred + totalDeb))) + " "+ mCurrencyList.get(mCindex));
             i++;
             mTextList.get(i).setText("Tipo : (" + accTypeL.get(mCuenta.acctipo)+")");
 
