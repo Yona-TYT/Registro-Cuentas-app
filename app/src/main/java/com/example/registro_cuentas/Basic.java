@@ -34,6 +34,7 @@ public class Basic {
     public static boolean isDow = true;
     public static boolean isUp = false;
 
+
     public Basic(Context mContex) {
         this.mContex = mContex;
     }
@@ -78,7 +79,7 @@ public class Basic {
                     isUp = false;
                     //Toast.makeText(mContex, "Keyboard is -", Toast.LENGTH_LONG).show();
 
-                    if (opt == 0 && elm != null) {
+                    if (elm != null) {
                         //Toast.makeText(mContex, "Aqui hayyyyyyyy?  " , Toast.LENGTH_LONG).show();
                         elm.clearFocus();
                     }
@@ -88,6 +89,8 @@ public class Basic {
                             mView.setVisibility(View.VISIBLE);
                         }
                     }
+                    mConstrain.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+
                 }
             }
         });

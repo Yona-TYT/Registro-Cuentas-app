@@ -51,6 +51,7 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 public class HomeFragment extends Fragment implements View.OnClickListener, AdapterView.OnItemClickListener, View.OnFocusChangeListener{
@@ -162,6 +163,12 @@ public class HomeFragment extends Fragment implements View.OnClickListener, Adap
                     }
                     //----------------------------------------------------------------------------------
                 }
+                else{
+                    // Para eventos al mostrar o ocultar el teclado
+                    List<View> mViewL1 = Arrays.asList(mLv1, mNavBar, mSearch1);
+                    setHiddenObjc(mViewL1, mInput1);
+                    //-----------------------------------------------
+                }
             }
         });
 
@@ -170,18 +177,6 @@ public class HomeFragment extends Fragment implements View.OnClickListener, Adap
         //Basic.msg(""+StartVar.mDollar);
         //Toast.makeText(mContext, "Siz is "+Basic.setFormatter(StartVar.mDollar), Toast.LENGTH_LONG).show();
         mInput1.setText(Basic.setFormatter(StartVar.mDollar));
-        List<View> mViewL1 = new ArrayList<>();
-        mViewL1.add(mSearch1);
-        mViewL1.add(mLv1);
-        mViewL1.add(mNavBar);
-//        int mOpt = 1; // Opcion para guardar el precio del dolar
-//        CurrencyInput mCInput = new CurrencyInput( mContext, mInput1,  mViewL1, "Bs", mOpt);
-//        mCInput.set();
-        //----------------------------------------------------------------------------------------------------
-        // Para eventos al mostrar o ocultar el teclado
-        Basic mKeyBoardEvent = new Basic(mContext);
-        mKeyBoardEvent.keyboardEvent(mConstrain, mInput1, mViewL1, 0); //opt = 0 is clear elm focus
-        //-------------------------------------------------------------------------------------
 
         //Para la lista del selector Tipo Moneda ----------------------------------------------------------------------------------------------
         SelecAdapter adapt1 = new SelecAdapter(mContext, mSpinL1);
@@ -405,10 +400,10 @@ public class HomeFragment extends Fragment implements View.OnClickListener, Adap
         if (itemId == R.id.lv1) {
             //Log.d("PhotoPicker", " Aquiiiiiiiiii Hayyyyyy 11100------------------------: " + position);
             //nextViewActivity((int)id);
-            currIdx = (int)id;
+            currIdx = (int) id;
             //Para ocultar el teclado virtual ----------------------------------------------------------------
             //view.requestFocusFromTouch();
-            InputMethodManager imm=(InputMethodManager)mContext.getSystemService(Context.INPUT_METHOD_SERVICE);
+            InputMethodManager imm = (InputMethodManager) mContext.getSystemService(Context.INPUT_METHOD_SERVICE);
             imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
             //------------------------------------------------------------------------------------------------
         }
@@ -522,9 +517,17 @@ public class HomeFragment extends Fragment implements View.OnClickListener, Adap
         if (itemId == R.id.searchBar) {
             if (b) {
                 mNavBar.setVisibility(View.INVISIBLE);
-            } else {
+            }
+            else {
                 mNavBar.setVisibility(View.VISIBLE);
             }
         }
+    }
+
+    public void setHiddenObjc(List<View> mList, View objc){
+        //----------------------------------------------------------------------------------------------------
+        Basic mKeyBoardEvent = new Basic(mContext);
+        mKeyBoardEvent.keyboardEvent(mConstrain, objc, mList, 0); //opt = 0 is clear elm focus
+        //-------------------------------------------------------------------------------------
     }
 }

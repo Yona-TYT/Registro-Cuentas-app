@@ -178,7 +178,6 @@ public class MainActivity extends AppCompatActivity {
 
         BottomNavigationView navView = findViewById(R.id.nav_view);
         navView.setLabelVisibilityMode(NavigationBarView.LABEL_VISIBILITY_LABELED);
-        startVar.setNavBar(navView);
 
         // Passing each menu ID as a set of Ids because each
         // menu should be considered as top level destinations.
@@ -192,6 +191,8 @@ public class MainActivity extends AppCompatActivity {
 
         View rootView = this.findViewById(android.R.id.content);
         startVar.setRootView(rootView);
+        startVar.setNavBar(navView);
+
     }
 
     public void setBottomNavigationVisibility(int visibility) {
