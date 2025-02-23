@@ -6,9 +6,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
-import android.view.KeyEvent;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
@@ -19,10 +17,10 @@ import android.widget.Spinner;
 
 import androidx.annotation.NonNull;
 import android.widget.SearchView;
-import android.widget.Toast;
 
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentActivity;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.example.registro_cuentas.AccDtailsActivity;
@@ -45,14 +43,21 @@ import com.example.registro_cuentas.R;
 import com.example.registro_cuentas.Registro;
 import com.example.registro_cuentas.StartVar;
 import com.example.registro_cuentas.SelecAdapter;
+import com.example.registro_cuentas.UrlSet;
 import com.example.registro_cuentas.databinding.FragmentHomeBinding;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
+import java.io.IOException;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
+
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
 
 public class HomeFragment extends Fragment implements View.OnClickListener, AdapterView.OnItemClickListener, View.OnFocusChangeListener{
 
@@ -109,6 +114,9 @@ public class HomeFragment extends Fragment implements View.OnClickListener, Adap
     private int currIdx = 0;
 
     public String glValue = "";
+
+    String mUrl = "https://example.com/api";
+
 
     @SuppressLint("SetTextI18n")
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -173,12 +181,12 @@ public class HomeFragment extends Fragment implements View.OnClickListener, Adap
         });
 
         //Efecto moneda
-        //-------------------------------------------------------------------------------------------------------
+        //---------------------------------------------------------------------------------------------
         //Basic.msg(""+StartVar.mDollar);
         //Toast.makeText(mContext, "Siz is "+Basic.setFormatter(StartVar.mDollar), Toast.LENGTH_LONG).show();
         mInput1.setText(Basic.setFormatter(StartVar.mDollar));
 
-        //Para la lista del selector Tipo Moneda ----------------------------------------------------------------------------------------------
+        //Para la lista del selector Tipo Moneda ------------------------------------------------------
         SelecAdapter adapt1 = new SelecAdapter(mContext, mSpinL1);
         mSpin1.setAdapter(adapt1);
         mSpin1.setSelection(currSel1); //Set La Moneda como default
@@ -212,7 +220,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener, Adap
             }
         });
         //--------------------------------------------------------------------------------------------
-        //Para la lista del selector Cuentas ----------------------------------------------------------------------------------------------
+        //Para la lista del selector Cuentas --------------------------------------------------------
         // Genera la lista de cuentas ---------------------------------------------------------
         listCuenta = appDBcuenta.daoUser().getUsers();
         if(listCuenta.size() > 1) {
@@ -270,7 +278,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener, Adap
         });
         //--------------------------------------------------------------------------------------------
 
-        //Para la lista del selector Fechas ----------------------------------------------------------------------------------------------
+        //Para la lista del selector Fechas ------------------------------------------------------------
         // Genera la lista de fechas ---------------------------------------------------------
         List<String> fechaList = new ArrayList<>();
         fechaList.add("Todos");
@@ -319,7 +327,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener, Adap
         });
         //--------------------------------------------------------------------------------------------
 
-        //Para la lista del selector Tipo Lista ----------------------------------------------------------------------------------------------
+        //Para la lista del selector Tipo Lista --------------------------------------------------------
         SelecAdapter adapt4 = new SelecAdapter(mContext, mSpinL4);
         mSpin4.setAdapter(adapt4);
         mSpin4.setSelection(currSel4); //Set La lista como default
@@ -530,4 +538,5 @@ public class HomeFragment extends Fragment implements View.OnClickListener, Adap
         mKeyBoardEvent.keyboardEvent(mConstrain, objc, mList, 0); //opt = 0 is clear elm focus
         //-------------------------------------------------------------------------------------
     }
+
 }

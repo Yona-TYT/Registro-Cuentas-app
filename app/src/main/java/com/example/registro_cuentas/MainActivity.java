@@ -4,6 +4,7 @@ import static android.service.controls.ControlsProviderService.TAG;
 import static com.example.registro_cuentas.StartVar.appDBcuenta;
 import static com.example.registro_cuentas.StartVar.appDBfecha;
 
+
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.Intent;
@@ -23,7 +24,6 @@ import android.widget.Toast;
 
 import com.example.registro_cuentas.databinding.ActivityMainBinding;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
-import com.google.android.material.bottomnavigation.LabelVisibilityMode;
 import com.google.android.material.navigation.NavigationBarView;
 
 import androidx.activity.OnBackPressedCallback;
@@ -60,7 +60,6 @@ public class MainActivity extends AppCompatActivity {
 
     private ActivityMainBinding binding;
 
-    private StartVar startVar;
     private static final int STORAGE_PERMISSION_CODE = 23;
 
     private List<Cuenta> listCuenta = new ArrayList<>();
@@ -89,7 +88,8 @@ public class MainActivity extends AppCompatActivity {
 
         BaseContext.initialise(this);
         //Satrted variables
-        startVar = new StartVar(getApplicationContext());
+        StartVar startVar = new StartVar(getApplicationContext());
+        Basic mBasic = new Basic(getApplicationContext());
 
         //Start File manager class
         mFile = new FilesManager(this);
