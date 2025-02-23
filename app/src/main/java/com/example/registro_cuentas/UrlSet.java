@@ -9,7 +9,10 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Iterator;
+import java.util.List;
 
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -21,12 +24,15 @@ public class UrlSet {
 
     private static Context mContext;
     private static FragmentActivity mActivity;
+    private static int mSelec;
 
-    static String mUrl = "https://pydolarve.org/api/v1/dollar?page=bcv";
+    static List<String> mUrl = Arrays.asList("https://pydolarve.org/api/v1/dollar?page=bcv", "https://pydolarve.org/api/v1/dollar?page=enparalelovzla");
+    static List<String> mkey = Arrays.asList("usd", "enparalelovzla");
 
-    public UrlSet(Context applicationContext, FragmentActivity mActivity) {
+    public UrlSet(Context applicationContext, FragmentActivity mActivity, int mSelec) {
         this.mContext = mContext;
         this.mActivity = mActivity;
+        this.mSelec = mSelec;
     }
 
     public static void urlRun() throws IOException {
@@ -34,7 +40,7 @@ public class UrlSet {
         OkHttpClient client = new OkHttpClient();
 
         Request request = new Request.Builder()
-                .url(mUrl)
+                .url(mUrl.get(mSelec))
                 .build();
 
         client.newCall(request).enqueue(new Callback() {
@@ -62,7 +68,7 @@ public class UrlSet {
 
                                 for (; mKeysB.hasNext(); ) {
                                     String mObjB = mKeysB.next();
-                                    if (mObjB.equals("usd")) {
+                                    if (mObjB.equals(mkey.get(mSelec))) {
 
                                         Basic.msg("--- " + newJson.getJSONObject(mObjB).get("price"));
                                     }
