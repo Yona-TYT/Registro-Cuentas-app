@@ -4,7 +4,9 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.util.Log;
@@ -41,6 +43,7 @@ import com.example.registro_cuentas.CurrencyInput;
 import com.example.registro_cuentas.DaoClt;
 import com.example.registro_cuentas.Deuda;
 import com.example.registro_cuentas.FilesManager;
+import com.example.registro_cuentas.Launcher;
 import com.example.registro_cuentas.MainActivity;
 import com.example.registro_cuentas.R;
 import com.example.registro_cuentas.Registro;
@@ -50,11 +53,13 @@ import com.example.registro_cuentas.databinding.FragmentAddpayBinding;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 
 public class AddPayFragment extends Fragment implements View.OnClickListener, View.OnFocusChangeListener{
 
@@ -156,12 +161,11 @@ public class AddPayFragment extends Fragment implements View.OnClickListener, Vi
         mInput3.setOnFocusChangeListener(this);
         mConstrain.setOnClickListener(this);
         mButt1.setOnClickListener(this);
-        mBtnImg1.setOnClickListener(this);
+        //mBtnImg1.setOnClickListener(this);
         mSw.setOnClickListener(this);
 
-        // Set imagen picker-----------------
-        //mFileM.setImgPicker(imageView1, mBtnImg1);
-        //------------------------------------
+        //Set Picker and Camera Launchers
+        setLauncher(mBtnImg1, imageView1);
 
         mInputList.add(mInput1);
         mInputList.add(mInput2);
@@ -296,35 +300,52 @@ public class AddPayFragment extends Fragment implements View.OnClickListener, Vi
         binding = null;
     }
 
-
-
-    // Registers a photo picker activity launcher in single-select mode.
-    ActivityResultLauncher<PickVisualMediaRequest> pickMedia =
-            registerForActivityResult(new ActivityResultContracts.PickVisualMedia(), uri -> {
-                // Callback is invoked after the user selects a media item or closes the
-                // photo picker.
+    private void setLauncher(View mObj, ImageView mImg){
+        Launcher mLaunch = new Launcher(this.requireActivity().getActivityResultRegistry(), this.requireActivity().getApplicationContext(), new Launcher.OnCapture() {
+            @Override
+            public void invoke(Uri uri) {
                 if (uri != null) {
-                    Log.d("PhotoPicker", "Selected URI: " + uri);
-                    imageView1.setImageURI(uri);
-                    currUri = uri;
+                    try {
+                        Log.d("PhotoPicker", "Selected URI: " + uri);
+                        if(mImg != null){
+                            mImg.setImageURI(uri);
+                        }
+                        currUri = uri;
+                    }
+                    catch (Exception e) {
+                        e.printStackTrace();
+                    }
                 }
                 else {
                     Basic.msg("No hay imagen seleccionada!");
                 }
-            });
+            }
+        });
+        getLifecycle().addObserver(mLaunch);
+        mObj.setOnClickListener(v -> {
+            try {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                    mLaunch.launchPicker();
+                }
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        });
+        mObj.setOnLongClickListener(v -> {
+            try {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                    mLaunch.launchCamera();
+                }
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+            return false;
+        });
+    }
+
     @Override
     public void onClick(View view) {
         int itemId = view.getId();
-        if (itemId == R.id.butt_pay2) {
-            if (StartVar.mPermiss) {
-                // Launch the photo picker and let the user choose only images.
-                //fmang.FilesManager();
-                pickMedia.launch(new PickVisualMediaRequest.Builder().setMediaType(ActivityResultContracts.PickVisualMedia.ImageOnly.INSTANCE).build());
-            }
-            else {
-                Basic.msg("Error Permiso Denegado!");
-            }
-        }
         if (itemId == R.id.butt_pay1) {
             //Comprueba que la lista de cuentas no este vacia
             StartVar mVars = new StartVar(mContext);

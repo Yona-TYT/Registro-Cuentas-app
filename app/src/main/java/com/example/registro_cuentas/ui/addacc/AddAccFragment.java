@@ -23,7 +23,6 @@ import com.example.registro_cuentas.BaseContext;
 import com.example.registro_cuentas.Basic;
 import com.example.registro_cuentas.Cuenta;
 import com.example.registro_cuentas.CurrencyEditText;
-import com.example.registro_cuentas.CurrencyInput;
 import com.example.registro_cuentas.MainActivity;
 import com.example.registro_cuentas.R;
 import com.example.registro_cuentas.SelecAdapter;

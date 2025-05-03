@@ -20,7 +20,6 @@ import android.widget.SearchView;
 
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentActivity;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.example.registro_cuentas.AccDtailsActivity;
@@ -43,21 +42,13 @@ import com.example.registro_cuentas.R;
 import com.example.registro_cuentas.Registro;
 import com.example.registro_cuentas.StartVar;
 import com.example.registro_cuentas.SelecAdapter;
-import com.example.registro_cuentas.UrlSet;
 import com.example.registro_cuentas.databinding.FragmentHomeBinding;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
-import java.io.IOException;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-
-import okhttp3.Call;
-import okhttp3.Callback;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.Response;
 
 public class HomeFragment extends Fragment implements View.OnClickListener, AdapterView.OnItemClickListener, View.OnFocusChangeListener{
 
@@ -110,13 +101,6 @@ public class HomeFragment extends Fragment implements View.OnClickListener, Adap
     private SearchView mSearch1;
     private ListView mLv1;
     //---------------------------------------------------------------------
-
-    private int currIdx = 0;
-
-    public String glValue = "";
-
-    String mUrl = "https://example.com/api";
-
 
     @SuppressLint("SetTextI18n")
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -408,7 +392,6 @@ public class HomeFragment extends Fragment implements View.OnClickListener, Adap
         if (itemId == R.id.lv1) {
             //Log.d("PhotoPicker", " Aquiiiiiiiiii Hayyyyyy 11100------------------------: " + position);
             //nextViewActivity((int)id);
-            currIdx = (int) id;
             //Para ocultar el teclado virtual ----------------------------------------------------------------
             //view.requestFocusFromTouch();
             InputMethodManager imm = (InputMethodManager) mContext.getSystemService(Context.INPUT_METHOD_SERVICE);
@@ -486,6 +469,9 @@ public class HomeFragment extends Fragment implements View.OnClickListener, Adap
             String txA = "";
             String txB = "";
             if(mTyp != 0) {
+                if(Basic.floatFormat(clt.total) == 0) {
+                    continue;
+                }
                 if (isDeb == 0) {
                     txA = " [Sin Registros] ";
                     txB = "[NA]";

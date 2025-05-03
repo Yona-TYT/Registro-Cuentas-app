@@ -6,12 +6,18 @@ import android.content.res.TypedArray;
 import android.text.InputType;
 import android.text.method.DigitsKeyListener;
 import android.util.AttributeSet;
+
+import androidx.annotation.Nullable;
 import androidx.appcompat.widget.AppCompatEditText;
 import java.math.BigDecimal;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
+import java.util.ArrayList;
 import java.util.Locale;
 import android.graphics.Rect;
+import android.util.Log;
+import android.view.MotionEvent;
+import android.view.inputmethod.InputMethodManager;
 
 
 public class CurrencyEditText extends AppCompatEditText {
@@ -19,10 +25,15 @@ public class CurrencyEditText extends AppCompatEditText {
     private CurrencyInputWatcher textWatcher;
     private Locale locale = Locale.forLanguageTag("ES");//locale; //Esto es un experimentoooooo!!!!!!!1//Locale.getDefault();
     private int maxDP;
+    private boolean isTouch = false;
+    private Context mContex;
 
     @SuppressLint("PrivateResource")
-    public CurrencyEditText(Context context, AttributeSet attrs) {
-        super(context, attrs);
+    public CurrencyEditText(Context mContext, AttributeSet attrs) {
+        super(mContext, attrs);
+
+        this.mContex = mContext;
+
         boolean useCurrencySymbolAsHint = false;
         setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_FLAG_DECIMAL);
         setKeyListener(DigitsKeyListener.getInstance("0123456789.,"));
@@ -31,7 +42,7 @@ public class CurrencyEditText extends AppCompatEditText {
         String prefix;
 
         int[] styleable = R.styleable.CurrencyEditText;
-        TypedArray a = context.getTheme().obtainStyledAttributes(attrs, styleable, 0, 0);
+        TypedArray a = mContext.getTheme().obtainStyledAttributes(attrs, styleable, 0, 0);
         try {
             prefix = a.getString(R.styleable.CurrencyEditText_currencySymbol);
             if (prefix == null) prefix = "";
@@ -98,6 +109,7 @@ public class CurrencyEditText extends AppCompatEditText {
 
     @Override
     public void setText(CharSequence text, BufferType type) {
+        isTouch = false;
         super.setText(text, type);
         if (getText() != null) setSelection(getText().length());
     }
@@ -112,18 +124,43 @@ public class CurrencyEditText extends AppCompatEditText {
         } else {
             removeTextChangedListener(textWatcher);
             if (getText().toString().equals(currencySymbolPrefix)) setText("");
+
+            //Close keyboard
+            ((InputMethodManager) mContex.getSystemService(Context.INPUT_METHOD_SERVICE)).hideSoftInputFromWindow(this.getWindowToken(), 0);
         }
     }
 
     @Override
     public void onSelectionChanged(int selStart, int selEnd) {
-        if (currencySymbolPrefix == null) return;
+
+        Log.d("PhotoPicker", "noooooo hayyyyyyyyyy: " );
+
+        if (currencySymbolPrefix == null){
+            return;
+        }
+
         int symbolLength = currencySymbolPrefix.length();
         if (selEnd < symbolLength && getText().toString().length() >= symbolLength) {
             setSelection(symbolLength);
-        } else {
+        }
+        else {
+            if(isTouch) {
+                //Resolver este bug
+                //setSelection( getText().toString().length(),0);
+            }
             super.onSelectionChanged(selStart, selEnd);
         }
+    }
+
+    @SuppressLint("ClickableViewAccessibility")
+    @Override
+    public boolean onTouchEvent(MotionEvent event) {
+
+         if(event.getAction() == MotionEvent.ACTION_DOWN){
+             isTouch = !isTouch;
+         }
+
+        return super.onTouchEvent(event);
     }
 
     private static Locale getLocaleFromTag(String localeTag) {

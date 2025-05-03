@@ -4,12 +4,10 @@ import android.content.Context;
 
 import androidx.fragment.app.FragmentActivity;
 
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
@@ -20,7 +18,7 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 
-public class UrlSet {
+public class GetDollar {
 
     private static Context mContext;
     private static FragmentActivity mActivity;
@@ -29,7 +27,7 @@ public class UrlSet {
     static List<String> mUrl = Arrays.asList("https://pydolarve.org/api/v1/dollar?page=bcv", "https://pydolarve.org/api/v1/dollar?page=enparalelovzla");
     static List<String> mkey = Arrays.asList("usd", "enparalelovzla");
 
-    public UrlSet(Context applicationContext, FragmentActivity mActivity, int mSelec) {
+    public GetDollar(Context applicationContext, FragmentActivity mActivity, int mSelec) {
         this.mContext = mContext;
         this.mActivity = mActivity;
         this.mSelec = mSelec;

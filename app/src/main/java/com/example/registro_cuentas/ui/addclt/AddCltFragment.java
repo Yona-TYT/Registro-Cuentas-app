@@ -12,6 +12,7 @@ import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -218,6 +219,7 @@ public class AddCltFragment extends Fragment  implements View.OnClickListener, A
             mSpin1.setSelection(currSel1); //Set default client
             if (currSel1 > 0) {
                 mClt = listCliente.get(currSel1 - 1);
+
                 swEstat = mClt.estat==1;
                 mSw.setChecked(swEstat);
             }
@@ -231,11 +233,12 @@ public class AddCltFragment extends Fragment  implements View.OnClickListener, A
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
                 currSel1 = i;
                 if (i > 0) {
-
                     mDeb = appDBdeuda.size() > currtAcc? appDBdeuda.get(currtAcc).daoUser().getUsers(mIdList.get(i)) : null;
                     String total = "0";
                     //Log.d("PhotoPicker", "-->>>>>>>>>>>>>>>>>>>>>>>>>>>> year: "+mDeb );
                     if (mDeb != null) {
+                        mClt = listCliente.get(i-1);
+                        //Basic.msg(mClt.nombre);
                         total = mDeb.total;
                         if (currtTyp > 0) {
                             int mult = CalcCalendar.getRangeMultiple(mDeb.ulfech, currtTyp);
@@ -345,8 +348,10 @@ public class AddCltFragment extends Fragment  implements View.OnClickListener, A
             alias = Basic.inputProcessor(alias); //Elimina caracteres que afectan a los csv
 
             String monto = Basic.setValue(Double.toString(mInput3.getNumericValue()));
+
+
             if(swEstat) {
-                if (monto.isEmpty() || Basic.parseFloat(monto) <= 0.0) {
+                if (monto.isEmpty() || Basic.parseFloat(monto) < 0.0) {
                     //MSG Para entrada de monto
                     Basic.msg("Ingrese un MONTO Valido!.");
                     return;
@@ -377,6 +382,9 @@ public class AddCltFragment extends Fragment  implements View.OnClickListener, A
             }
             else {
                 DaoClt mDaoClt = StartVar.appDBcliente.daoUser();
+
+                Log.d("Monto", "-->>>>>>>>>>>>>>>>>>>>>>>>>>>> Aqui hayyyyyy: "+mClt.cliente );
+
                 mDaoClt.updateUser(
                         mClt.cliente, nombre, alias, monto, 0,
                         mClt.fecha, (swEstat ? 1 : 0), mClt.pagado, mClt.ulfech, currSel2, "0"
