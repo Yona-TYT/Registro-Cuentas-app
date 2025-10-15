@@ -4,6 +4,7 @@ import static android.widget.GridLayout.spec;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Rect;
 import android.graphics.Typeface;
 import android.os.Build;
@@ -33,6 +34,12 @@ public class Basic {
     private static Context mContex;
     public static boolean isDow = true;
     public static boolean isUp = false;
+
+    private static final String ACTION_APP_EVENT = "com.example.cow_data.EVENT";
+    private static final String EXTRA_EVENT_TYPE = "cow_data_event";
+    private static final String EXTRA_FILE_PATHS = "file_paths";
+    private static final String EXTRA_SENDER_TYPE = "sender_type";
+    private static final String EVENT_FILE_UPLOADED = "file_uploaded";
 
 
     public Basic(Context mContex) {
@@ -140,10 +147,13 @@ public class Basic {
         if (value.isEmpty()){
             value = "0";
         }
+        return setFormatter(Float.parseFloat(value));
+    }
+    public static String setFormatter(Float value){
         NumberFormat nf = NumberFormat.getNumberInstance(Locale.forLanguageTag("ES"));
         DecimalFormat formatter = (DecimalFormat) nf;
         formatter.applyPattern("###,##0.00");
-        return formatter.format(Float.parseFloat(value));
+        return formatter.format(value);
     }
 
     @SuppressLint("DefaultLocale")
@@ -161,25 +171,35 @@ public class Basic {
     }
 
     @SuppressLint("DefaultLocale")
-    public static String getValue(String value) {
+    public static String getConverteValue(String value) {
         value = value.replaceAll("([^\\d.,])","");
         value = value.replaceAll(",",".");
 
         if (value.isEmpty()){
             value = "0";
         }
-        float precDoll = floatFormat(StartVar.mDollar);
         float number = Float.parseFloat(value);
+        return Float.toString(getConverteValue(number));
+    }
+
+    public static Float getConverteValue(Float value) {
+
+        float precDoll = floatFormat(StartVar.mDollar);
+        float number = value;
         if (StartVar.mCurrency == 1) {    //Selector en Bs
             number = number * precDoll;
         }
-        return Float.toString(number);
+        return number;
     }
 
     @SuppressLint("DefaultLocale")
     public static String getValueFormatter(String value) {
-        return setFormatter(getValue(value));
+        return setFormatter(getConverteValue(value));
     }
+    public static String getValueFormatter(Float value) {
+        return setFormatter(getConverteValue(value).toString());
+    }
+
     public static Float floatFormat(String value) {
         String mValue = value.replaceAll("([^.\\d])", "");
         mValue = mValue.replaceAll("^.$", "0.00");
@@ -187,21 +207,20 @@ public class Basic {
         return mValue.isEmpty() ? (float)0 : Float.parseFloat(mValue);
     }
 
-    public static float getDebt(int mult, String mont, String debt) {
-        mont = mont.replaceAll("([^.0-9]+)", "");
-        debt = debt.replaceAll("([^.0-9]+)", "");
+    public static float getDebt(int mult, Float mont, Float debt) {
+//        mont = mont.replaceAll("([^.0-9]+)", "");
+//        debt = debt.replaceAll("([^.0-9]+)", "");
 
         float precDoll = Basic.floatFormat(StartVar.mDollar);
-        if (!mont.isEmpty() && !debt.isEmpty()) {
-            float numA = Float.parseFloat(mont);
-            float numB = Float.parseFloat(debt);
+        float numA = mont;
+        float numB = debt;
 
-            float result = numA*mult;
+        float result = numA*mult;
 
-            result -= numB;
-            return result;
-        }
-        return 0;
+        result -= numB;
+
+        return result;
+
     }
 
     public static String setMask(String value, String sing) {
@@ -241,71 +260,8 @@ public class Basic {
 
         Toast mToast = new Toast(mContex);
         mToast.setView(cardView);
+        mToast.setDuration(Toast.LENGTH_LONG);
         mToast.show();
-    }
-    public static void checkClt(){
-
-    }
-
-    public static int bitL(int val, int rota) {
-        return val << rota;
-    }
-
-    public static int bitR(int val, int rota) {
-        return (val >> rota) & 1;
-    }
-
-    public static int toHex(String value) {
-        return Integer.decode(value);
-    }
-
-    public static List<Integer> getBits(int n) {
-        List<Integer> list = new ArrayList<>();
-        while (true) {
-            if(n < 32){
-                list.add(bitL(0x1, n));
-                break;
-            }
-            else{
-                list.add(0);
-                n -= 32;
-            }
-        }
-        return list;
-    }
-
-    public static List<Integer> getBits(String text) {
-        String[] sList = text.split("'");
-        int n = 0;
-        List<Integer> list = new ArrayList<>();
-        for (String val: sList){
-            list.add(Integer.decode(val));
-        }
-        return list;
-    }
-
-    public static String saveBits(List<Integer> list) {
-        String text = "";
-        for (Integer val: list){
-            text = String.format("%x",val);
-           if(!text.startsWith("0x")){
-               text = "0x"+text;
-           }
-           //msg(text);
-        }
-        return text;
-    }
-    public static String saveNewBit(int r){
-        String bit = "";
-        for(int i = 0 ; i < r; i += 32) {
-            if(r < 32) {
-                bit = String.format("0x%x", Basic.bitL(0x1, r))+"'";
-            }
-            else{
-                r -= 32;
-            }
-        }
-        return bit;
     }
 
 
@@ -333,5 +289,25 @@ public class Basic {
     public static boolean isLollipopAndAbove() {
         return Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP;
     }
+
+    public static void sendFileUploadedBroadcast(Context context, String[] filePaths, String senderType) {
+        //LOG.debug("Sending file uploaded broadcast para: " + senderType);
+        Intent intent = new Intent(ACTION_APP_EVENT);
+        intent.putExtra(EXTRA_EVENT_TYPE, EVENT_FILE_UPLOADED);
+        intent.putExtra(EXTRA_FILE_PATHS, filePaths);
+        intent.putExtra(EXTRA_SENDER_TYPE, senderType);
+        context.sendBroadcast(intent);
+    }
+
+    // También para errores
+    public static void sendUploadErrorBroadcast(Context context, String errorMessage, String senderType) {
+        //LOG.debug("Sending upload error broadcast: " + errorMessage);
+        Intent intent = new Intent(ACTION_APP_EVENT);
+        intent.putExtra(EXTRA_EVENT_TYPE, "upload_error");
+        intent.putExtra("error_message", errorMessage);
+        intent.putExtra(EXTRA_SENDER_TYPE, senderType);
+        context.sendBroadcast(intent);
+    }
+
 
 }

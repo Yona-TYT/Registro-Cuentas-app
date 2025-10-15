@@ -18,14 +18,14 @@ import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
-import com.example.registro_cuentas.AppDBacc;
+import com.example.registro_cuentas.db.AllDao;
 import com.example.registro_cuentas.BaseContext;
 import com.example.registro_cuentas.Basic;
-import com.example.registro_cuentas.Cuenta;
+import com.example.registro_cuentas.db.Cuenta;
 import com.example.registro_cuentas.CurrencyEditText;
-import com.example.registro_cuentas.MainActivity;
+import com.example.registro_cuentas.activitys.MainActivity;
 import com.example.registro_cuentas.R;
-import com.example.registro_cuentas.SelecAdapter;
+import com.example.registro_cuentas.adapters.SelecAdapter;
 import com.example.registro_cuentas.StartVar;
 import com.example.registro_cuentas.databinding.FragmentAddaccBinding;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
@@ -42,7 +42,7 @@ public class AddAccFragment extends Fragment implements View.OnClickListener, Vi
     private Context mContext = BaseContext.getContext();
 
     // DB
-    private AppDBacc appDBcuenta = StartVar.appDBcuenta;
+    private AllDao appDBcuenta = StartVar.appDBall;
 
     //Todos los Inputs
     private EditText mInput1;
@@ -106,7 +106,6 @@ public class AddAccFragment extends Fragment implements View.OnClickListener, Vi
 
         mInputList.add(mInput1);
         mInputList.add(mInput2);
-        mInputList.add(mInput3);
 
         //Efecto moneda
         //-------------------------------------------------------------------------------------------------------
@@ -138,7 +137,7 @@ public class AddAccFragment extends Fragment implements View.OnClickListener, Vi
         //--------------------------------------------------------------------------------------------
 
         mPermiss = StartVar.mPermiss;
-        mIndex = "" + appDBcuenta.daoUser().getUsers().size();
+        mIndex = "" + StartVar.appDBall.daoAcc().getUsers().size();
         if (mIndex.isEmpty()) {
             mIndex = "0";
         }
@@ -186,7 +185,7 @@ public class AddAccFragment extends Fragment implements View.OnClickListener, Vi
                     mInput.clearFocus();
                 }
                 String monto = Basic.setValue(Double.toString(mInput3.getNumericValue()));
-                if(monto.isEmpty() || Basic.parseFloat(monto) <= 0.0){
+                if(monto.isEmpty() || Basic.parseFloat(monto) < 0.0){
                     //MSG Para entrada de monto
                     msgIdx = 2;
                     setMessage(msgIdx);
@@ -199,7 +198,7 @@ public class AddAccFragment extends Fragment implements View.OnClickListener, Vi
                 }
 
                 Cuenta obj = new Cuenta(mList.get(0), mList.get(1), mList.get(2), monto, currSel1, 0, 0,0,"0", currdate);
-                appDBcuenta.daoUser().insetUser(obj);
+                StartVar.appDBall.daoAcc().insetUser(obj);
                 //SE Limpia la lista
                 mList.clear();
 
@@ -209,7 +208,7 @@ public class AddAccFragment extends Fragment implements View.OnClickListener, Vi
                 //-------------------------------------------------------
                 //-------------------------------------------------------
                 //Actualiza la db para los registros
-                mVars.setRegListDB();
+                //mVars.setRegListDB();
                 //--------------------------------
 
                 //Esto inicia las actividad Main despues de tiempo de espera del preloder

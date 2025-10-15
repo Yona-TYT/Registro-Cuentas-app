@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:background="?attr/fullscreenBackgroundColor"
     android:theme="@style/ThemeOverlay.RegistroCuentas.FullscreenContainer"
-    tools:context=".ImageActivity">
+    tools:context=".activitys.ImageActivity">
 
 
     <ImageView

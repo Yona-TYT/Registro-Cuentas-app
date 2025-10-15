@@ -45,37 +45,37 @@
         android:theme="@style/Theme.RegistroCuentas"
         tools:targetApi="31">
         <activity
-            android:name=".CltEditActivity"
+            android:name=".activitys.CltEditActivity"
             android:exported="false"
             android:theme="@style/Theme.RegistroCuentas.NoActionBar" />
         <activity
-            android:name=".CltDetailsActivity"
+            android:name=".activitys.CltDetailsActivity"
             android:exported="false"
             android:theme="@style/Theme.RegistroCuentas.NoActionBar" />
         <activity
-            android:name=".ImageActivity"
+            android:name=".activitys.ImageActivity"
             android:configChanges="orientation|keyboardHidden|screenSize"
             android:exported="false"
             android:label="@string/title_activity_image"
             android:theme="@style/Theme.RegistroCuentas.Fullscreen" />
         <activity
-            android:name=".PayEditActivity"
+            android:name=".activitys.PayEditActivity"
             android:exported="false"
             android:theme="@style/Theme.RegistroCuentas.NoActionBar" />
         <activity
-            android:name=".AccEditActivity"
+            android:name=".activitys.AccEditActivity"
             android:exported="false"
             android:theme="@style/Theme.RegistroCuentas.NoActionBar" />
         <activity
-            android:name=".AccDtailsActivity"
+            android:name=".activitys.AccDtailsActivity"
             android:exported="false"
             android:theme="@style/Theme.RegistroCuentas.NoActionBar" />
         <activity
-            android:name=".RegDetailsActivity"
+            android:name=".activitys.PayDetailsActivity"
             android:exported="false"
             android:theme="@style/Theme.RegistroCuentas.NoActionBar" />
         <activity
-            android:name=".MainActivity"
+            android:name=".activitys.MainActivity"
             android:exported="true"
             android:label="@string/app_name">
             <intent-filter>
@@ -86,7 +86,7 @@
         </activity>
         <provider
             android:name="androidx.core.content.FileProvider"
-            android:authorities="${applicationId}.fileprovider"
+            android:authorities="${applicationId}.provider"
             android:exported="false"
             android:grantUriPermissions="true">
             <meta-data

@@ -1,0 +1,35 @@
+package com.example.registro_cuentas.db;
+
+import androidx.room.Entity;
+import androidx.room.PrimaryKey;
+import io.reactivex.annotations.NonNull;
+
+@Entity
+public class Conf {
+    @PrimaryKey(autoGenerate = true)
+    public long uid;
+    public String config;
+    public String version;
+    public String hexid;
+    public String date;
+    public String time;
+    public Integer curr;
+    public String dolar;
+    public Integer moneda;
+    public Integer mes;
+
+
+
+    public Conf(@NonNull String config, String version, String hexid, String date, String time, Integer curr, String dolar, Integer moneda, Integer mes) {
+        this.config = config;
+        this.version = version;
+        this.hexid = hexid;
+        this.date = date;
+        this.time = time;
+        this.curr = curr;
+        this.dolar = dolar;
+        this.moneda = moneda;
+        this.mes = mes;
+
+    }
+}

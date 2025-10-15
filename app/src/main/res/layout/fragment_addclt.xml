@@ -118,16 +118,27 @@
 
     <Switch
         android:id="@+id/sw_clt1"
-        android:layout_width="@dimen/input_wm"
+        android:layout_width="@dimen/input_w1"
         android:layout_height="@dimen/input_h1"
         android:layout_marginTop="8dp"
         android:padding="10dp"
-        android:text="Fijar Monto"
+        android:text="Activar Cliente"
         app:layout_constraintEnd_toStartOf="@+id/guideline2"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="@+id/guideline"
         app:layout_constraintTop_toBottomOf="@+id/input_clt4"
         tools:ignore="UseSwitchCompatOrMaterialXml" />
+
+    <CheckBox
+        android:id="@+id/check_clt1"
+        android:layout_width="@dimen/input_w1"
+        android:layout_height="@dimen/input_h1"
+        android:text="Visible para:"
+        app:layout_constraintHorizontal_bias="0.0"
+
+        app:layout_constraintEnd_toStartOf="@+id/guideline2"
+        app:layout_constraintStart_toStartOf="@+id/guideline"
+        app:layout_constraintTop_toBottomOf="@+id/sw_clt1" />
 
     <com.google.android.material.textfield.TextInputEditText
         android:id="@+id/input_clt2"
@@ -172,6 +183,8 @@
         android:layout_height="wrap_content"
         android:orientation="vertical"
         app:layout_constraintGuide_end="30dp" />
+
+
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

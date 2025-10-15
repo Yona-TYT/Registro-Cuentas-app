@@ -1,57 +1,40 @@
 package com.example.registro_cuentas;
 
-import static android.service.controls.ControlsProviderService.TAG;
-
-import android.annotation.SuppressLint;
 import android.content.ContentResolver;
-import android.content.ContentValues;
 import android.content.Context;
-import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Environment;
 import android.provider.MediaStore;
-import android.provider.Settings;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
-import android.widget.Toast;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.PickVisualMediaRequest;
 import androidx.activity.result.contract.ActivityResultContracts;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
-import androidx.documentfile.provider.DocumentFile;
 
+import com.example.registro_cuentas.activitys.MainActivity;
 import com.opencsv.CSVReader;
 import com.opencsv.exceptions.CsvValidationException;
 
-import androidx.activity.result.ActivityResult;
-import androidx.activity.result.ActivityResultCallback;
-import android.Manifest;
-
 import java.io.File;
-import java.io.FileNotFoundException;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
-import java.io.OutputStream;
+import java.io.InputStream;
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 import java.util.Objects;
 
 public class FilesManager extends MainActivity implements View.OnClickListener{
-    private Context mContext;
 
     public static ImageView mImgPrev;
     public static Uri currUri;
 
-    public FilesManager(Context mContext){
-        this.mContext = mContext;
+    public FilesManager(){
     }
 
     public void setImgPicker(ImageView mImg, View mView){
@@ -126,7 +109,7 @@ public class FilesManager extends MainActivity implements View.OnClickListener{
         CsvWriterSimple write = new CsvWriterSimple();
 
         //Creamos el directorio para los archivos
-        File path = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS+"/.accdata/");
+        File path = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS+StartVar.dirAppName);
         boolean isDiralloway = true;
         if(!path.exists()){
             isDiralloway = path.mkdir();
@@ -146,6 +129,41 @@ public class FilesManager extends MainActivity implements View.OnClickListener{
         }
         //-----------------------------------------------------------
         return null;
+    }
+
+    public File csvExport(List<String[]> list, String fileName) throws IOException {
+        // Definimos la class
+        CsvWriterSimple write = new CsvWriterSimple();
+
+        File path = directoryCreate();
+
+        //Si se crea correctamente entonces procede a escribir
+        if (path != null) {
+            String myName = "CowData_Save.csv";
+            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+                myName = "CowData_" + LocalDate.now().toString() + "_" + (LocalTime.now().toString().replaceAll("\\D", "_")) + ".csv";
+            }
+            File file = new File(path, fileName.isEmpty() ? myName : fileName);
+            write.writeToCsvFile(list, file);
+            return file;
+        }
+        //-----------------------------------------------------------
+        return null;
+    }
+
+    public static File directoryCreate() {
+        //Creamos el directorio para los archivos
+
+        File path = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS + StartVar.dirAppName);
+        boolean isDiralloway = true;
+        if (!path.exists()) {
+            isDiralloway = path.mkdir();
+        }
+
+        if(!isDiralloway){
+            return null;
+        }
+        return path;
     }
 
     public boolean csvImport(String dir) throws IOException, CsvValidationException {
@@ -239,5 +257,69 @@ public class FilesManager extends MainActivity implements View.OnClickListener{
                     Log.d("PhotoPicker", "No media selected");
                 }
             });
+
+
+    // Método para copiar el archivo con un nuevo nombre
+    public static File getNewFile(String rutaOriginal, String newName, Context context) throws IOException {
+        File originalFile = new File(rutaOriginal);
+        if (!originalFile.exists()) {
+            return null; // El archivo original no existe
+        }
+
+        // Crear un nuevo archivo en el directorio de caché o almacenamiento interno
+        File newFile = new File(context.getCacheDir(), newName);
+        // Copiar contenido del archivo original al nuevo archivo
+        try (FileInputStream in = new FileInputStream(originalFile);
+             FileOutputStream out = new FileOutputStream(newFile)) {
+            byte[] buffer = new byte[1024];
+            int read;
+            while ((read = in.read(buffer)) != -1) {
+                out.write(buffer, 0, read);
+            }
+        }
+        return newFile;
+    }
+
+    public static File getFileFromUri(Context context, Uri uri) throws IOException {
+        // Verificar si la Uri es null
+        if (uri == null) {
+            throw new IOException("Uri es null");
+        }
+
+        // Obtener el ContentResolver
+        String fileName = getFileName(context, uri);
+        File file = new File(context.getCacheDir(), fileName != null ? fileName : "temp_file");
+
+        // Copiar el contenido de la Uri a un archivo temporal
+        try (InputStream inputStream = context.getContentResolver().openInputStream(uri);
+             FileOutputStream outputStream = new FileOutputStream(file)) {
+            if (inputStream != null) {
+                byte[] buffer = new byte[1024];
+                int bytesRead;
+                while ((bytesRead = inputStream.read(buffer)) != -1) {
+                    outputStream.write(buffer, 0, bytesRead);
+                }
+            }
+        }
+
+        return file;
+    }
+
+    // Método para obtener el nombre del archivo desde la Uri (opcional)
+    private static String getFileName(Context context, Uri uri) {
+        String fileName = null;
+        String[] projection = { android.provider.MediaStore.MediaColumns.DISPLAY_NAME };
+
+        try (android.database.Cursor cursor = context.getContentResolver().query(uri, projection, null, null, null)) {
+            if (cursor != null && cursor.moveToFirst()) {
+                int nameIndex = cursor.getColumnIndexOrThrow(android.provider.MediaStore.MediaColumns.DISPLAY_NAME);
+                fileName = cursor.getString(nameIndex);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return fileName;
+    }
 
 }

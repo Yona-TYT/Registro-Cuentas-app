@@ -1,10 +1,20 @@
+
 plugins {
     alias(libs.plugins.android.application)
 }
 
 android {
     namespace 'com.example.registro_cuentas'
-    compileSdk 34
+    compileSdk 35
+
+
+    packaging {
+        resources {
+            it.excludes.add("META-INF/INDEX.LIST")
+            it.excludes.add("META-INF/DEPENDENCIES")
+
+        }
+    }
 
     defaultConfig {
         applicationId "com.example.registro_cuentas"
@@ -14,6 +24,12 @@ android {
         versionName "1.0"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+
+        // Define el esquema de redirección
+        manifestPlaceholders = [
+                appAuthRedirectScheme: "com.example.registro_cuentas"
+        ]
+
     }
 
     buildTypes {
@@ -32,6 +48,7 @@ android {
 }
 
 dependencies {
+
     implementation libs.appcompat
     implementation libs.material
     implementation libs.constraintlayout
@@ -39,18 +56,15 @@ dependencies {
     implementation libs.lifecycle.viewmodel.ktx
     implementation libs.navigation.fragment
     implementation libs.navigation.ui
+    //Animations libs for apps
+    implementation 'com.airbnb.android:lottie:6.6.6'
     implementation libs.activity
-    //implementation libs.filament.android
-    testImplementation libs.junit
+    implementation libs.recyclerview
+    implementation libs.googleid
     androidTestImplementation libs.ext.junit
     androidTestImplementation libs.espresso.core
 
-    //Texto mask Test
-    implementation 'io.github.vicmikhailau:MaskedEditText:5.0.2'
-
-    implementation 'com.airbnb.android:lottie:3.0.1'
-
-    def room_version = "2.6.1"
+    def room_version = '2.7.0'
 
     implementation "androidx.room:room-runtime:$room_version"
     annotationProcessor "androidx.room:room-compiler:$room_version"
@@ -70,10 +84,10 @@ dependencies {
     // optional - Paging 3 Integration
     implementation "androidx.room:room-paging:$room_version"
 
-    runtimeOnly 'androidx.coordinatorlayout:coordinatorlayout:1.2.0'
+    runtimeOnly 'androidx.coordinatorlayout:coordinatorlayout:1.3.0'
 
-    def activity_version = "1.7.2"
-    def fragment_version = "1.7.1"
+    def activity_version = '1.10.1'
+    def fragment_version = '1.8.6'
 
     // https://mvnrepository.com/artifact/androidx.activity/activity-ktx
     runtimeOnly "androidx.activity:activity-ktx:$activity_version"
@@ -82,18 +96,61 @@ dependencies {
     runtimeOnly "androidx.fragment:fragment-ktx:$fragment_version"
 
     //For rememberLauncherForActivityResult()
-    runtimeOnly 'androidx.activity:activity-compose:1.8.2'
+    runtimeOnly 'androidx.activity:activity-compose:1.10.1'
 
     // https://mvnrepository.com/artifact/androidx.appcompat/appcompat
-    runtimeOnly 'androidx.appcompat:appcompat:1.6.1'
+    runtimeOnly 'androidx.appcompat:appcompat:1.7.0'
 
     // https://mvnrepository.com/artifact/com.opencsv/opencsv
-    implementation 'com.opencsv:opencsv:5.9'
+    implementation 'com.opencsv:opencsv:5.10'
 
-    // https://mvnrepository.com/artifact/com.squareup.okhttp3/okhttp
+
+    implementation libs.androidx.credentials.v122
+    implementation libs.androidx.credentials.play.services.auth.v122
+
+    //implementation libs.play.services.auth // Para Google Sign-In
+
+    implementation libs.google.api.client
+
+    // https://mvnrepository.com/artifact/com.google.auth/google-auth-library-credentials
+    implementation libs.google.auth.library.credentials
+    implementation libs.google.auth.library.oauth2.http.v1371
+
+    implementation libs.google.api.services.drive
+
+    //implementation libs.google.http.client.jackson2 // Añadir para JacksonFactory
+
+    implementation libs.play.services.auth.v2100  // Para Google Sign-In
+
+    implementation(libs.google.api.client.android.v260) {
+        exclude group: 'org.apache.httpcomponents' // Evita conflictos
+    }
+
+    implementation(libs.google.api.services.drive.vv3rev20240815200)
+
+    implementation "androidx.preference:preference:1.2.1"
+    implementation 'org.slf4j:slf4j-api:2.0.7'
+    implementation 'com.github.tony19:logback-android:3.0.0'
+
+    //Android's WorkManager
+    implementation 'androidx.work:work-runtime:2.10.1'
+
+    //Google Drive Oauth
+    implementation 'net.openid:appauth:0.9.1'
+
+
+    //OKHTTP client
     //implementation 'com.squareup.okhttp3:okhttp:4.12.0'
-    //Retrofit
-    implementation 'com.squareup.okhttp3:logging-interceptor:4.9.0'
-    implementation 'com.squareup.okhttp3:okhttp:4.9.0'
-    implementation 'com.squareup.okhttp3:okhttp-urlconnection:4.4.1'
+    //implementation('com.squareup.okhttp3:okhttp:5.1.0')   Da problemas de compatibilidad
+    implementation("com.squareup.okhttp3:okhttp:5.0.0-alpha.16")
+
+    //Event bus
+    implementation 'de.greenrobot:eventbus:2.4.0'
+
+    implementation 'com.github.eltos:SimpleDialogFragments:v3.9'
+
+    implementation "androidx.lifecycle:lifecycle-process:2.9.3"
+
+    implementation 'io.github.classgraph:classgraph:4.8.181'
+
 }

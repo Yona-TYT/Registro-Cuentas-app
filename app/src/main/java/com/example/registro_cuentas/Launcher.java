@@ -29,8 +29,8 @@ import android.Manifest;
 
 public class Launcher extends AppCompatActivity implements DefaultLifecycleObserver {
 
-    private final ActivityResultRegistry registry;
     private final Context context;
+    private final ActivityResultRegistry registry;
     private final OnCapture onCapture;
 
     private String uniqueKey = Long.toString(System.currentTimeMillis());

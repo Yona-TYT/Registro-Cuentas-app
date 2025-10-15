@@ -4,7 +4,6 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -23,43 +22,39 @@ import android.widget.Switch;
 
 import androidx.activity.OnBackPressedCallback;
 import androidx.activity.OnBackPressedDispatcher;
-import androidx.activity.result.ActivityResultLauncher;
-import androidx.activity.result.PickVisualMediaRequest;
-import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
-import com.example.registro_cuentas.AppDBclt;
-import com.example.registro_cuentas.AppDBdeb;
-import com.example.registro_cuentas.AppDBreg;
 import com.example.registro_cuentas.BaseContext;
 import com.example.registro_cuentas.Basic;
+import com.example.registro_cuentas.BitsOper;
 import com.example.registro_cuentas.CalcCalendar;
-import com.example.registro_cuentas.Cliente;
+import com.example.registro_cuentas.db.Cliente;
 import com.example.registro_cuentas.CurrencyEditText;
-import com.example.registro_cuentas.CurrencyInput;
-import com.example.registro_cuentas.DaoClt;
-import com.example.registro_cuentas.Deuda;
+import com.example.registro_cuentas.db.Cuenta;
+import com.example.registro_cuentas.db.dao.DaoAcc;
+import com.example.registro_cuentas.db.dao.DaoClt;
+import com.example.registro_cuentas.db.dao.DaoDeb;
+import com.example.registro_cuentas.db.dao.DaoPay;
+import com.example.registro_cuentas.db.Deuda;
 import com.example.registro_cuentas.FilesManager;
 import com.example.registro_cuentas.Launcher;
-import com.example.registro_cuentas.MainActivity;
+import com.example.registro_cuentas.activitys.MainActivity;
 import com.example.registro_cuentas.R;
-import com.example.registro_cuentas.Registro;
 import com.example.registro_cuentas.StartVar;
-import com.example.registro_cuentas.SelecAdapter;
+import com.example.registro_cuentas.adapters.SelecAdapter;
 import com.example.registro_cuentas.databinding.FragmentAddpayBinding;
+import com.example.registro_cuentas.db.Pagos;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Objects;
 
 public class AddPayFragment extends Fragment implements View.OnClickListener, View.OnFocusChangeListener{
 
@@ -68,11 +63,14 @@ public class AddPayFragment extends Fragment implements View.OnClickListener, Vi
     private Context mContext = BaseContext.getContext();
 
     // DB
-    private List<AppDBreg> appDBregistro = StartVar.appDBregistro;
-    private List<AppDBdeb> appDBdeuda = StartVar.appDBdeuda;
+    private DaoPay daoRegistro = StartVar.appDBall.daoPay();
+    private DaoDeb daoDeuda = StartVar.appDBall.daoDeb();
+    private List<Deuda> listDeuda = new ArrayList<>();
 
-    private AppDBclt appDBcliente = StartVar.appDBcliente;
+    private DaoClt daoCliente = StartVar.appDBall.daoClt();
     private List<Cliente> listCliente = new ArrayList<>();
+
+    private DaoAcc daoCuenta = StartVar.appDBall.daoAcc();
 
     private ConstraintLayout mConstrain;
     private BottomNavigationView mNavBar = StartVar.mNavBar;
@@ -114,7 +112,7 @@ public class AddPayFragment extends Fragment implements View.OnClickListener, Vi
 
     private Basic mBasic = new Basic(BaseContext.getContext());
 
-    private FilesManager mFileM = new FilesManager(BaseContext.getContext());
+    private FilesManager mFileM = new FilesManager();
     private String sImage = "";
     private Uri oldFile = null;
     private Uri currUri = null;
@@ -184,13 +182,15 @@ public class AddPayFragment extends Fragment implements View.OnClickListener, Vi
         //-------------------------------------------------------------------------------------
 
         mPermiss = StartVar.mPermiss;
-        if(!appDBregistro.isEmpty()) {
-            mIndex = "" + appDBregistro.get(currtAcc).daoUser().getUsers().size();
+        if(daoRegistro != null) {
+            mIndex = "" + daoRegistro.getUsers().size();
             if (mIndex.isEmpty()) {
                 mIndex = "0";
             }
         }
-        listCliente = appDBcliente.daoUser().getUsers();
+        listCliente = daoCliente.getUsers();
+
+        listDeuda = daoDeuda.getUsers();
 
         //Para la lista del selector Cliente ----------------------------------------------------------------------------------------------
         List<String> mCltList = new ArrayList<>();
@@ -202,7 +202,7 @@ public class AddPayFragment extends Fragment implements View.OnClickListener, Vi
         int x = currtAcc;
         int siz = 0;
         for(int i = 0; i < listCliente.size(); i++){
-            List<Integer> bitList = Basic.getBits(listCliente.get(i).bits);
+            List<Integer> bitList = BitsOper.getBits(listCliente.get(i).bits);
             int mByte = bitList.get(0);
             if(x == 32){
                 x = 0;
@@ -215,7 +215,7 @@ public class AddPayFragment extends Fragment implements View.OnClickListener, Vi
                 }
             }
 
-            if(Basic.bitR(mByte, x) == 1) {
+            if(BitsOper.bitR(mByte, x) == 1) {
                 mCltList.add(listCliente.get(i).nombre);
                 mAliList.add(listCliente.get(i).alias);
                 mIdList.add(listCliente.get(i).cliente);
@@ -243,12 +243,25 @@ public class AddPayFragment extends Fragment implements View.OnClickListener, Vi
                         mInput2.setText(alias);
                         mInput2.setEnabled(false);
                     }
-                    Deuda mDeb = appDBdeuda.size() > currtAcc? appDBdeuda.get(currtAcc).daoUser().getUsers(mIdList.get(i)) : null;
+
+                    Cliente mClt = daoCliente.getUsers(mIdList.get(i));
+                    Deuda mDeb = null;
+                    String accId = daoCuenta.getUsers().get(StartVar.mCurrAcc).cuenta;
+                    for(Deuda mD : daoDeuda.getListByGroupId(mClt.cliente)){
+                        if(mD.accid.equals(accId)){
+                            mDeb = mD;
+                            break;
+                        }
+                    }
                     if(mDeb != null) {
                         if (mDeb.estat == 1) {
-                            mInput4.setText(Basic.getValueFormatter(mDeb.total));
-                            int mult = CalcCalendar.getRangeMultiple(mDeb.ulfech, currtTyp);
-                            float monto = Basic.getDebt(mult, mDeb.total, mDeb.debe);
+                            String ultFec = mDeb.ulfech;
+                            if (ultFec.isEmpty()){
+                                ultFec = mDeb.fecha;
+                            }
+                            mInput4.setText(Basic.getValueFormatter(mDeb.rent.toString()));
+                            int mult = CalcCalendar.getRangeMultiple(ultFec, currtTyp);
+                            float monto = Basic.getDebt(mult, mDeb.rent, mDeb.paid);
 
                             if (mDeb.pagado == 2 && monto <=0) {
                                 mButt1.setEnabled(false);
@@ -349,7 +362,7 @@ public class AddPayFragment extends Fragment implements View.OnClickListener, Vi
         if (itemId == R.id.butt_pay1) {
             //Comprueba que la lista de cuentas no este vacia
             StartVar mVars = new StartVar(mContext);
-            if (StartVar.listacc.size() < 2) {
+            if (daoCuenta.getUsers().isEmpty()) {
                 setMessage(3); //MSG lista de cuentas vacia
                 return;
             }
@@ -360,6 +373,7 @@ public class AddPayFragment extends Fragment implements View.OnClickListener, Vi
             boolean newClt = true;
             List<String> mList = new ArrayList<>();
             mList.add("payID"+mIndex);
+
             for(int i = 0; i < mInputList.size(); i++) {
                 String text = mInputList.get(i).getText().toString().toLowerCase();
                 text = Basic.inputProcessor(text); //Elimina caracteres que afectan a los csv
@@ -419,19 +433,22 @@ public class AddPayFragment extends Fragment implements View.OnClickListener, Vi
                 }
             }
             if (result) {
+
+                String debId = "debID"+listDeuda.size();
+                Cuenta mAcc = daoCuenta.getUsers().get(StartVar.mCurrAcc);
+                String accId = mAcc.cuenta;
+
                 //Inicia la fecha actual
                 String currdate = "";
                 String currtime = "";
                 if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
                     currtime = LocalTime.now().toString();
-                }
-                if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
                     currdate = LocalDate.now().toString();
                 }
 
-                String monto = Basic.setValue(Double.toString(mInput4.getNumericValue()));
+                float rent = (float)mInput4.getNumericValue();
 
-                if(monto.isEmpty() || Basic.parseFloat(monto) <= 0.0){
+                if(rent <= 0.0){
                     //MSG Para entrada de monto
                     msgIdx = 2;
                     setMessage(msgIdx);
@@ -456,100 +473,167 @@ public class AddPayFragment extends Fragment implements View.OnClickListener, Vi
                     sImage = "";
                 }
                 //-------------------------------------------------------------------
+
                if(newClt){
-                   cltId = ""+listCliente.size();
+                   cltId = "cltID"+listCliente.size();
                    Cliente objClt = null;
                    objClt = new Cliente(
-                           "cltID"+cltId, mList.get(1), mList.get(2),"0",
-                           (swPorc?1:0), currdate, 0,0, currdate, 0,
-                           "0", Basic.saveNewBit(StartVar.mCurrAcc)
+                           cltId, mList.get(1), mList.get(2),"@null",
+                           0, currdate, 0f, currdate, 0,
+                           BitsOper.saveNewBit(StartVar.mCurrAcc)
                    );
-                   appDBcliente.daoUser().insetUser(objClt);
+                   daoCliente.insetUser(objClt);
 
                    Deuda objDeb = new Deuda(
-                           "cltID"+cltId, Integer.toString(currtAcc), "0", 0, currdate,
-                           0, 0, CalcCalendar.getDateMinus(currdate,1, currtTyp), 0,"0"
+                           debId, accId, cltId, 0f, 0, currdate,
+                           0, 0, CalcCalendar.getCorrectDate(currdate, currtTyp), 0,0f
                            );
-                   appDBdeuda.get(currtAcc).daoUser().insetUser(objDeb);
+                   daoDeuda.insetUser(objDeb);
                }
                else {
                    //Actualiza la fecha del ultimo pago
-                   StartVar.appDBcliente.daoUser().updateUltfech(cltId, currdate);
+                   daoCliente.updateUltfech(cltId, currdate);
 
-                   Deuda mDeb = appDBdeuda.get(currtAcc).daoUser().getUsers(cltId);
-                   if (mDeb != null) {
-                       int pagado = 1;
-                       String debe = mDeb.debe;
-                       String ulFech = mDeb.ulfech;
-                       if (mDeb.estat == 1) {
-                           int mult = CalcCalendar.getRangeMultiple(ulFech, currtTyp);
-                           float alldeb = Basic.getDebt(mult, mDeb.total, mDeb.debe);
-                           if (alldeb > 0) {
-                               float debt = Basic.parseFloat(debe);
-                               float currMnt = Basic.parseFloat(monto);
-                               float total = Basic.parseFloat(mDeb.total);
-
-                               currMnt += debt;
-
-                               int i = 1;
-                               //Basic.msg(total+" : "+currMnt);
-                               for (; i <= mult; i++) {
-                                   if (currMnt < total) {
-                                       debe = Float.toString(currMnt);
-                                       i--;
-                                       break;
-                                   } else {
-                                       currMnt -= total;
-                                       debt -= total;
-                                   }
-                                   //La deuda no fue pagada
-                                   if (currMnt == 0) {
-                                       debe = Float.toString(0);
-                                       break;
-                                   }
-                               }
-                               //Deuda fue saldada
-                               if (i == mult) {
-                                   debe = "0";
-                                   pagado = 2;
-                                   ulFech = currdate;
-                               } else if (i < 0) {
-                                   Basic.msg("El MONTO es mayor a la deuda!");
-                                   debe = Float.toString(currMnt);
-                                   pagado = 2;
-                                   ulFech = currdate;
-                                   return;
-                               } else {
-                                   ulFech = CalcCalendar.getDatePlus(mDeb.ulfech, i, currtTyp);
-                                   if (CalcCalendar.getRangeMultiple(ulFech, currtTyp) < 0) {
-                                       Basic.msg("El MONTO es mayor a la deuda!");
-                                       mInput4.setText(Basic.getValueFormatter(Float.toString(debt)));
-                                       return;
-                                   }
-                               }
-                           } else {
-                               Basic.msg("Cliente sin deudas!");
-                               pagado = 2;
-                               StartVar.appDBdeuda.get(currtAcc).daoUser().updateDebt(cltId, pagado, ulFech, debe);
-                               return;
-                           }
-                           //   Basic.msg(ulFech+" : "+  CalcCalendar.getRangeMultiple(ulFech, 0)+" : "+i );
+                   Deuda mDeb = null;
+                   Cliente mClt = daoCliente.getUsers(cltId);
+                   for(Deuda mD : daoDeuda.getListByGroupId(mClt.cliente)){
+                       if(mD.accid.equals(accId)){
+                           mDeb = mD;
+                           break;
                        }
-                       StartVar.appDBdeuda.get(currtAcc).daoUser().updateDebt(cltId, pagado, ulFech, debe);
+                   }
+                   if(mDeb == null){
+                       Deuda objDeb = new Deuda(
+                               debId, accId, cltId, 0f, 0, currdate,
+                               0, 0, CalcCalendar.getCorrectDate(currdate, currtTyp), 0,0f
+                       );
+                       daoDeuda.insetUser(objDeb);
                    }
                    else {
-                       Deuda objDeb = new Deuda(
-                               "cltID"+cltId, Integer.toString(currtAcc), "0", 0, currdate,
-                               0, 0, CalcCalendar.getDateMinus(currdate,1, currtTyp), 0,"0"
-                       );
-                       appDBdeuda.get(currtAcc).daoUser().insetUser(objDeb);
+                       int pagado = 1;
+                       Object[] mObj = CalcCalendar.dateToMoney(mDeb.ulfech, mAcc.acctipo, mDeb.rent, (mDeb.paid + rent));
+                       if(mObj != null){
+                           //Basic.msg(" ulfech "+mDeb.ulfech+" "+mObj[1]+" "+mObj[2]);
+                           float maxRent = (float)mObj[0];
+                           float currPaid = (float)mObj[1];
+                           String startDate = (String) mObj[2];
+
+                           //Basic.msg("maxRent: "+maxRent+" currPaid "+currPaid);
+
+                           if (currPaid > 0) {
+                                   Basic.msg("El MONTO es mayor a la deuda!");
+                                   mInput4.setText(Basic.getValueFormatter(Float.toString(mDeb.rent - mDeb.paid)));
+                                   return;
+                           }
+                           else {
+                               Basic.msg("maxRent "+maxRent);
+                               if(maxRent == 0){
+                                   pagado = 2;
+                               }
+                               daoDeuda.updateDebt(mDeb.deuda, pagado, startDate, currPaid);
+                           }
+
+//                           if(maxRent <= 0) {
+//                               Basic.msg("Cliente sin deudas!");
+//                               pagado = 2;
+//                               daoDeuda.updateDebt(mDeb.deuda, pagado, startDate, currPaid);
+//                               return;
+//                           }
+
+//                           if(maxRent == 0){
+//                               daoDeuda.updateDebt(mDeb.deuda, pagado, startDate, currPaid);
+//                           }
+
+                       }
+                       else {
+                             Basic.msg("Cliente sin deudas!");
+                             pagado = 2;
+                             daoDeuda.updateDebt(mDeb.deuda, pagado, mDeb.ulfech, mDeb.paid);
+                             return;
+                       }
                    }
+//
+//                   Cliente mClt = daoCliente.getUsers(cltId);
+//                   if(mClt != null) {
+//                       daoDeuda.getListByGroupId(mClt.cliente);
+//                   }
+//                   Deuda mDeb = daoDeuda.getUsers(cltId);
+//                   if (mDeb != null) {
+//                       int pagado = 1;
+//                       String debe = mDeb.debe;
+//                       String ultFec = mDeb.ulfech;
+//                       if (ultFec.isEmpty()){
+//                           ultFec = StartVar.appDBall.daoClt().getUsers(cltId).fecha;
+//                       }
+//                       if (mDeb.estat == 1) {
+//                           int mult = CalcCalendar.getRangeMultiple(ultFec, currtTyp);
+//                           float alldeb = Basic.getDebt(mult, mDeb.total, mDeb.debe);
+//                           if (alldeb > 0) {
+//                               float debt = Basic.parseFloat(debe);
+//                               float currMnt = Basic.parseFloat(monto);
+//                               float total = Basic.parseFloat(mDeb.total);
+//
+//                               currMnt += debt;
+//
+//                               int i = 1;
+//                               //Basic.msg(total+" : "+currMnt);
+//                               for (; i <= mult; i++) {
+//                                   if (currMnt < total) {
+//                                       debe = Float.toString(currMnt);
+//                                       i--;
+//                                       break;
+//                                   } else {
+//                                       currMnt -= total;
+//                                       debt -= total;
+//                                   }
+//                                   //La deuda no fue pagada
+//                                   if (currMnt == 0) {
+//                                       debe = Float.toString(0);
+//                                       break;
+//                                   }
+//                               }
+//                               //Deuda fue saldada
+//                               if (i == mult) {
+//                                   debe = "0";
+//                                   pagado = 2;
+//                                   ultFec = currdate;
+//                               } else if (i < 0) {
+//                                   Basic.msg("El MONTO es mayor a la deuda!");
+//                                   debe = Float.toString(currMnt);
+//                                   pagado = 2;
+//                                   ultFec = currdate;
+//                                   return;
+//                               } else {
+//                                   ultFec = CalcCalendar.getDatePlus(mDeb.ulfech, i, currtTyp);
+//                                   if (CalcCalendar.getRangeMultiple(ultFec, currtTyp) < 0) {
+//                                       Basic.msg("El MONTO es mayor a la deuda!");
+//                                       mInput4.setText(Basic.getValueFormatter(Float.toString(debt)));
+//                                       return;
+//                                   }
+//                               }
+//                           } else {
+//                               Basic.msg("Cliente sin deudas!");
+//                               pagado = 2;
+//                               StartVar.appDBall.daoDeb().updateDebt(cltId, pagado, ultFec, debe);
+//                               return;
+//                           }
+//                           //   Basic.msg(ulFech+" : "+  CalcCalendar.getRangeMultiple(ulFech, 0)+" : "+i );
+//                       }
+//                       StartVar.appDBall.daoDeb().updateDebt(cltId, pagado, ultFec, debe);
+//                   }
+//                   else {
+//                       Deuda objDeb = new Deuda(
+//                               debId, accId, cltId, "0", 0, currdate,
+//                               0, 0, CalcCalendar.getDateMinus(currdate,1, currtTyp), 0,"0"
+//                       );
+//                       StartVar.appDBall.daoDeb().insetUser(objDeb);
+//                   }
                }
-                Registro obj = new Registro(
-                        mList.get(0), mList.get(1), mList.get(3), monto, currSel2, (swPorc?1:0),
+                Pagos obj = new Pagos(
+                        mList.get(0), mList.get(1), mList.get(3), rent, currSel2, (swPorc?1:0),
                         sImage, currdate, currtime, (newClt?"cltID"+listCliente.size():cltId), Integer.toString(currtAcc), 0, "0"
                 );
-                appDBregistro.get(currtAcc).daoUser().insetUser(obj);
+                StartVar.appDBall.daoPay().insetUser(obj);
 
                //Actualisza la lista de fechas
                CalcCalendar.startCalList(mContext);
@@ -557,9 +641,9 @@ public class AddPayFragment extends Fragment implements View.OnClickListener, Vi
                //SE Limpia la lista
                 mList.clear();
                 //Recarga La lista de la DB ----------------------------
-                mVars.getRegListDB();
-                mVars.getCltListDB();
-                mVars.getDebListDB();
+               // mVars.getRegListDB();
+                //mVars.getCltListDB();
+                //mVars.getDebListDB();
                 //-------------------------------------------------------
 
                 //Esto inicia las actividad Main

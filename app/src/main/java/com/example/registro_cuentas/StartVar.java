@@ -1,35 +1,64 @@
 package com.example.registro_cuentas;
 
+import android.app.Activity;
 import android.content.Context;
 import android.view.View;
 
 import androidx.room.Room;
 
+import com.example.registro_cuentas.db.AllDao;
+import com.example.registro_cuentas.db.Cliente;
+import com.example.registro_cuentas.db.Conf;
+import com.example.registro_cuentas.db.Cuenta;
+import com.example.registro_cuentas.db.Deuda;
+import com.example.registro_cuentas.db.Fecha;
+import com.example.registro_cuentas.db.Pagos;
+import com.example.registro_cuentas.db.UsuarioQueue;
+import com.example.registro_cuentas.drive.SetWorkResult;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
+import java.nio.ByteBuffer;
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.UUID;
+import java.util.Base64;
 
 public class StartVar {
+
+    //Mapa de arrays
+    public static HashMap<String, ArrayList<String>> arrayMap = new HashMap<>();
+    public static final String mId1 = "id1";
+    public static final String mId2 = "id2";
 
     //Nombre de data Base
     private static String nameDBacc = "Cuentas";
     private static String nameDBclt = "Clientes";
     private static String nameDBfec = "Fechas";
+    public static String nameDBconf = "Config-RG";
+
+    //Worker tags
+    public static final String WORK_TAG_DOWNLOAD = "DownloadWorkConfigDb"; // Define WORK_TAG para configdb
+    //public static final String WORK_TAG_UPLOAD = "UploadWorkCowData"; // Define WORK_TAG para cowdatadb
+
+    public static List<String[]> csvList = new ArrayList<>();
 
     //Todas las listas----------------------------------------------
     public static List<Cuenta> listacc =  new ArrayList<>();
     public static List<Cliente> listclt =  new ArrayList<>();
     public static List<Fecha> listfec =  new ArrayList<>();
-    public static List<List> listreg = new ArrayList<>();
-    public static List<List> listdeb = new ArrayList<>();
+    public static List<Pagos> listreg = new ArrayList<>();
+    public static List<Deuda> listdeb = new ArrayList<>();
     // DB
-    public static AppDBacc appDBcuenta;
-    public static AppDBclt appDBcliente;
-    public static AppDBfec appDBfecha;
-    public static List<AppDBreg> appDBregistro =  new ArrayList<>();
-    public static List<AppDBdeb> appDBdeuda =  new ArrayList<>();
+    public static AllDao appDBall;
+
     //-------------------------------------------------------------------
+
+    // DB Config
+    public static Conf mConfigDB;
+    public static String mConfID = "confID0";
 
     // Var redundants
     public static boolean mPermiss = false;     //Permisos de gestion multimedia
@@ -40,12 +69,12 @@ public class StartVar {
 
     public static String mDollar = "";       //Precio del dolar
 
-
     public static ArrayList<String> textList;
     public static ArrayList<String> dirList;
     public static ArrayList<String> typeList;
     public static ArrayList<String> morlist = new ArrayList<>();
 
+    public static List<Object[]> bitList = new ArrayList<>();
 
     public static int currSel4 = 0;
     public static int payIndex = 0;
@@ -53,121 +82,96 @@ public class StartVar {
     public static String cltBit = "0x0";
 
 
-    public static String saveDataName = "savedataID0";
     public static String saveRegName = "reg";
     public static String saveDebName = "deb";
+
+    public static final String dirAppName = "/.accdata/";
 
     //Barra de navegacion
     public static BottomNavigationView mNavBar;
     //Root View
     public static View mRootView;
 
+    //Preloder
+    public static boolean mainStart = false;
+    //Hacer upload cuando los datos esten disponibles.
+    public static boolean makeUpdate = false;
 
-    private Context mContex;
+    public static Context mContex;
+    public static Activity mActivity;
+    public static UsuarioQueue usuarioQueue;
+    public static int sendDate = 0;
+
+    public static SetWorkResult mWorkResult = null;
+
     public StartVar(Context mContex){
         this.mContex = mContex;
     }
 
-    //------------------------------------------ Para guardar las cuentas
-    public void setAccListDB(){
+    public static void getConfigDB(){
         //Instancia de la base de datos
-        StartVar.appDBcuenta = Room.databaseBuilder( mContex, AppDBacc.class, nameDBacc).allowMainThreadQueries().build();
-        StartVar.listacc =  appDBcuenta.daoUser().getUsers();
+        StartVar.mConfigDB =  StartVar.appDBall.daoCfg().getUsers(mConfID);
+    }
+
+    //------------------------------------------ Para guardar las cuentas
+    public void setAllListDB(){
+        //Instancia de la base de datos
+        StartVar.appDBall = Room.databaseBuilder( mContex, AllDao.class, nameDBacc).allowMainThreadQueries().build();
+
+        StartVar.listacc = appDBall.daoAcc().getUsers();
+        StartVar.listclt = appDBall.daoClt().getUsers();
+        StartVar.listdeb = appDBall.daoDeb().getUsers();
+        StartVar.listfec = appDBall.daoDat().getUsers();
+        StartVar.listreg = appDBall.daoPay().getUsers();
+
+        //Instancia de la base de datos para Config
+        mConfigDB = StartVar.appDBall.daoCfg().getUsers(mConfID);
+
+        if(mConfigDB == null){
+            String date = "";
+            String time= "";
+            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+                date = LocalDate.now().toString();
+                time = LocalTime.now().toString();
+            }
+
+            // Generar UUID
+            UUID uuid = UUID.randomUUID();
+            // Convertir UUID a bytes (16 bytes)
+            ByteBuffer byteBuffer = ByteBuffer.allocate(16);
+            byteBuffer.putLong(uuid.getMostSignificantBits());
+            byteBuffer.putLong(uuid.getLeastSignificantBits());
+
+            // Codificar en Base64 (sin padding para ahorrar espacio)
+            String textID = "";
+            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+                textID = Base64.getUrlEncoder().withoutPadding().encodeToString(byteBuffer.array());
+            }
+
+            //configDatabase.daoConf().insertUser();
+            Conf obj = new Conf(mConfID, "2", textID, date, time, 0, "0", 0, 0);
+            StartVar.appDBall.daoCfg().insetUser(obj);
+        }
+
+
     }
 
     public void getAccListDB(){
-        //Instancia de la base de datos
-        StartVar.listacc =  StartVar.appDBcuenta.daoUser().getUsers();
+        //Instancia para obtener Cuentas
+        StartVar.listacc =  StartVar.appDBall.daoAcc().getUsers();
     }
     //----------------------------------------------------------------------------------
-
-    //------------------------------------------ Para guardar los clientes
-    public void setCltListDB(){
-        //Instancia de la base de datos
-        StartVar.appDBcliente = Room.databaseBuilder( mContex, AppDBclt.class, nameDBclt).allowMainThreadQueries().build();
-        StartVar.listclt =  appDBcliente.daoUser().getUsers();
-    }
 
     public void getCltListDB(){
-        //Instancia de la base de datos
-        StartVar.listclt =  StartVar.appDBcliente.daoUser().getUsers();
+        //Instancia para obtener Clientes
+        StartVar.listclt =  StartVar.appDBall.daoClt().getUsers();
     }
     //----------------------------------------------------------------------------------
 
-    //---------------------------------------- Para Guardar los datos
-    public void setRegListDB(){
-        //Limpia las listas
-        if(StartVar.appDBregistro != null){
-            StartVar.appDBregistro.clear();
-            StartVar.listreg.clear();
-        }
-
-        //Instancia de la base de datos
-        int siz = StartVar.listacc.size();
-        for (int i = 0; i < siz; i++){
-            String name = StartVar.listacc.get(i).cuenta;
-            AppDBreg db = Room.databaseBuilder( mContex, AppDBreg.class, saveRegName+name).allowMainThreadQueries().build();
-            StartVar.appDBregistro.add(db);
-            StartVar.listreg.add(db.daoUser().getUsers());
-        }
-    }
-    //----------------------------------------------------------------------------------
-
-    public void getRegListDB(){
-        //Limpia las listas
-        StartVar.appDBregistro.clear();
-        StartVar.listreg.clear();
-
-        //Instancia de la base de datos
-        for (int i = 0; i < StartVar.appDBregistro.size(); i++){
-            AppDBreg db = StartVar.appDBregistro.get(i);
-            StartVar.listreg.add(db.daoUser().getUsers());
-        }
-    }
-    //--------------------------------------------------------------------------------
-
-    //---------------------------------------- Para Guardar info de deudas CLientes
-    public void setDebListDB(){
-        //Limpia las listas
-        if(StartVar.appDBdeuda != null){
-            StartVar.appDBdeuda.clear();
-            StartVar.listdeb.clear();
-        }
-
-        //Instancia de la base de datos
-        int siz = StartVar.listacc.size();
-        for (int i = 0; i < siz; i++){
-            String name = StartVar.listacc.get(i).cuenta;
-            AppDBdeb db = Room.databaseBuilder( mContex, AppDBdeb.class, saveDebName+name).allowMainThreadQueries().build();
-            StartVar.appDBdeuda.add(db);
-            List<Deuda> list = db.daoUser().getUsers();
-            StartVar.listdeb.add(list);
-        }
-    }
-    //----------------------------------------------------------------------------------
-
-    public void getDebListDB(){
-        //Limpia las listas
-        StartVar.appDBdeuda.clear();
-        StartVar.listdeb.clear();
-
-        //Instancia de la base de datos
-        for (int i = 0; i < StartVar.appDBdeuda.size(); i++){
-            AppDBdeb db = StartVar.appDBdeuda.get(i);
-            StartVar.listdeb.add(db.daoUser().getUsers());
-        }
-    }
-    //--------------------------------------------------------------------------------
-    //------------------------------------------ Para guardar las Fechas
-    public void setFecListDB(){
-        //Instancia de la base de datos
-        StartVar.appDBfecha = Room.databaseBuilder( mContex, AppDBfec.class, nameDBfec).allowMainThreadQueries().build();
-        StartVar.listfec =  appDBfecha.daoUser().getUsers();
-    }
 
     public void getFecListDB(){
-        //Instancia de la base de datos
-        StartVar.listfec =  StartVar.appDBfecha.daoUser().getUsers();
+        //Instancia para obtener Fechas
+        StartVar.listfec =  StartVar.appDBall.daoDat().getUsers();
     }
 
     public void setmPermiss(boolean permiss){
@@ -210,7 +214,7 @@ public class StartVar {
     public void setCltIndex(int value){
         StartVar.cltIndex = value;
     }
-    public void setCltBit(String value){
+    public static void setCltBit(String value){
         StartVar.cltBit = value;
     }
 
@@ -218,4 +222,7 @@ public class StartVar {
         StartVar.morlist.clear();
         StartVar.morlist = list;
     }
+
+    public static void setmMainStart(boolean mStart){mainStart = mStart;}
+
 }

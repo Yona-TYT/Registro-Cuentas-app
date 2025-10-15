@@ -20,31 +20,32 @@ import android.widget.SearchView;
 
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.ViewModelProvider;
 
-import com.example.registro_cuentas.AccDtailsActivity;
-import com.example.registro_cuentas.AppDBacc;
-import com.example.registro_cuentas.AppDBclt;
-import com.example.registro_cuentas.AppDBfec;
-import com.example.registro_cuentas.AppDBreg;
+import com.example.registro_cuentas.activitys.AccDtailsActivity;
+import com.example.registro_cuentas.db.AllDao;
 import com.example.registro_cuentas.BaseContext;
 import com.example.registro_cuentas.Basic;
 import com.example.registro_cuentas.CalcCalendar;
-import com.example.registro_cuentas.Cliente;
-import com.example.registro_cuentas.CltAdapter;
-import com.example.registro_cuentas.Cuenta;
+import com.example.registro_cuentas.db.Cliente;
+import com.example.registro_cuentas.adapters.CltAdapter;
+import com.example.registro_cuentas.db.Cuenta;
 import com.example.registro_cuentas.CurrencyEditText;
-import com.example.registro_cuentas.DaoClt;
-import com.example.registro_cuentas.Deuda;
-import com.example.registro_cuentas.Fecha;
-import com.example.registro_cuentas.PayAdapter;
+import com.example.registro_cuentas.db.dao.DaoAcc;
+import com.example.registro_cuentas.db.dao.DaoClt;
+import com.example.registro_cuentas.db.dao.DaoDeb;
+import com.example.registro_cuentas.db.dao.DaoPay;
+import com.example.registro_cuentas.db.Deuda;
+import com.example.registro_cuentas.db.Fecha;
+import com.example.registro_cuentas.GetDollar;
+import com.example.registro_cuentas.adapters.PayAdapter;
 import com.example.registro_cuentas.R;
-import com.example.registro_cuentas.Registro;
+import com.example.registro_cuentas.db.Pagos;
 import com.example.registro_cuentas.StartVar;
-import com.example.registro_cuentas.SelecAdapter;
+import com.example.registro_cuentas.adapters.SelecAdapter;
 import com.example.registro_cuentas.databinding.FragmentHomeBinding;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
+import java.io.IOException;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -57,14 +58,24 @@ public class HomeFragment extends Fragment implements View.OnClickListener, Adap
     private Context mContext;
 
     // DB ----------------------------------------------------------------
-    private AppDBacc appDBcuenta = StartVar.appDBcuenta;
-    private AppDBfec appDBfecha = StartVar.appDBfecha;
-    private AppDBclt appDBcliente = StartVar.appDBcliente;
+    private AllDao appDBcuenta = StartVar.appDBall;
 
     private List<Cuenta> listCuenta;
-    private List<AppDBreg> appDBregistro = StartVar.appDBregistro;
-    private List<Registro> listRegistro = new ArrayList<>();
+    private List<Pagos> appDBregistro = StartVar.listreg;
+    private List<Pagos> listRegistro = new ArrayList<>();
     //--------------------------------------------------------------------
+
+    //--------------------------
+    private DaoPay daoRegistro = StartVar.appDBall.daoPay();
+    private DaoDeb daoDeuda = StartVar.appDBall.daoDeb();
+    private List<Deuda> listDeuda = new ArrayList<>();
+
+    private DaoClt daoCliente = StartVar.appDBall.daoClt();
+    private List<Cliente> listCliente = new ArrayList<>();
+
+    private DaoAcc daoCuenta = StartVar.appDBall.daoAcc();
+
+    //------------------------------------
 
     private ConstraintLayout mConstrain;
     private BottomNavigationView mNavBar = StartVar.mNavBar;
@@ -107,8 +118,6 @@ public class HomeFragment extends Fragment implements View.OnClickListener, Adap
         //Para limpiar todas las listas
         empyLists();
 
-        HomeViewModel homeViewModel = new ViewModelProvider(this).get(HomeViewModel.class);
-
         binding = FragmentHomeBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
 
@@ -132,6 +141,13 @@ public class HomeFragment extends Fragment implements View.OnClickListener, Adap
         mConstrain.setOnClickListener(this);
         mSearch1.setOnFocusChangeListener(this);
 
+        GetDollar mGet = new GetDollar(mContext, getActivity(), 0, mInput1);
+        try {
+            GetDollar.urlRun();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
         //Para guardar el precio del dolar
         mInput1.setOnFocusChangeListener(new View.OnFocusChangeListener() {
             @Override
@@ -139,7 +155,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener, Adap
                 if(!b){
                     String value = Double.toString(mInput1.getNumericValue());
                     // Actualiza y guarda el Precio del dolar ------------------------
-                    StartVar.appDBcuenta.daoUser().updateDollar(StartVar.saveDataName, value);
+                    StartVar.appDBall.daoCfg().updateDolar(StartVar.mConfID, value);
                     StartVar mVars = new StartVar(mContext);
                     mVars.setDollar(value);
                     //----------------------------------------------------------------------------------
@@ -167,7 +183,6 @@ public class HomeFragment extends Fragment implements View.OnClickListener, Adap
         //Efecto moneda
         //---------------------------------------------------------------------------------------------
         //Basic.msg(""+StartVar.mDollar);
-        //Toast.makeText(mContext, "Siz is "+Basic.setFormatter(StartVar.mDollar), Toast.LENGTH_LONG).show();
         mInput1.setText(Basic.setFormatter(StartVar.mDollar));
 
         //Para la lista del selector Tipo Moneda ------------------------------------------------------
@@ -182,7 +197,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener, Adap
                 mCurr = mCurrencyList.get(i);
 
                 // Actualiza y guarda el estado del selector tipo de moneda ------------------------
-                appDBcuenta.daoUser().updateCurrency(StartVar.saveDataName, i);
+                StartVar.appDBall.daoCfg().updateMoneda(StartVar.mConfID, i);
 
                 StartVar mVars = new StartVar(mContext);
                 mVars.setCurrency(i);
@@ -206,38 +221,48 @@ public class HomeFragment extends Fragment implements View.OnClickListener, Adap
         //--------------------------------------------------------------------------------------------
         //Para la lista del selector Cuentas --------------------------------------------------------
         // Genera la lista de cuentas ---------------------------------------------------------
-        listCuenta = appDBcuenta.daoUser().getUsers();
-        if(listCuenta.size() > 1) {
+        listCuenta = daoCuenta.getUsers();
+        List<String[]> maccList = new ArrayList<>();
+        if(!listCuenta.isEmpty()) {
             mButt1.setOnClickListener(this);
+
+            for (int i = 0;  i < listCuenta.size(); i++){
+                String name = listCuenta.get(i).nombre;
+                String desc = listCuenta.get(i).desc;
+                String[] stList= new String[3];
+                stList[0] = name;
+                stList[1] =name;
+                stList[2] = Integer.toString(i);
+                maccList.add(stList);
+                accnameList.add(name+ " ("+desc+")");
+                //nameList.add(listCuenta.get(i).nombre);
+            }
         }
         else {
             mButt1.setEnabled(false);
-        }
-        List<String[]> maccList = new ArrayList<>();
-        for (int i = 1; listCuenta.size() > 1 && i < listCuenta.size(); i++){
-            String name = listCuenta.get(i).nombre;
-            String desc = listCuenta.get(i).desc;
             String[] stList= new String[3];
-            stList[0] = name;
-            stList[1] =name;
-            stList[2] = Integer.toString((i-1));
+            stList[0] = "NA";
+            stList[1] = "NA";
+            stList[2] = Integer.toString(0);
             maccList.add(stList);
-            accnameList.add(name+ " ("+desc+")");
-           //nameList.add(listCuenta.get(i).nombre);
+
+            accnameList.add("Vacio (No hay Cuentas Disponibles)");
+
         }
+
         SelecAdapter adapt2 = new SelecAdapter(mContext, accnameList);
         mSpin2.setAdapter(adapt2);
-        mSpin2.setSelection((currSel2==0?0:currSel2-1)); //Set La cuenta como default
+        mSpin2.setSelection(currSel2); //Set La cuenta como default
         mSpin2.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
                 currSel2 = i;
                 // Actualiza y guarda el estado del selector de cuentas-----------------------------
                 StartVar mVars = new StartVar(mContext);
-                int idx = i+1;
-                if(idx < listCuenta.size()) {
-                    appDBcuenta.daoUser().updateCurrentAcc(StartVar.saveDataName, idx);
-                    mVars.setCurrentTyp(appDBcuenta.daoUser().getUsers().get(idx).acctipo);
+                int idx = i;
+                if(!listCuenta.isEmpty()) {
+                    StartVar.appDBall.daoCfg().updateCurrAcc(StartVar.mConfID, idx);
+                    mVars.setCurrentTyp(appDBcuenta.daoAcc().getUsers().get(idx).acctipo);
                 }
                 mVars.setCurrentAcc(i);
 
@@ -268,7 +293,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener, Adap
         fechaList.add("Todos");
         String curM = "";
         String curY = "";
-        List<Fecha> listFecha = appDBfecha.daoUser().getUsers();
+        List<Fecha> listFecha = StartVar.appDBall.daoDat().getUsers();
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             LocalDate currdate = LocalDate.now();
             curM = currdate.getMonth().toString();
@@ -290,7 +315,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener, Adap
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
                 int count = i==0?0 :adapterView.getCount();
                 currSel3 = (count - i);
-                appDBcuenta.daoUser().updateCurrentFec(StartVar.saveDataName, (count - i));
+                StartVar.appDBall.daoCfg().updateMes(StartVar.mConfID, (count - i));
                 StartVar mVars = new StartVar(mContext);
                 mVars.setCurrentMes((count - i));
 
@@ -401,82 +426,95 @@ public class HomeFragment extends Fragment implements View.OnClickListener, Adap
     }
 
     public void setRegList(){
-        if(!appDBregistro.isEmpty()) {
-            listRegistro = appDBregistro.get(currSel2).daoUser().getUsers();
-            List<Fecha> listFecha = appDBfecha.daoUser().getUsers();
-            int idx = currSel3 - 1;
-            Fecha selFecha = listFecha.get(Math.max(idx, 0));
-            List<Object[]> mregList = new ArrayList<>();
-            for (int i = 0; i < listRegistro.size(); i++) {
-                Registro reg = listRegistro.get(i);
-                DaoClt mDao = StartVar.appDBcliente.daoUser();
-                String name = mDao.getSaveName(reg.cltid);
-                String fecha = reg.fecha;
-                if(currSel3 == 0) {
-                    Object[] stList = new Object[5];
-                    stList[0] = i;
-                    stList[1] = name;
-                    stList[2] = reg.monto;
-                    stList[3] = fecha;
-                    stList[4] = reg.oper;
-                    mregList.add(stList);
-                }
-                else {
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                        LocalDate date = LocalDate.parse(fecha);
-                        if(date.getMonth().toString().equals(selFecha.mes)){
-                            Object[] stList = new Object[5];
-                            stList[0] = i;
-                            stList[1] = name;
-                            stList[2] = reg.monto;
-                            stList[3] = fecha;
-                            stList[4] = reg.oper;
-                            mregList.add(stList);
-                        }
+        listRegistro = StartVar.appDBall.daoPay().getUsers();
+        List<Fecha> listFecha = StartVar.appDBall.daoDat().getUsers();
+        int idx = currSel3 - 1;
+        Fecha selFecha = listFecha.get(Math.max(idx, 0));
+        List<Object[]> mregList = new ArrayList<>();
+        for (int i = 0; i < listRegistro.size(); i++) {
+            Pagos reg = listRegistro.get(i);
+            DaoClt mDao = StartVar.appDBall.daoClt();
+            String name = mDao.getSaveName(reg.cltid);
+            String fecha = reg.fecha;
+            if(currSel3 == 0) {
+                Object[] stList = new Object[5];
+                stList[0] = i;
+                stList[1] = name;
+                stList[2] = reg.monto;
+                stList[3] = fecha;
+                stList[4] = reg.oper;
+                mregList.add(stList);
+            }
+            else {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                    LocalDate date = LocalDate.parse(fecha);
+                    if(date.getMonth().toString().equals(selFecha.mes)){
+                        Object[] stList = new Object[5];
+                        stList[0] = i;
+                        stList[1] = name;
+                        stList[2] = reg.monto;
+                        stList[3] = fecha;
+                        stList[4] = reg.oper;
+                        mregList.add(stList);
                     }
                 }
             }
-            //Para configurar la lista de pagos
-            mPayadapter = new PayAdapter(mContext, mregList);
-            mLv1.setAdapter(mPayadapter);
-            mPayadapter.getFilter().filter("");
         }
-        else if(mLv1.getChildCount() > 0){
-            mLv1.removeAllViews();
-        }
+        //Para configurar la lista de pagos
+        mPayadapter = new PayAdapter(mContext, mregList);
+        mLv1.setAdapter(mPayadapter);
+        mPayadapter.getFilter().filter("");
     }
 
     public void setCltList(){
-        List<Cliente> listClt = appDBcliente.daoUser().getUsers();
-        List<Object[]> mregList = new ArrayList<>();
+        List<Cliente> listClt = daoCliente.getUsers();
+        List<Object[]> cltList = new ArrayList<>();
+
+//        for (Deuda mD : daoDeuda.getUsers()) {
+//            Basic.msg("" + mD.cltid);
+//        }
+
+        //Basic.msg(""+listDeb.size());
         for (int i = 0; i < listClt.size(); i++) {
             Cliente clt = listClt.get(i);
-            Deuda deb = StartVar.appDBdeuda.get(currSel2).daoUser().getUsers(clt.cliente);
-            if(deb==null){
+            Deuda mDeb = null;
+
+            for (Deuda mD : daoDeuda.getListByGroupId(clt.cliente)){
+                if(mD.accid.equals(listCuenta.get(currSel2).cuenta)){
+                    mDeb = mD;
+                    break;
+                }
+            }
+
+            if(mDeb==null){
                 continue;
             }
             Object[] stList = new Object[4];
             stList[0] = i;
 
-            String ultFec = deb.ulfech;
-            String debe = Basic.getValue(deb.debe);
-            String total = Basic.getValue(deb.total);
-            int isDeb = deb.pagado;
+            String ultFec = mDeb.ulfech;
+            if (ultFec.isEmpty()){
+                ultFec = clt.fecha;
+            }
+            Float debe = mDeb.paid;
+            Float rent = mDeb.rent;
+            int isDeb = mDeb.pagado;
             int mTyp =  StartVar.mCurrTyp;
             int mult = CalcCalendar.getRangeMultiple(ultFec, mTyp);
-            String monto = Float.toString(Basic.getDebt(mult, total, debe));
+            String monto = Float.toString(Basic.getDebt(mult, rent, debe));
 
             String txA = "";
             String txB = "";
+            //Basic.msg(mult+" "+clt.nombre+" t"+monto);
             if(mTyp != 0) {
-                if(Basic.floatFormat(clt.total) == 0) {
+                if(mDeb.rent == 0 || mDeb.estat == 0) {
                     continue;
                 }
-                if (isDeb == 0) {
-                    txA = " [Sin Registros] ";
+                if (isDeb == 0 && rent <= 0) {
+                    txA = " [Sin Registros] "+ ultFec;
                     txB = "[NA]";
                 } else if (isDeb == 1 || mult > 0) {
-                    txA = " [" + (deb.oper == 0 ? "+" : "-") + Basic.setFormatter(monto) + " " + mCurr + "] ";
+                    txA = " [" + (mDeb.oper == 0 ? "+" : "-") + Basic.setFormatter(monto) + " " + mCurr + "] ";
                     txB = " [PENDIENTE]";
                 } else {
                     txA = " [Pagado] ";
@@ -484,17 +522,26 @@ public class HomeFragment extends Fragment implements View.OnClickListener, Adap
                 }
             }
             else {
-                txA = "  ";
-                txB = " Ult: " + ultFec;
+                if (isDeb == 0 && rent <= 0) {
+                    txA = " [Sin Registros]";
+                    txB = "[NA]";
+                }
+                else {
+                    txA = "  ";
+                    txB = " Ult: " + ultFec;
+                }
             }
             stList[1] = clt.nombre;
             stList[2] = txA;
             stList[3] = txB;
 
-            mregList.add(stList);
+            cltList.add(stList);
+
         }
+
+
         //Para configurar la lista de pagos
-        mCltadapter = new CltAdapter(mContext, mregList);
+        mCltadapter = new CltAdapter(mContext, cltList);
         mLv1.setAdapter(mCltadapter);
         mCltadapter.getFilter().filter("");
     }

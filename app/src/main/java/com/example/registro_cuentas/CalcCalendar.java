@@ -1,9 +1,8 @@
 package com.example.registro_cuentas;
 
-import static com.example.registro_cuentas.StartVar.appDBfecha;
-
 import android.content.Context;
-import android.widget.Toast;
+
+import com.example.registro_cuentas.db.Fecha;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -79,8 +78,7 @@ public class CalcCalendar {
         //Inicia la fecha actual
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
             LocalDate currdate = LocalDate.now();
-            AppDBfec appDBfecha = StartVar.appDBfecha;
-            List<Fecha> listFecha = appDBfecha.daoUser().getUsers();
+            List<Fecha> listFecha = StartVar.appDBall.daoDat().getUsers();
             for (Fecha d : listFecha){
                 String f = d.date;
                 LocalDate date = LocalDate.parse(f);
@@ -90,7 +88,7 @@ public class CalcCalendar {
             }
             LocalTime currtime = LocalTime.now();
             Fecha obj = new Fecha("dateID" + (listFecha.size() - 1), "" + currdate.getYear(), currdate.getMonth().toString(), "" + currdate.getDayOfMonth(), CalcCalendar.getTime(currtime.toString()), currdate.toString());
-            appDBfecha.daoUser().insetUser(obj);
+            StartVar.appDBall.daoDat().insetUser(obj);
             //Recarga La lista de la DB ----------------------------
             StartVar var = new StartVar(mContext);
             var.getFecListDB();
@@ -125,6 +123,68 @@ public class CalcCalendar {
         return (int)num;
     }
 
+    public static Object[] dateToMoney(String startDate, int select, float rent, float paid) {
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+            if (rent <= 0) {
+                return null;
+            }
+            if (!startDate.isEmpty()) {
+                LocalDate originalDate = LocalDate.parse(startDate);
+                LocalDate currdate = LocalDate.now();
+
+                int result = currdate.compareTo(originalDate);
+                if (result < 1) {
+                    return null;
+                }
+
+                long numOwed = 0;
+                if (select == 1) {
+                    // Días: solo completos transcurridos (sin extra)
+                    numOwed = ChronoUnit.DAYS.between(originalDate, currdate);
+                } else if (select == 2) {
+                    // Meses: incluye período actual iniciado
+                    originalDate = LocalDate.of(originalDate.getYear(), originalDate.getMonth(), 1);
+                    numOwed = ChronoUnit.MONTHS.between(originalDate, currdate);
+                } else if (select == 3) {
+                    originalDate = LocalDate.of(originalDate.getYear(), 1, 1);
+                    numOwed = ChronoUnit.YEARS.between(originalDate, currdate);
+                } else {
+                    return null;
+                }
+                if (numOwed < 1) {
+                    numOwed = 0;
+                }
+
+                // Simula pagos desde la fecha original (garantiza date >= startDate)
+                LocalDate date = originalDate;
+                int count = 0;
+                float currentPaid = paid;
+                Basic.msg("currentPaid "+currentPaid+" numOwed: "+numOwed+ "count: "+count);
+
+                for (long i = numOwed; i > 0; i--) {
+                    if (currentPaid >= rent) {
+                        currentPaid -= rent;
+                        if (select == 1) {
+                            date = date.plusDays(1);
+                        } else if (select == 2) {
+                            date = date.plusMonths(1);
+                        } else {  // select == 3
+                            date = date.plusYears(1);
+                        }
+                    } else {
+                        count++;
+                    }
+                }
+                Basic.msg("startDate "+startDate+" date: "+date.toString()+ "count: "+count);
+
+                float debt = Math.max(0f, (rent * count) - currentPaid);
+                return new Object[]{debt, currentPaid, date.toString()};
+            }
+        }
+        return null;
+    }
+
+
     public static String getDatePlus(String txDate, int sum, int selec) {
         String newDate = "";
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
@@ -147,73 +207,51 @@ public class CalcCalendar {
         }
         return newDate;
     }
-    public static String getDateMinus(String txDate, int minus, int selec) {
+//    public static String getCorrectDate(String txDate, int minus, int selec) {
+//        String newDate = "";
+//        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+//            if (!txDate.isEmpty()) {
+//                //Convierte Sting  a forrmato de fecha
+//                LocalDate date = LocalDate.parse(txDate);
+//                //Para Dias
+//                if (selec == 1) {
+//                    newDate = date.minusDays(minus).toString();
+//                }
+//                //Para meses
+//                else if (selec == 2) {
+//                    newDate = date.minusMonths(minus).toString();
+//                }
+//                //Para años
+//                else if (selec == 3) {
+//                    newDate = date.minusYears(minus).toString();
+//                }
+//            }
+//        }
+//        return newDate;
+//    }
+
+    public static String getCorrectDate(String txDate, int selec) {
         String newDate = "";
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
             if (!txDate.isEmpty()) {
                 //Convierte Sting  a forrmato de fecha
                 LocalDate date = LocalDate.parse(txDate);
+                Basic.msg("selec"+selec+" txDate "+txDate);
                 //Para Dias
                 if (selec == 1) {
-                    newDate = date.minusDays(minus).toString();
+                    return txDate;
                 }
                 //Para meses
                 else if (selec == 2) {
-                    newDate = date.minusMonths(minus).toString();
+                    newDate = LocalDate.of(date.getYear(), date.getMonth(), 1).toString();
+
                 }
                 //Para años
                 else if (selec == 3) {
-                    newDate = date.minusYears(minus).toString();
+                    newDate = LocalDate.of(date.getYear(), 1, 1).toString();
                 }
             }
         }
         return newDate;
     }
 }
-
-
-
-//    @RequiresApi(api = Build.VERSION_CODES.O)
-//    private LocalDate validateDate(int year, int moth, int day){
-//        Log.d("PhotoPicker", "1-->>>>>>>>>>>>>>>>>>>>>>>>>>>> year: " + year + " mes: "+ moth);
-//
-//        //Esto saca un aproximado de los meses restantes pero no es perfecto
-//        if(moth > 12) {
-//            float myFloat =  ((float)(moth-1) / (float)12);
-//            year = ((int)myFloat)+1;
-//            moth = getFloatPart(myFloat)+1;
-//
-//            Log.d("PhotoPicker", "-->>>>>>>>>>>>>>>>>>>>>>>>>>>> year: " + year + " mes: "+ moth);
-//        }
-//        boolean result = true;
-//        try{
-//            LocalDate.of(year, moth, day);
-//        }
-//        catch(DateTimeException e) {
-//            result = false;
-//        }
-//        if(result){
-//            return LocalDate.of(year, moth, day);
-//        }
-//        else {
-//            return LocalDate.of(1, 1, 1);
-//        }
-//    }
-
-//    private int getFloatPart(float numero) {
-//
-//        Log.d("", String.format("El número originalmente es: %f\n", numero));
-//
-//        int parteEntera = (int)numero; // Le quitamos la parte decimal pasando a int
-//
-//        float parteDecimal = (numero - (float)parteEntera); // restamos la parte entera
-//
-//        String text =  Float.toString(parteDecimal); //Convertimos los decimales a string
-//
-//        text = text.replace('.', '0');
-//        text = ""+(text.length() > 2? text.charAt(2): 0);
-//        Log.d("", String.format("Parte entera: %d. Parte decimal: %s\n", parteEntera, text));
-//
-//        return Integer.parseInt(text);
-//
-//    }
