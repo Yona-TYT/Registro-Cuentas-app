@@ -49,6 +49,7 @@ import java.io.IOException;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.List;
 
 public class HomeFragment extends Fragment implements View.OnClickListener, AdapterView.OnItemClickListener, View.OnFocusChangeListener{
@@ -61,12 +62,11 @@ public class HomeFragment extends Fragment implements View.OnClickListener, Adap
     private AllDao appDBcuenta = StartVar.appDBall;
 
     private List<Cuenta> listCuenta;
-    private List<Pagos> appDBregistro = StartVar.listreg;
     private List<Pagos> listPagos = new ArrayList<>();
     //--------------------------------------------------------------------
 
     //--------------------------
-    private DaoPay daoRegistro = StartVar.appDBall.daoPay();
+    private DaoPay daoPagos = StartVar.appDBall.daoPay();
     private DaoDeb daoDeuda = StartVar.appDBall.daoDeb();
     private List<Deuda> listDeuda = new ArrayList<>();
 
@@ -90,6 +90,10 @@ public class HomeFragment extends Fragment implements View.OnClickListener, Adap
     private int currSel2 = StartVar.mCurrAcc;
     private int currSel3 = StartVar.mCurrMes;
     private int currSel4 = StartVar.currSel4;
+
+    private boolean allSel3 = false;
+    List<Fecha> dateOrderedList = StartVar.appDBall.daoDat().getUsers();
+
 
     private List<String> mSpinL1= Arrays.asList("Dolar", "Bolivar");
     private List<String> mSpinL4= Arrays.asList("Pagos", "Clientes");
@@ -202,7 +206,6 @@ public class HomeFragment extends Fragment implements View.OnClickListener, Adap
                 StartVar mVars = new StartVar(mContext);
                 mVars.setCurrency(i);
                 //----------------------------------------------------------------------------------
-                //Recarga la lista de pagos o lista dwe clientes -----------------------------------
                 //Lista de pagos
                 if(currSel4==0){
                     setPayList();
@@ -235,7 +238,6 @@ public class HomeFragment extends Fragment implements View.OnClickListener, Adap
                 stList[2] = Integer.toString(i);
                 maccList.add(stList);
                 accnameList.add(name + (desc.replaceAll("[^a-zA-Z0-9]", "").isEmpty()? "" : " ("+desc+")"));
-                //nameList.add(listCuenta.get(i).nombre);
             }
         }
         else {
@@ -247,7 +249,6 @@ public class HomeFragment extends Fragment implements View.OnClickListener, Adap
             maccList.add(stList);
 
             accnameList.add("Vacio (No hay Cuentas Disponibles)");
-
         }
 
         SelecAdapter adapt2 = new SelecAdapter(mContext, accnameList);
@@ -268,9 +269,6 @@ public class HomeFragment extends Fragment implements View.OnClickListener, Adap
                 mVars.setCurrentAcc(i);
 
                 //----------------------------------------------------------------------------------
-
-                //Recarga la lista de pagos y clientes en funcion de la cuenta seleccionada--------------------
-
                 //Lista de pagos
                 if(currSel4==0){
                     setPayList();
@@ -294,39 +292,50 @@ public class HomeFragment extends Fragment implements View.OnClickListener, Adap
         fechaList.add("Todos");
         String curM = "";
         String curY = "";
-        List<Fecha> listFecha = StartVar.appDBall.daoDat().getUsers();
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+
+            dateOrderedList.sort(Comparator.comparing((Fecha fecha) -> LocalDate.parse(fecha.getDate())).reversed());
+
             LocalDate currdate = LocalDate.now();
             curM = currdate.getMonth().toString();
             curY = Integer.toString(currdate.getYear());
         }
-        for (int i = (listFecha.size()-1); i >=0 ; i--){
-            String mes = listFecha.get(i).mes;
-            String year = listFecha.get(i).year;
-            fechaList.add(mes+" ("+year+")");
+        for (int i = 0; i < dateOrderedList.size(); i++){
+            String mes = dateOrderedList.get(i).mes;
+            String year = dateOrderedList.get(i).year;
             if(curM.equals(mes) && curY.equals(year)){
+                fechaList.add("Este Mes ("+mes+")");
                 currSel3 = i;
             }
+            else{
+                fechaList.add(mes+" ("+year+")");
+            }
         }
+
         SelecAdapter adapt3 = new SelecAdapter(mContext, fechaList);
         mSpin3.setAdapter(adapt3);
-        mSpin3.setSelection(currSel3); //Set La fecha default
+        mSpin3.setSelection(currSel3+1); //Set La fecha default
         mSpin3.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                int count = i==0?0 :adapterView.getCount();
-                currSel3 = (count - i);
-                StartVar.appDBall.daoCfg().updateMes(StartVar.mConfID, (count - i));
-                StartVar mVars = new StartVar(mContext);
-                mVars.setCurrentMes((count - i));
+                if(i > 0) {
+                    allSel3 = false;
+                    currSel3 = i - 1;
 
-                if(currSel4 == 0) {
+                    StartVar.appDBall.daoCfg().updateMes(StartVar.mConfID, currSel3);
+                    StartVar mVars = new StartVar(mContext);
+                    mVars.setCurrentMes(currSel3);
+                }
+                else {
+                    allSel3 = true;
+                }
+
+                if (currSel4 == 0) {
                     //Recarga la lista de pagos en funcion de la cuenta seleccionada--------------------
-                    if (!appDBregistro.isEmpty()) {
+                    if (!listPagos.isEmpty()) {
                         setPayList();
                     }
-                }
-                else{
+                } else {
                     setCltList();
                 }
             }
@@ -431,35 +440,35 @@ public class HomeFragment extends Fragment implements View.OnClickListener, Adap
             return;
         }
 
-        listPagos = StartVar.appDBall.daoPay().getListByGroupId(mAcc.cuenta);
-        List<Fecha> listFecha = StartVar.appDBall.daoDat().getUsers();
-        int idx = currSel3 - 1;
-        Fecha selFecha = listFecha.get(Math.max(idx, 0));
+        listPagos = daoPagos.getListByGroupId(mAcc.cuenta);
+        List<Fecha> listFecha = dateOrderedList;
+        int idx = currSel3;
+        Fecha selFecha = listFecha.get(idx);
         List<Object[]> mregList = new ArrayList<>();
         for (int i = 0; i < listPagos.size(); i++) {
-            Pagos reg = listPagos.get(i);
-            DaoClt mDao = StartVar.appDBall.daoClt();
-            String name = mDao.getSaveName(reg.cltid);
-            String fecha = reg.fecha;
-            if(currSel3 == 0) {
+            Pagos mPay = listPagos.get(i);
+            String name = daoCliente.getSaveName(mPay.cltid);
+            String fecha = mPay.fecha;
+            if(allSel3) {
                 Object[] stList = new Object[5];
                 stList[0] = i;
                 stList[1] = name;
-                stList[2] = reg.monto;
+                stList[2] = mPay.monto;
                 stList[3] = fecha;
-                stList[4] = reg.oper;
+                stList[4] = mPay.oper;
                 mregList.add(stList);
             }
             else {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                     LocalDate date = LocalDate.parse(fecha);
+
                     if(date.getMonth().toString().equals(selFecha.mes)){
                         Object[] stList = new Object[5];
                         stList[0] = i;
                         stList[1] = name;
-                        stList[2] = reg.monto;
+                        stList[2] = mPay.monto;
                         stList[3] = fecha;
-                        stList[4] = reg.oper;
+                        stList[4] = mPay.oper;
                         mregList.add(stList);
                     }
                 }

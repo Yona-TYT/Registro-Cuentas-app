@@ -212,7 +212,6 @@ public class AccDtailsActivity extends AppCompatActivity implements View.OnClick
 
             listPagos = StartVar.appDBall.daoPay().getUsers();
 
-            Basic.msg(""+listPagos.size());
             List<Fecha> listFecha = StartVar.appDBall.daoDat().getUsers();
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                 for (Pagos mPay : listPagos) {

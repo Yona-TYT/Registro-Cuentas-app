@@ -1,8 +1,6 @@
 package com.example.registro_cuentas.activitys;
 
 import static android.service.controls.ControlsProviderService.TAG;
-import static com.example.registro_cuentas.StartVar.appDBall;
-
 
 import android.Manifest;
 import android.annotation.SuppressLint;
@@ -25,16 +23,9 @@ import com.example.registro_cuentas.BaseContext;
 import com.example.registro_cuentas.Basic;
 import com.example.registro_cuentas.CalcCalendar;
 import com.example.registro_cuentas.DBListCreator;
-import com.example.registro_cuentas.db.Cliente;
-import com.example.registro_cuentas.db.Conf;
-import com.example.registro_cuentas.db.Cuenta;
-import com.example.registro_cuentas.db.dao.DaoDeb;
-import com.example.registro_cuentas.db.dao.DaoPay;
-import com.example.registro_cuentas.db.Deuda;
-import com.example.registro_cuentas.db.Fecha;
+
 import com.example.registro_cuentas.FilesManager;
 import com.example.registro_cuentas.R;
-import com.example.registro_cuentas.db.Pagos;
 import com.example.registro_cuentas.StartVar;
 import com.example.registro_cuentas.databinding.ActivityMainBinding;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
@@ -55,17 +46,8 @@ import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.time.LocalDate;
-import java.time.LocalTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
+
 
 import io.reactivex.annotations.NonNull;
 
@@ -119,10 +101,8 @@ public class MainActivity extends AppCompatActivity {
 //        }
 
         //-------------------------------------------------------
-        //startVar.setCltListDB();
-        //startVar.setFecListDB();
-        startVar.setmPermiss(true);
 
+        startVar.setmPermiss(true);
 
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
@@ -171,8 +151,6 @@ public class MainActivity extends AppCompatActivity {
             spannabl.setSpan(new ForegroundColorSpan(ContextCompat.getColor(this, R.color.black)),0 ,spannabl.length(),0);
             item.setTitle(spannabl);
         }
-        //test.setBackgroundColor(ContextCompat.getColor(test.getContext(), R.color.purple_500));
-
 
         return true;
     }

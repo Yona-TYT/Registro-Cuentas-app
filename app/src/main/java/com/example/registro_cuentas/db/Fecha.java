@@ -24,4 +24,9 @@ public class Fecha {
             this.hora = hora;
             this.date = date;
     }
+
+    // Getter requerido para el sorting (y otros accesos)
+    public String getDate() {
+        return date;
+    }
 }
