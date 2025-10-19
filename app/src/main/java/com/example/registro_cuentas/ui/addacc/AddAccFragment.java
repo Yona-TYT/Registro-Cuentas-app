@@ -18,6 +18,7 @@ import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
+import com.example.registro_cuentas.activitys.ReloadActivity;
 import com.example.registro_cuentas.db.AllDao;
 import com.example.registro_cuentas.BaseContext;
 import com.example.registro_cuentas.Basic;
@@ -74,8 +75,6 @@ public class AddAccFragment extends Fragment implements View.OnClickListener, Vi
     private String mCurr = mCurrencyList.get(StartVar.mCurrency);
 
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        AddAccViewModel addAccViewModel = new ViewModelProvider(this).get(AddAccViewModel.class);
-
         //Se configura el Boton nav Back -----------------------------------------------
         OnBackPressedDispatcher onBackPressedDispatcher = this.getActivity().getOnBackPressedDispatcher();
         OnBackPressedCallback callback = new OnBackPressedCallback(true) {
@@ -158,7 +157,7 @@ public class AddAccFragment extends Fragment implements View.OnClickListener, Vi
             boolean result = true;
             int msgIdx = 0;
             List<String> mList = new ArrayList<>();
-            mList.add("userID"+mIndex);
+            mList.add("accID"+mIndex);
             for(int i = 0; i < mInputList.size(); i++) {
                 String text = mInputList.get(i).getText().toString();
                 text = Basic.inputProcessor(text); //Elimina caracteres que afectan a los csv
@@ -206,16 +205,9 @@ public class AddAccFragment extends Fragment implements View.OnClickListener, Vi
                 StartVar mVars = new StartVar(mContext);
                 mVars.getAccListDB();
                 //-------------------------------------------------------
-                //-------------------------------------------------------
-                //Actualiza la db para los registros
-                //mVars.setRegListDB();
-                //--------------------------------
 
-                //Esto inicia las actividad Main despues de tiempo de espera del preloder
-                startActivity(new Intent(mContext, MainActivity.class));
-                //finish(); //Finaliza la actividad y ya no se accede mas
-
-                return;
+                //Esto inicia las actividad Reload
+                startActivity(new Intent(mContext, ReloadActivity.class));
             }
         }
     }

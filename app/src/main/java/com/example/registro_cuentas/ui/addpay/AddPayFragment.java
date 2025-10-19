@@ -25,12 +25,12 @@ import androidx.activity.OnBackPressedDispatcher;
 import androidx.annotation.NonNull;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.ViewModelProvider;
 
 import com.example.registro_cuentas.BaseContext;
 import com.example.registro_cuentas.Basic;
 import com.example.registro_cuentas.BitsOper;
 import com.example.registro_cuentas.CalcCalendar;
+import com.example.registro_cuentas.activitys.ReloadActivity;
 import com.example.registro_cuentas.db.Cliente;
 import com.example.registro_cuentas.CurrencyEditText;
 import com.example.registro_cuentas.db.Cuenta;
@@ -63,7 +63,7 @@ public class AddPayFragment extends Fragment implements View.OnClickListener, Vi
     private Context mContext = BaseContext.getContext();
 
     // DB
-    private DaoPay daoRegistro = StartVar.appDBall.daoPay();
+    private DaoPay daoPagos = StartVar.appDBall.daoPay();
     private DaoDeb daoDeuda = StartVar.appDBall.daoDeb();
     private List<Deuda> listDeuda = new ArrayList<>();
 
@@ -117,6 +117,10 @@ public class AddPayFragment extends Fragment implements View.OnClickListener, Vi
     private Uri oldFile = null;
     private Uri currUri = null;
 
+    private List<String> mCltList = new ArrayList<>();
+    private List<String> mAliList = new ArrayList<>();
+    private List<String> mIdList = new ArrayList<>();
+
     @SuppressLint("DefaultLocale")
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
     {
@@ -132,8 +136,6 @@ public class AddPayFragment extends Fragment implements View.OnClickListener, Vi
         };
         onBackPressedDispatcher.addCallback(this.getActivity(), callback);
         //---------------------------------------------------------------------------------
-
-        AddPayViewModel addPayViewModel = new ViewModelProvider(this).get(AddPayViewModel.class);
 
         binding = FragmentAddpayBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
@@ -182,8 +184,8 @@ public class AddPayFragment extends Fragment implements View.OnClickListener, Vi
         //-------------------------------------------------------------------------------------
 
         mPermiss = StartVar.mPermiss;
-        if(daoRegistro != null) {
-            mIndex = "" + daoRegistro.getUsers().size();
+        if(daoPagos != null) {
+            mIndex = "" + daoPagos.getUsers().size();
             if (mIndex.isEmpty()) {
                 mIndex = "0";
             }
@@ -193,9 +195,6 @@ public class AddPayFragment extends Fragment implements View.OnClickListener, Vi
         listDeuda = daoDeuda.getUsers();
 
         //Para la lista del selector Cliente ----------------------------------------------------------------------------------------------
-        List<String> mCltList = new ArrayList<>();
-        List<String> mAliList = new ArrayList<>();
-        List<String> mIdList = new ArrayList<>();
         mCltList.add("Agregar");
         mAliList.add("");
         mIdList.add("");
@@ -226,15 +225,15 @@ public class AddPayFragment extends Fragment implements View.OnClickListener, Vi
         }
         SelecAdapter adapt1 = new SelecAdapter(mContext, mCltList);
         mSpin1.setAdapter(adapt1);
-        if(!mCltList.isEmpty()) {
-            mSpin1.setSelection(currSel1); //Set default client
-        }
+
         mSpin1.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
                 currSel1 = i;
                 if (i > 0) {
-                    mButt1.setEnabled(true);
+
+                    setEnabled(true);
+
                     mInput1.setText(mCltList.get(i).toUpperCase());
                     mInput1.setEnabled(false);
 
@@ -263,10 +262,21 @@ public class AddPayFragment extends Fragment implements View.OnClickListener, Vi
                             int mult = CalcCalendar.getRangeMultiple(ultFec, currtTyp);
                             float monto = Basic.getDebt(mult, mDeb.rent, mDeb.paid);
 
-                            if (mDeb.pagado == 2 && monto <=0) {
-                                mButt1.setEnabled(false);
+
+                            if (mult <= 0) {
+//                                mInput3.setEnabled(false);
+//                                mInput4.setEnabled(false);
+//                                mButt1.setEnabled(false);
+                                setEnabled(false);
                                 Basic.msg("Este cliente no Tine DEUDAS!");
                             }
+                        }
+                        else {
+//                            mInput3.setEnabled(false);
+//                            mInput4.setEnabled(false);
+//                            mButt1.setEnabled(false);
+                            setEnabled(false);
+                            Basic.msg("Este cliente esta INACTIVO!");
                         }
                     }
                     else {
@@ -274,12 +284,15 @@ public class AddPayFragment extends Fragment implements View.OnClickListener, Vi
                     }
                 }
                 else{
+//                    mInput1.setEnabled(true);
+//                    mInput2.setEnabled(true);
+//                    mInput3.setEnabled(true);
+//                    mInput4.setEnabled(true);
+//                    mButt1.setEnabled(true);
+                    setEnabled(true);
+
                     mInput1.setText("");
-                    mInput1.setEnabled(true);
-
                     mInput2.setText("");
-                    mInput2.setEnabled(true);
-
                     mInput4.setText(Basic.setFormatter("0"));
                 }
             }
@@ -311,6 +324,18 @@ public class AddPayFragment extends Fragment implements View.OnClickListener, Vi
     public void onDestroyView() {
         super.onDestroyView();
         binding = null;
+    }
+
+    private void setEnabled(boolean active){
+        mInput1.setEnabled(active);
+        mInput2.setEnabled(active);
+        mInput3.setEnabled(active);
+        mInput4.setEnabled(active);
+        mButt1.setEnabled(active);
+        mButt1.setEnabled(active);
+        mBtnImg1.setEnabled(active);
+        mSpin2.setEnabled(active);
+        mSw.setEnabled(active);
     }
 
     private void setLauncher(View mObj, ImageView mImg){
@@ -380,16 +405,16 @@ public class AddPayFragment extends Fragment implements View.OnClickListener, Vi
                 //Para el input Nombre
                 if(i == 0) {
                     text = Basic.nameProcessor(text);
-                    for (int j = 0; j < listCliente.size(); j++) {
-                        String name = listCliente.get(j).nombre;
+                    for (int j = 1; j < mIdList.size(); j++) {
+                        String name = daoCliente.getUsers(mIdList.get(j)).nombre;
                         if(name.toLowerCase().equals(text)){
                             //MSG Cliente Ya Existe
                             msgIdx = 1;
                             //setMessage(msgIdx);
 
-                            mSpin1.setSelection(j+1); //Set Client
+                            mSpin1.setSelection(j); //Set Client
 
-                            cltId = listCliente.get(j).cliente;
+                            cltId = mIdList.get(j);
                             newClt = false;
                             break;
                         }
@@ -423,6 +448,7 @@ public class AddPayFragment extends Fragment implements View.OnClickListener, Vi
                 }
                 mList.add(text);
             }
+
             //Para Limpiar Todos Los inputs
             for (int i = 0; i < mInputList.size(); i++) {
                 EditText mInput = mInputList.get(i);
@@ -432,6 +458,7 @@ public class AddPayFragment extends Fragment implements View.OnClickListener, Vi
                     mInput.clearFocus();
                 }
             }
+
             if (result) {
 
                 String debId = "debID"+listDeuda.size();
@@ -509,7 +536,7 @@ public class AddPayFragment extends Fragment implements View.OnClickListener, Vi
                        );
                        daoDeuda.insetUser(objDeb);
                    }
-                   else {
+                   else if (mAcc.acctipo > 0){
                        int pagado = 1;
                        Object[] mObj = CalcCalendar.dateToMoney(mDeb.ulfech, mAcc.acctipo, mDeb.rent, (mDeb.paid + rent));
                        if(mObj != null){
@@ -526,7 +553,6 @@ public class AddPayFragment extends Fragment implements View.OnClickListener, Vi
                                    return;
                            }
                            else {
-                               Basic.msg("maxRent "+maxRent);
                                if(maxRent == 0){
                                    pagado = 2;
                                }
@@ -631,30 +657,27 @@ public class AddPayFragment extends Fragment implements View.OnClickListener, Vi
                }
                 Pagos obj = new Pagos(
                         mList.get(0), mList.get(1), mList.get(3), rent, currSel2, (swPorc?1:0),
-                        sImage, currdate, currtime, (newClt?"cltID"+listCliente.size():cltId), Integer.toString(currtAcc), 0, "0"
+                        sImage, currdate, currtime, (newClt?"cltID"+listCliente.size():cltId), accId, 0, "0"
                 );
                 StartVar.appDBall.daoPay().insetUser(obj);
 
                //Actualisza la lista de fechas
-               CalcCalendar.startCalList(mContext);
+               CalcCalendar.addCurrentMonthIfAbsent(mContext);
 
                //SE Limpia la lista
                 mList.clear();
-                //Recarga La lista de la DB ----------------------------
-               // mVars.getRegListDB();
-                //mVars.getCltListDB();
-                //mVars.getDebListDB();
-                //-------------------------------------------------------
 
-                //Esto inicia las actividad Main
-                startActivity(new Intent(mContext, MainActivity.class));
-                //finish(); //Finaliza la actividad y ya no se accede mas
+                //Esto inicia las actividad Reload
+                startActivity(new Intent(mContext, ReloadActivity.class));
             }
         }
         if (itemId == R.id.sw_pay1){
             swPorc = !swPorc;
         }
     }
+
+
+
     public void setMessage(int idx){
         if(idx == 0){
             Basic.msg("Ingrese NOMBRE Cliente!.");

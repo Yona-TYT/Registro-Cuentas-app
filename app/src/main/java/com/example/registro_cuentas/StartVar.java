@@ -225,4 +225,9 @@ public class StartVar {
 
     public static void setmMainStart(boolean mStart){mainStart = mStart;}
 
+    public static void setCsvList(List<String[]> mList){
+        StartVar.csvList.clear();
+        StartVar.csvList = mList;
+    }
+
 }

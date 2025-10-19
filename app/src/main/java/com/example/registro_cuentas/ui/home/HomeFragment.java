@@ -62,7 +62,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener, Adap
 
     private List<Cuenta> listCuenta;
     private List<Pagos> appDBregistro = StartVar.listreg;
-    private List<Pagos> listRegistro = new ArrayList<>();
+    private List<Pagos> listPagos = new ArrayList<>();
     //--------------------------------------------------------------------
 
     //--------------------------
@@ -74,7 +74,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener, Adap
     private List<Cliente> listCliente = new ArrayList<>();
 
     private DaoAcc daoCuenta = StartVar.appDBall.daoAcc();
-
+    private Cuenta mAcc;
     //------------------------------------
 
     private ConstraintLayout mConstrain;
@@ -163,7 +163,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener, Adap
                     //Recarga la lista de pagos o lista dwe clientes -----------------------------------
                     //Lista de pagos
                     if(currSel4==0){
-                        setRegList();
+                        setPayList();
                     }
                     //Lista de Clientes
                     else {
@@ -205,7 +205,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener, Adap
                 //Recarga la lista de pagos o lista dwe clientes -----------------------------------
                 //Lista de pagos
                 if(currSel4==0){
-                    setRegList();
+                    setPayList();
                 }
                 //Lista de Clientes
                 else {
@@ -234,7 +234,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener, Adap
                 stList[1] =name;
                 stList[2] = Integer.toString(i);
                 maccList.add(stList);
-                accnameList.add(name+ " ("+desc+")");
+                accnameList.add(name + (desc.replaceAll("[^a-zA-Z0-9]", "").isEmpty()? "" : " ("+desc+")"));
                 //nameList.add(listCuenta.get(i).nombre);
             }
         }
@@ -261,8 +261,9 @@ public class HomeFragment extends Fragment implements View.OnClickListener, Adap
                 StartVar mVars = new StartVar(mContext);
                 int idx = i;
                 if(!listCuenta.isEmpty()) {
+                    mAcc = appDBcuenta.daoAcc().getUsers().get(idx);
                     StartVar.appDBall.daoCfg().updateCurrAcc(StartVar.mConfID, idx);
-                    mVars.setCurrentTyp(appDBcuenta.daoAcc().getUsers().get(idx).acctipo);
+                    mVars.setCurrentTyp(mAcc.acctipo);
                 }
                 mVars.setCurrentAcc(i);
 
@@ -272,7 +273,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener, Adap
 
                 //Lista de pagos
                 if(currSel4==0){
-                    setRegList();
+                    setPayList();
                 }
                 //Lista de Clientes
                 else {
@@ -322,7 +323,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener, Adap
                 if(currSel4 == 0) {
                     //Recarga la lista de pagos en funcion de la cuenta seleccionada--------------------
                     if (!appDBregistro.isEmpty()) {
-                        setRegList();
+                        setPayList();
                     }
                 }
                 else{
@@ -346,7 +347,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener, Adap
                 currSel4 = i;
                 //Lista de pagos
                 if(i==0){
-                    setRegList();
+                    setPayList();
                 }
                 //Lista de Clientes
                 else {
@@ -361,7 +362,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener, Adap
         //--------------------------------------------------------------------------------------------
 
         // Genera la lista de registros ---------------------------------------------------------
-        setRegList();
+        setPayList();
         //--------------------------------------------------------------------------------------
 
         //Para el adapter del buscador -------------------------------------------------------
@@ -425,14 +426,18 @@ public class HomeFragment extends Fragment implements View.OnClickListener, Adap
         }
     }
 
-    public void setRegList(){
-        listRegistro = StartVar.appDBall.daoPay().getUsers();
+    public void setPayList(){
+        if(mAcc == null){
+            return;
+        }
+
+        listPagos = StartVar.appDBall.daoPay().getListByGroupId(mAcc.cuenta);
         List<Fecha> listFecha = StartVar.appDBall.daoDat().getUsers();
         int idx = currSel3 - 1;
         Fecha selFecha = listFecha.get(Math.max(idx, 0));
         List<Object[]> mregList = new ArrayList<>();
-        for (int i = 0; i < listRegistro.size(); i++) {
-            Pagos reg = listRegistro.get(i);
+        for (int i = 0; i < listPagos.size(); i++) {
+            Pagos reg = listPagos.get(i);
             DaoClt mDao = StartVar.appDBall.daoClt();
             String name = mDao.getSaveName(reg.cltid);
             String fecha = reg.fecha;
@@ -467,6 +472,9 @@ public class HomeFragment extends Fragment implements View.OnClickListener, Adap
     }
 
     public void setCltList(){
+        if(mAcc == null){
+            return;
+        }
         List<Cliente> listClt = daoCliente.getUsers();
         List<Object[]> cltList = new ArrayList<>();
 
@@ -480,7 +488,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener, Adap
             Deuda mDeb = null;
 
             for (Deuda mD : daoDeuda.getListByGroupId(clt.cliente)){
-                if(mD.accid.equals(listCuenta.get(currSel2).cuenta)){
+                if(mD.accid.equals(mAcc.cuenta)){
                     mDeb = mD;
                     break;
                 }
@@ -536,10 +544,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener, Adap
             stList[3] = txB;
 
             cltList.add(stList);
-
         }
-
-
         //Para configurar la lista de pagos
         mCltadapter = new CltAdapter(mContext, cltList);
         mLv1.setAdapter(mCltadapter);

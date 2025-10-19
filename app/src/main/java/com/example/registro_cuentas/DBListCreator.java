@@ -1,6 +1,8 @@
 package com.example.registro_cuentas;
 
 
+import static com.example.registro_cuentas.StartVar.appDBall;
+
 import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
@@ -8,121 +10,383 @@ import android.net.Uri;
 import androidx.appcompat.app.AppCompatActivity;
 
 
+import com.example.registro_cuentas.db.Cliente;
+import com.example.registro_cuentas.db.Conf;
+import com.example.registro_cuentas.db.Cuenta;
+import com.example.registro_cuentas.db.Fecha;
+import com.example.registro_cuentas.db.Pagos;
+import com.example.registro_cuentas.db.dao.DaoAcc;
+import com.example.registro_cuentas.db.dao.DaoCfg;
 import com.example.registro_cuentas.db.dao.DaoClt;
 import com.example.registro_cuentas.db.Deuda;
+import com.example.registro_cuentas.db.dao.DaoDat;
+import com.example.registro_cuentas.db.dao.DaoDeb;
+import com.example.registro_cuentas.db.dao.DaoPay;
 
+import java.io.BufferedReader;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Objects;
 
 public class DBListCreator extends AppCompatActivity {
 
     // Classs para la gestion de archivos
     private FilesManager fmang = new FilesManager();
+
+    private static DaoCfg daoConf = StartVar.appDBall.daoCfg();
+    private static DaoAcc daoCuenta = StartVar.appDBall.daoAcc();
+    private static DaoClt daoCliente = StartVar.appDBall.daoClt();
+    private static DaoDeb daoDeuda = StartVar.appDBall.daoDeb();
+    private static DaoDat daoFecha = StartVar.appDBall.daoDat();
+    private static DaoPay daoPagos = StartVar.appDBall.daoPay();
+
+
     public DBListCreator(){}
 
-    public static HashMap<String, ArrayList<Object>> debList(){
+    public static HashMap<String, HashMap<String, ArrayList<Object>>> createDbLists(){
 
-        //Define y Inizializa el Array Map
-        HashMap<String, ArrayList<Object>> arrayMap;
-        arrayMap = new HashMap<>();
-        arrayMap.put("name",  new ArrayList<>());
-        arrayMap.put("lts",  new ArrayList<>());
-        arrayMap.put("datePre",  new ArrayList<>());
-        arrayMap.put("dateBrith",  new ArrayList<>());
-        arrayMap.put("swPre", new ArrayList<>());
-        arrayMap.put("type", new ArrayList<>());
-        arrayMap.put("select", new ArrayList<>());
-        arrayMap.put("img",  new ArrayList<>());
-
+        //Lista general de todos los objetos db
         List<String[]> mList = new ArrayList<>();
 
+        //=================================== Config DB Lista =====================================================
+        mList.add(new String[]{"<0>"});// Etiqueta para config
         //Instancia de la base de datos
-        List<Deuda> listuser =  StartVar.appDBall.daoDeb().getUsers();
+        Conf mConf =  daoConf.getUsers(StartVar.mConfID);
+        mList.add(new String[]{mConf.config, mConf.version, mConf.hexid, mConf.date, mConf.time, mConf.curr.toString(), mConf.dolar, mConf.moneda.toString(),mConf.mes.toString() });
 
-        //Dao mDao = new Dao();
+        //=================================== Cuenta DB Lista =====================================================
+
+        mList.add(new String[]{"<1>"});// Etiqueta para cuenta
+
+        HashMap<String, ArrayList<Object>> mapAcc = new HashMap<>();
+        mapAcc.put("mA", new ArrayList<>());
+        mapAcc.put("mB", new ArrayList<>());
+        mapAcc.put("mC", new ArrayList<>());
+        mapAcc.put("mD", new ArrayList<>());
+        mapAcc.put("mE", new ArrayList<>());
+        mapAcc.put("mF", new ArrayList<>());
+        mapAcc.put("mG", new ArrayList<>());
+        mapAcc.put("mH", new ArrayList<>());
+        mapAcc.put("mI", new ArrayList<>());
+        mapAcc.put("mJ", new ArrayList<>());
+
+        ArrayList<Object> accLmA = mapAcc.get("mA");
+        ArrayList<Object> accLmB = mapAcc.get("mB");
+        ArrayList<Object> accLmC = mapAcc.get("mC");
+        ArrayList<Object> accLmD = mapAcc.get("mD");
+        ArrayList<Object> accLmE = mapAcc.get("mE");
+        ArrayList<Object> accLmF = mapAcc.get("mF");
+        ArrayList<Object> accLmG = mapAcc.get("mG");
+        ArrayList<Object> accLmH = mapAcc.get("mH");
+        ArrayList<Object> accLmI = mapAcc.get("mI");
+        ArrayList<Object> accLmJ = mapAcc.get("mJ");
+
+        //Instancia de la base de datos
+        List<Cuenta> listAcc =  daoCuenta.getUsers();
+
+        for (Cuenta myAcc : listAcc) {
+
+            //------------------------------------------------------
+            // Se crea la lista para esportar a csv  ---------------
+            String[] txList = new String[10];
+
+            txList[0] = myAcc.cuenta;
+            txList[1] = myAcc.nombre;
+            txList[2] = myAcc.desc;
+            txList[3] = myAcc.monto;
+            txList[4] = myAcc.acctipo.toString();
+            txList[5] = myAcc.fecselc.toString();
+            txList[6] = myAcc.accselc.toString();
+            txList[7] = myAcc.moneda.toString();
+            txList[8] = myAcc.dolar;
+            txList[9] = myAcc.ultfec;
+
+            mList.add(txList);
+
+            //--------------------------------------------------------
+            accLmA.add(myAcc.cuenta);
+            accLmB.add(myAcc.nombre);
+            accLmC.add(myAcc.desc);
+            accLmD.add(myAcc.monto);
+            accLmE.add(myAcc.acctipo);
+            accLmF.add(myAcc.fecselc);
+            accLmG.add(myAcc.accselc);
+            accLmH.add(myAcc.moneda);
+            accLmI.add(myAcc.dolar);
+            accLmJ.add(myAcc.ultfec);
+            //------------------------------------------
+        }
+
+        //=================================== Cliente DB Lista =====================================================
+
+        mList.add(new String[]{"<2>"});// Etiqueta para cliente
+
+        HashMap<String, ArrayList<Object>> mapClt = new HashMap<>();
+        mapClt.put("mA", new ArrayList<>());
+        mapClt.put("mB", new ArrayList<>());
+        mapClt.put("mC", new ArrayList<>());
+        mapClt.put("mD", new ArrayList<>());
+        mapClt.put("mE", new ArrayList<>());
+        mapClt.put("mF", new ArrayList<>());
+        mapClt.put("mG", new ArrayList<>());
+        mapClt.put("mH", new ArrayList<>());
+        mapClt.put("mI", new ArrayList<>());
+        mapClt.put("mJ", new ArrayList<>());
+
+        ArrayList<Object> cltLmA = mapClt.get("mA");
+        ArrayList<Object> cltLmB = mapClt.get("mB");
+        ArrayList<Object> cltLmC = mapClt.get("mC");
+        ArrayList<Object> cltLmD = mapClt.get("mD");
+        ArrayList<Object> cltLmE = mapClt.get("mE");
+        ArrayList<Object> cltLmF = mapClt.get("mF");
+        ArrayList<Object> cltLmG = mapClt.get("mG");
+        ArrayList<Object> cltLmH = mapClt.get("mH");
+        ArrayList<Object> cltLmI = mapClt.get("mI");
+        ArrayList<Object> cltLmJ = mapClt.get("mJ");
+
+        //Instancia de la base de datos
+        List<Cliente> listClt =  daoCliente.getUsers();
+
+        for (Cliente myClt : listClt) {
+
+            //------------------------------------------------------
+            // Se crea la lista para esportar a csv  ---------------
+            String[] txList = new String[10];
+
+            txList[0] = myClt.cliente;
+            txList[1] = myClt.nombre;
+            txList[2] = myClt.alias;
+            txList[3] = myClt.defaulacc;
+            txList[4] = myClt.priority.toString();
+            txList[5] = myClt.fecha;
+            txList[6] = myClt.level.toString();
+            txList[7] = myClt.ulfech;
+            txList[8] = myClt.oper.toString();
+            txList[9] = myClt.bits;
+
+            mList.add(txList);
+
+            //--------------------------------------------------------
+            cltLmA.add(myClt.cliente);
+            cltLmB.add(myClt.nombre);
+            cltLmC.add(myClt.alias);
+            cltLmD.add(myClt.defaulacc);
+            cltLmE.add(myClt.priority);
+            cltLmF.add(myClt.fecha);
+            cltLmG.add(myClt.level);
+            cltLmH.add(myClt.ulfech);
+            cltLmI.add(myClt.oper);
+            cltLmJ.add(myClt.bits);
+            //------------------------------------------
+        }
+
+        //=================================== Deuda DB Lista =====================================================
+
+        mList.add(new String[]{"<3>"});// Etiqueta para deuda
+
+        HashMap<String, ArrayList<Object>> mapDeb = new HashMap<>();
+        mapDeb.put("mA", new ArrayList<>());
+        mapDeb.put("mB", new ArrayList<>());
+        mapDeb.put("mC", new ArrayList<>());
+        mapDeb.put("mD", new ArrayList<>());
+        mapDeb.put("mE", new ArrayList<>());
+        mapDeb.put("mF", new ArrayList<>());
+        mapDeb.put("mG", new ArrayList<>());
+        mapDeb.put("mH", new ArrayList<>());
+        mapDeb.put("mI", new ArrayList<>());
+        mapDeb.put("mJ", new ArrayList<>());
+        mapDeb.put("mK", new ArrayList<>());
+
+        ArrayList<Object> debLmA = mapDeb.get("mA");
+        ArrayList<Object> debLmB = mapDeb.get("mB");
+        ArrayList<Object> debLmC = mapDeb.get("mC");
+        ArrayList<Object> debLmD = mapDeb.get("mD");
+        ArrayList<Object> debLmE = mapDeb.get("mE");
+        ArrayList<Object> debLmF = mapDeb.get("mF");
+        ArrayList<Object> debLmG = mapDeb.get("mG");
+        ArrayList<Object> debLmH = mapDeb.get("mH");
+        ArrayList<Object> debLmI = mapDeb.get("mI");
+        ArrayList<Object> debLmJ = mapDeb.get("mJ");
+        ArrayList<Object> debLmK = mapDeb.get("mK");
+
+        //Instancia de la base de datos
+        List<Deuda> listDeb =  daoDeuda.getUsers();
+
+        for (Deuda myDeb : listDeb) {
+
+            //------------------------------------------------------
+            // Se crea la lista para esportar a csv  ---------------
+            String[] txList = new String[11];
+
+            txList[0] = myDeb.deuda;
+            txList[1] = myDeb.accid;
+            txList[2] = myDeb.cltid;
+            txList[3] = myDeb.rent.toString();
+            txList[4] = myDeb.porc.toString();
+            txList[5] = myDeb.fecha;
+            txList[6] = myDeb.estat.toString();
+            txList[7] = myDeb.pagado.toString();
+            txList[8] = myDeb.ulfech;
+            txList[9] = myDeb.oper.toString();
+            txList[10] = myDeb.paid.toString();
+
+            mList.add(txList);
+
+            //--------------------------------------------------------
+            debLmA.add(myDeb.deuda);
+            debLmB.add(myDeb.accid);
+            debLmC.add(myDeb.cltid);
+            debLmD.add(myDeb.rent);
+            debLmE.add(myDeb.porc);
+            debLmF.add(myDeb.fecha);
+            debLmG.add(myDeb.estat);
+            debLmH.add(myDeb.pagado);
+            debLmI.add(myDeb.ulfech);
+            debLmJ.add(myDeb.oper);
+            debLmK.add(myDeb.paid);
+            //------------------------------------------
+        }
+
+        //=================================== Date DB Lista =====================================================
+
+        mList.add(new String[]{"<4>"});// Etiqueta para date
+
+        HashMap<String, ArrayList<Object>> mapDat = new HashMap<>();
+        mapDat.put("mA", new ArrayList<>());
+        mapDat.put("mB", new ArrayList<>());
+        mapDat.put("mC", new ArrayList<>());
+        mapDat.put("mD", new ArrayList<>());
+        mapDat.put("mE", new ArrayList<>());
+        mapDat.put("mF", new ArrayList<>());
+
+        ArrayList<Object> datLmA = mapDat.get("mA");
+        ArrayList<Object> datLmB = mapDat.get("mB");
+        ArrayList<Object> datLmC = mapDat.get("mC");
+        ArrayList<Object> datLmD = mapDat.get("mD");
+        ArrayList<Object> datLmE = mapDat.get("mE");
+        ArrayList<Object> datLmF = mapDat.get("mF");
+
+        //Instancia de la base de datos
+        List<Fecha> listDat =  daoFecha.getUsers();
+
+        for (Fecha myDat : listDat) {
+
+            //------------------------------------------------------
+            // Se crea la lista para esportar a csv  ---------------
+            String[] txList = new String[6];
+
+            txList[0] = myDat.fecha;
+            txList[1] = myDat.year;
+            txList[2] = myDat.mes;
+            txList[3] = myDat.dia;
+            txList[4] = myDat.hora;
+            txList[5] = myDat.date;
+
+            mList.add(txList);
+
+            //--------------------------------------------------------
+            datLmA.add(myDat.fecha);
+            datLmB.add(myDat.year);
+            datLmC.add(myDat.mes);
+            datLmD.add(myDat.dia);
+            datLmE.add(myDat.hora);
+            datLmF.add(myDat.date);
+            //------------------------------------------
+        }
+
+        //=================================== Pagos DB Lista =====================================================
+
+        mList.add(new String[]{"<5>"});// Etiqueta para cliente
+
+        HashMap<String, ArrayList<Object>> mapPay = new HashMap<>();
+        mapPay.put("mA", new ArrayList<>());
+        mapPay.put("mB", new ArrayList<>());
+        mapPay.put("mC", new ArrayList<>());
+        mapPay.put("mD", new ArrayList<>());
+        mapPay.put("mE", new ArrayList<>());
+        mapPay.put("mF", new ArrayList<>());
+        mapPay.put("mG", new ArrayList<>());
+        mapPay.put("mH", new ArrayList<>());
+        mapPay.put("mI", new ArrayList<>());
+        mapPay.put("mJ", new ArrayList<>());
+        mapPay.put("mK", new ArrayList<>());
+        mapPay.put("mL", new ArrayList<>());
+        mapPay.put("mM", new ArrayList<>());
+
+        ArrayList<Object> payLmA = mapPay.get("mA");
+        ArrayList<Object> payLmB = mapPay.get("mB");
+        ArrayList<Object> payLmC = mapPay.get("mC");
+        ArrayList<Object> payLmD = mapPay.get("mD");
+        ArrayList<Object> payLmE = mapPay.get("mE");
+        ArrayList<Object> payLmF = mapPay.get("mF");
+        ArrayList<Object> payLmG = mapPay.get("mG");
+        ArrayList<Object> payLmH = mapPay.get("mH");
+        ArrayList<Object> payLmI = mapPay.get("mI");
+        ArrayList<Object> payLmJ = mapPay.get("mJ");
+        ArrayList<Object> payLmK = mapPay.get("mK");
+        ArrayList<Object> payLmL = mapPay.get("mL");
+        ArrayList<Object> payLmM = mapPay.get("mM");
+
+        //Instancia de la base de datos
+        List<Pagos> listPay = daoPagos.getUsers();
+
+        for (Pagos myPay : listPay) {
+
+            //------------------------------------------------------
+            // Se crea la lista para esportar a csv  ---------------
+            String[] txList = new String[13];
+
+            txList[0] = myPay.pago;
+            txList[1] = myPay.nombre;
+            txList[2] = myPay.concep;
+            txList[3] = myPay.monto.toString();
+            txList[4] = myPay.oper.toString();
+            txList[5] = myPay.porc.toString();
+            txList[6] = myPay.imagen;
+            txList[7] = myPay.fecha;
+            txList[8] = myPay.time;
+            txList[9] = myPay.cltid;
+            txList[10] = myPay.accid;
+            txList[11] = myPay.more4.toString();
+            txList[12] = myPay.more5;
+
+            mList.add(txList);
+
+            //--------------------------------------------------------
+            payLmA.add(myPay.pago);
+            payLmB.add(myPay.nombre);
+            payLmC.add(myPay.concep);
+            payLmD.add(myPay.monto);
+            payLmE.add(myPay.oper);
+            payLmF.add(myPay.porc);
+            payLmG.add(myPay.imagen);
+            payLmH.add(myPay.fecha);
+            payLmI.add(myPay.time);
+            payLmJ.add(myPay.cltid);
+            payLmK.add(myPay.accid);
+            payLmL.add(myPay.more4);
+            payLmM.add(myPay.more5);
+            //------------------------------------------
+        }
 
 
-//        //Se agrega una fila con las configuraciones de la db y versoion
-//        StartVar.getConfigDB();
-//        Configdb mConf = StartVar.mConfigDB;
-//        mList.add(new String[]{mConf.config, mConf.version, mConf.hexid, mConf.date, mConf.time, mConf.save1, mConf.save2, mConf.save3});
-//
-//
-//        ArrayList<Object> nameL = arrayMap.get("name");
-//        ArrayList<Object> ltsL = arrayMap.get("lts");
-//        ArrayList<Object> dPreL = arrayMap.get("datePre");
-//        ArrayList<Object> dBrithL = arrayMap.get("dateBrith");
-//        ArrayList<Object> swPreL = arrayMap.get("swPre");
-//        ArrayList<Object> typeL = arrayMap.get("type");
-//        ArrayList<Object> selL = arrayMap.get("select");
-//        ArrayList<Object> imgL = arrayMap.get("img");
+        StartVar.setCsvList(mList);
 
-//        if(nameL != null && ltsL != null && dPreL != null && dBrithL!= null && swPreL != null && typeL != null && selL != null && imgL != null) {
-//            for (Usuario myUser : listuser) {
-//                String tximg = myUser.imagen;
-//                String txname = myUser.nombre;
-//                String txsel2 = myUser.sel2;
-//                String txsel3 = myUser.sel3;
-//                String txpre = myUser.pre;
-//                String txlitros = myUser.litros;
-//                String txedad = myUser.edad;
-//
-//                //------------------------------------------------------
-//                // Se crea la lista para esportar a csv  ---------------
-//                String[] txList = new String[14];
-//
-//                txList[0] = myUser.usuario;
-//                txList[1] = txname;
-//                txList[2] = myUser.color;
-//                txList[3] = myUser.litros;
-//                txList[4] = txedad;
-//                txList[5] = txpre;
-//                txList[6] = tximg;
-//                txList[7] = myUser.sel1;
-//                txList[8] = txsel2;
-//                txList[9] = txsel3;
-//                txList[10] = (myUser.more1).isEmpty()?"@null":myUser.more1;
-//                txList[11] = (myUser.more2).isEmpty()?"@null":myUser.more2;
-//                txList[12] = (myUser.more3).isEmpty()?"@null":myUser.more3;
-//                txList[13] = (myUser.more4).isEmpty()?"@null":myUser.more4;
-//
-//                mList.add(txList);
-//
-//                //--------------------------------------------------------
-//                // Se obtine la direccion de la image,  el nombre, la listSelec etc.
-//                nameL.add(txname);
-//                ltsL.add(txlitros);
-//                dPreL.add(txpre);
-//                dBrithL.add(txedad);
-//                swPreL.add(txsel3);
-//                typeL.add(txsel2);
-//                selL.add(Integer.parseInt(txsel2));
-//
-//                if (FilesManager.isBlockedPath(tximg)) {
-//                    imgL.add(tximg);
-//                } else {
-//                    imgL.add("null");
-//                }
-//                //------------------------------------------
-//            }
-//            StartVar.setCsvList(mList);
-//        }
-        return arrayMap;
+        HashMap<String, HashMap<String, ArrayList<Object>>> allMaps = new HashMap<>();
+        allMaps.put("acc", mapAcc);
+        allMaps.put("clt", mapClt);
+        allMaps.put("deb", mapDeb);
+        allMaps.put("dat", mapDat);
+        allMaps.put("pay", mapPay);
 
-//        ArrayList<Object> mArray = arrayMap.get("name");
-//        if (mArray != null) {
-//            String mText = "";
-//            for (Object s : mArray) {
-//                mText = ((String) s+",");
-//            }
-//            Basic.msg(mText);
-//        }
-//        else {
-//            Basic.msg("Aqui no hay!");
-//        }
-
+        return allMaps;
     }
+
     public static void cvsToDB(Activity myThis, Uri uri, int importType, String mMsg) {
         cvsToDBInternal(myThis, uri, importType, mMsg, true);
     }
@@ -132,83 +396,131 @@ public class DBListCreator extends AppCompatActivity {
     }
 
     public static void cvsToDBInternal(Activity myThis, Uri uri, int importType, String mMsg, boolean finish){
-        StartVar mStartVar = new StartVar(StartVar.mContex);
-        //mStartVar.setUserListDB();
-
         StringBuilder stringBuilder = new StringBuilder();
-//        try {
-//            InputStream inputStream = StartVar.mContex.getContentResolver().openInputStream(uri);
-//            BufferedReader reader = new BufferedReader( new InputStreamReader(Objects.requireNonNull(inputStream)));
-//
-//            String line;
-//            String version = "0";
-//
-////            DaoUser mDao = StartVar.appDatabase.daoUser();
-////            DaoConf mDaoConf = StartVar.configDatabase.daoConf();
-////            for (Usuario mUser : mDao.getUsers()){
-////                mDao.removerUser(mUser.usuario);
-////            }
-//
-//            while ((line = reader.readLine()) != null) {
-//                line = line.replaceAll("\"", "");
-//                String[] spl = line.split(",");
-//                //Log.d("PhotoPicker", " Aquiiiiiiiiii Hayyyyyy ------------------------: "+ line);
-//                int f = spl.length;
-//                //Si la version es vieja
-//                if(f<2){
-//                    version = spl[0];
-//                    continue;
-//                }
-//                //Si no se agrega la configuracion aqui
-//                else if (spl[0].equals("confID0")){
-//                    mDaoConf.updateUser("confID0", spl[1], spl[2], spl[3], spl[4], spl[5], spl[6] ,spl[7]);
-//
-//                    version = spl[1];
-//                    continue;
-//                }
-//                if(Objects.equals(version, "0")) {
-//                    Usuario obj = new Usuario(
-//                            (importType == 0? getUserId(mDao) : spl[0]), spl[1], spl[2], spl[3], spl[4], spl[5], spl[6], "0", (f > 7 ? spl[7] : ""),
-//                            "0", (f > 8 ? spl[8] : ""), (f > 9 ? spl[9] : ""), (f > 10 ? spl[10] : ""), (f > 11 ? spl[11] : "")
-//                    );
-//                    mDao.insetUser(obj);
-//                }
-//                else if(Objects.equals(version, "1")) {
-//                    Usuario obj = new Usuario(
-//                            (importType == 0? getUserId(mDao) : spl[0]), spl[1], spl[2], spl[3], spl[4], ""/*spl[5]*/, spl[5], spl[6], spl[7], "0",
-//                            (f > 8 ? spl[8] : ""), (f > 9 ? spl[9] : ""), (f > 10 ? spl[10] : ""), (f > 11 ? spl[11] : "")                                    );
-//                    mDao.insetUser(obj);
-//
-//                }
-//
-//                else if(Objects.equals(version, "2")) {
-//                    Usuario obj = new Usuario(
-//                            (importType == 0? getUserId(mDao) : spl[0]), spl[1], spl[2], spl[3], spl[4], spl[5], spl[6], spl[7], spl[8], spl[9],
-//                            (f > 10 ? spl[10] : ""), (f > 11 ? spl[11] : ""), (f > 12 ? spl[12] : ""), (f > 13 ? spl[13] : "")
-//                    );
-//                    mDao.insetUser(obj);
-//                }
-//                else if(Objects.equals(version, "3")) {
-//                    Usuario obj = new Usuario(
-//                            (importType == 0? getUserId(mDao) : spl[0]), spl[1], spl[2], spl[3], spl[4], spl[5], spl[6], spl[7], spl[8], spl[9],
-//                            (f > 10 ? spl[10] : ""), (f > 11 ? spl[11] : ""), (f > 12 ? spl[12] : ""), (f > 13 ? spl[13] : "")
-//                    );
-//                    mDao.insetUser(obj);
-//                }
-//
-//                stringBuilder.append(line);
-//            }
-//            mStartVar.setUserListDB();
+        try {
 
-//        }
-//        catch (FileNotFoundException e) {
-//            Basic.msg("ErrorA: "+ e.getMessage());
-//            throw new RuntimeException(e);
-//        }
-//        catch (IOException e) {
-//            Basic.msg("ErrorB: "+ e.getMessage());
-//            throw new RuntimeException(e);
-//        }
+            //Limpia todas las DB
+            for (Cuenta obj : daoCuenta.getUsers()){
+                daoCuenta.removerUser(obj.cuenta);
+            }
+            for (Cliente obj : daoCliente.getUsers()){
+                daoCliente.removerUser(obj.cliente);
+            }
+            for (Deuda obj : daoDeuda.getUsers()){
+                daoDeuda.removerUser(obj.deuda);
+            }
+            for (Fecha obj : daoFecha.getUsers()){
+                daoFecha.removerUser(obj.fecha);
+            }
+            for (Pagos obj : daoPagos.getUsers()){
+                daoPagos.removerUser(obj.pago);
+            }
+
+            InputStream inputStream = StartVar.mContex.getContentResolver().openInputStream(uri);
+
+            BufferedReader reader = new BufferedReader( new InputStreamReader(Objects.requireNonNull(inputStream)));
+            String line;
+            String version = "0";
+            int opt = 0;
+            String[] t = {"<0>", "<1>", "<2>", "<3>", "<4>", "<5>"};
+            while ((line = reader.readLine()) != null) {
+                line = line.replaceAll("\"", "");
+                String[] spl = line.split(",");
+                //Log.d("PhotoPicker", " Aquiiiiiiiiii Hayyyyyy ------------------------: "+ line);
+                int f = spl.length;
+                if(f==1){
+                    String tx = spl[0];
+                    if(tx.equals(t[0])){
+                        t[0] = "";
+                        stringBuilder.append(line);
+                        continue;
+                    }
+                    else if(tx.equals(t[1])){
+                        t[1] = "";
+                        opt = 1;
+                        stringBuilder.append(line);
+                        continue;
+                    }
+                    else if(tx.equals(t[2])){
+                        t[2] = "";
+                        opt = 2;
+                        stringBuilder.append(line);
+                        continue;
+                    }
+                    else if(tx.equals(t[3])){
+                        t[3] = "";
+                        opt = 3;
+                        stringBuilder.append(line);
+                        continue;
+                    }
+                    else if(tx.equals(t[4])){
+                        t[4] = "";
+                        opt = 4;
+                        stringBuilder.append(line);
+                        continue;
+                    }
+                    else if(tx.equals(t[5])){
+                        t[5] = "";
+                        opt = 5;
+                        stringBuilder.append(line);
+                        continue;
+                    }
+                    stringBuilder.append(line);
+                    continue;
+                }
+                if(opt==0) {
+                    version = spl[1];
+                    daoConf.updateUser("confID0", spl[1], spl[2], spl[3], spl[4], Integer.parseInt(spl[5]), spl[6] ,Integer.parseInt(spl[7]), Integer.parseInt(spl[8]));
+                }
+                else if(opt==1){
+                    //Basic.msg(spl[10] +" "+name+" "+spl[1]);
+                    Cuenta obj = new Cuenta(
+                            spl[0], spl[1], spl[2], spl[3], Integer.parseInt(spl[4]), Integer.parseInt(spl[5]),
+                            Integer.parseInt(spl[6]), Integer.parseInt(spl[7]), spl[8], spl[9]
+                    );
+                    daoCuenta.insetUser(obj);
+                }
+                else if(opt==2) {
+                    Cliente obj = new Cliente(
+                            spl[0], spl[1], spl[2], spl[3], Integer.parseInt(spl[4]), spl[5], Float.parseFloat(spl[6]),
+                            spl[7], Integer.parseInt(spl[8]), spl[9]
+                    );
+                    daoCliente.insetUser(obj);
+                }
+                else if(opt==3){
+                    Deuda obj = new Deuda(
+                            spl[0], spl[1], spl[2], Float.parseFloat(spl[3]), Integer.parseInt(spl[4]), spl[5],
+                            Integer.parseInt(spl[6]), Integer.parseInt(spl[7]), spl[8], Integer.parseInt(spl[9]), Float.parseFloat(spl[10])
+                    );
+                    daoDeuda.insetUser(obj);
+                }
+
+                else if(opt==4){
+                    Fecha obj = new Fecha(
+                            spl[0], spl[1], spl[2], spl[3], spl[4], spl[5]
+                    );
+                    daoFecha.insetUser(obj);
+                }
+                else {
+                    Pagos obj = new Pagos(
+                            spl[0], spl[1], spl[2], Float.parseFloat(spl[3]), Integer.parseInt(spl[4]), Integer.parseInt(spl[5]),
+                            spl[6], spl[7], spl[8], spl[9], spl[10], Integer.parseInt(spl[11]), spl[12]
+                    );
+                    daoPagos.insetUser(obj);
+                }
+
+                stringBuilder.append(line);
+
+            }
+        }
+        catch (FileNotFoundException e) {
+            Basic.msg("ErrorA: "+ e.getMessage());
+            throw new RuntimeException(e);
+        }
+        catch (IOException e) {
+            Basic.msg("ErrorB: "+ e.getMessage());
+            throw new RuntimeException(e);
+        }
 
         if(finish) {
             Intent mIntent = new Intent(StartVar.mContex, myThis.getClass());

@@ -22,22 +22,22 @@ public interface DaoPay {
     @Query("SELECT * FROM Pagos WHERE accid = :accid ORDER BY uid ASC")
     List<Pagos> getListByGroupId(String accid);  // Cambiado a String
 
-    @Query("SELECT * FROM Pagos WHERE registro= :user")
+    @Query("SELECT * FROM Pagos WHERE pago= :user")
     Pagos getUsers(String user);
 
     @Insert
     void insetUser(Pagos...registros);
 
-    @Query("UPDATE Pagos SET nombre= :nombre, concep= :concep, monto= :monto, oper= :oper, porc= :porc, imagen= :imagen, fecha= :fecha, time= :time, cltid= :cltid, accid= :accid, more4= :more4, more5= :more5 WHERE registro= :user")
+    @Query("UPDATE Pagos SET nombre= :nombre, concep= :concep, monto= :monto, oper= :oper, porc= :porc, imagen= :imagen, fecha= :fecha, time= :time, cltid= :cltid, accid= :accid, more4= :more4, more5= :more5 WHERE pago= :user")
     void updateUser(String user, String nombre, String concep, Float monto, Integer oper, Integer porc, String imagen, String fecha, String time , String cltid, String accid, Integer more4, String more5 );
 
     // Para actualizar valores individuales --------------------------------------------------------
-    @Query("UPDATE Pagos SET concep= :concep, monto= :monto, oper= :oper, porc= :porc, imagen= :imagen  WHERE registro= :user")
+    @Query("UPDATE Pagos SET concep= :concep, monto= :monto, oper= :oper, porc= :porc, imagen= :imagen  WHERE pago= :user")
     void updatePay(String user, String concep, Float monto, Integer oper, Integer porc, String imagen);
 
     //----------------------------------------------------------------------------------------------
 
-    @Query("DELETE FROM Pagos WHERE  registro= :user")
+    @Query("DELETE FROM Pagos WHERE  pago= :user")
     void removerUser(String user);
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)

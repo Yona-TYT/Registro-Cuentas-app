@@ -33,7 +33,7 @@ public class UsuarioWorker extends Worker {
             Deuda mUser = gson.fromJson(usuarioJson, Deuda.class);
 
             if(mSend == 1){
-                DBListCreator.debList(); //Actualiza la lista para exportar csv
+                DBListCreator.createDbLists(); //Actualiza la lista para exportar csv
                 String currDate = "";
                 String currTime = "";
                 if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
@@ -82,7 +82,7 @@ public class UsuarioWorker extends Worker {
                 StartVar.appDBall.daoCfg().updateDateTime(StartVar.mConfID, currDate, currTime);
                 StartVar.getConfigDB();
 
-                DBListCreator.debList(); //Actualiza la lista para exportar csv
+                DBListCreator.createDbLists(); //Actualiza la lista para exportar csv
 
                 GoogleDriveManager manager = new GoogleDriveManager(PreferenceHelper.getInstance());
                 manager.uploadDataBase();

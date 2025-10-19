@@ -1,5 +1,6 @@
 package com.example.registro_cuentas.activitys;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.MenuItem;
@@ -39,6 +40,8 @@ import java.util.List;
 import io.reactivex.annotations.NonNull;
 
 public class AccEditActivity extends AppCompatActivity implements View.OnClickListener {
+
+    private Context mContext = BaseContext.getContext();
 
     // DB
     private AllDao appDBcuenta = StartVar.appDBall;
@@ -124,7 +127,7 @@ public class AccEditActivity extends AppCompatActivity implements View.OnClickLi
 
         //--------------------------------------------------------------------------------------------
         //Para la lista del selector Tipo De Cuenta ----------------------------------------------------------------------------------------------
-        SelecAdapter adapt1 = new SelecAdapter(this, mSpinL1);
+        SelecAdapter adapt1 = new SelecAdapter(mContext, mSpinL1);
         mSpin1.setAdapter(adapt1);
         mSpin1.setSelection(mAcc.acctipo); //Set default ingreso
 
@@ -185,17 +188,11 @@ public class AccEditActivity extends AppCompatActivity implements View.OnClickLi
             DaoAcc mDao = StartVar.appDBall.daoAcc();
             mDao.updateAccount(mAcc.cuenta, nombre, desc, monto, currSel1);
 
-            //Recarga La lista de la DB ----------------------------
-            StartVar mVars = new StartVar(BaseContext.getContext());
-            //mVars.getRegListDB();
-            mVars.setCurrentTyp(currSel1);
-            //-------------------------------------------------------
-
-            //Esto inicia las actividad Main despues de tiempo de espera del preloder
-            startActivity(new Intent(this, MainActivity.class));
+            //Esto inicia las actividad Reload
+            startActivity(new Intent(mContext, ReloadActivity.class));
             this.finish(); //Finaliza la actividad y ya no se accede mas
-        }
 
+        }
     }
     //------------------------------------------------------------
 }

@@ -3,6 +3,7 @@ package com.example.registro_cuentas;
 import android.content.Context;
 
 import com.example.registro_cuentas.db.Fecha;
+import com.example.registro_cuentas.db.dao.DaoDat;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -74,25 +75,33 @@ public class CalcCalendar {
         return text;
     }
 
-    public static void startCalList(Context mContext) {
-        //Inicia la fecha actual
+    public static void addCurrentMonthIfAbsent(Context mContext) {
+        DaoDat daoFecha = StartVar.appDBall.daoDat();
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+            // Inicia la fecha actual
             LocalDate currdate = LocalDate.now();
-            List<Fecha> listFecha = StartVar.appDBall.daoDat().getUsers();
-            for (Fecha d : listFecha){
+            List<Fecha> listFecha = daoFecha.getUsers();
+            boolean exists = false;
+            for (Fecha d : listFecha) {
                 String f = d.date;
                 LocalDate date = LocalDate.parse(f);
                 if (currdate.getMonth().equals(date.getMonth()) && currdate.getYear() == date.getYear()) {
-                    return;
+                    exists = true;
+                    break;
                 }
             }
+            if (exists) {
+                return;
+            }
             LocalTime currtime = LocalTime.now();
-            Fecha obj = new Fecha("dateID" + (listFecha.size() - 1), "" + currdate.getYear(), currdate.getMonth().toString(), "" + currdate.getDayOfMonth(), CalcCalendar.getTime(currtime.toString()), currdate.toString());
-            StartVar.appDBall.daoDat().insetUser(obj);
-            //Recarga La lista de la DB ----------------------------
+            Fecha obj = new Fecha("dateID" + listFecha.size(), "" + currdate.getYear(),
+                    currdate.getMonth().toString(), "" + currdate.getDayOfMonth(),
+                    CalcCalendar.getTime(currtime.toString()), currdate.toString());
+            daoFecha.insetUser(obj);
+            // Recarga la lista de la DB ----------------------------
             StartVar var = new StartVar(mContext);
             var.getFecListDB();
-            //-------------------------------------------------------
+            // -------------------------------------------------------
         }
     }
 
@@ -149,7 +158,7 @@ public class CalcCalendar {
                     originalDate = LocalDate.of(originalDate.getYear(), 1, 1);
                     numOwed = ChronoUnit.YEARS.between(originalDate, currdate);
                 } else {
-                    return null;
+                    return new Object[]{0f, 0f, "", 1};
                 }
                 if (numOwed < 1) {
                     numOwed = 0;
@@ -159,7 +168,7 @@ public class CalcCalendar {
                 LocalDate date = originalDate;
                 int count = 0;
                 float currentPaid = paid;
-                Basic.msg("currentPaid "+currentPaid+" numOwed: "+numOwed+ "count: "+count);
+                //Basic.msg("currentPaid "+currentPaid+" numOwed: "+numOwed+ "count: "+count);
 
                 for (long i = numOwed; i > 0; i--) {
                     if (currentPaid >= rent) {
@@ -175,15 +184,14 @@ public class CalcCalendar {
                         count++;
                     }
                 }
-                Basic.msg("startDate "+startDate+" date: "+date.toString()+ "count: "+count);
+                //Basic.msg("startDate "+startDate+" date: "+date.toString()+ "count: "+count);
 
                 float debt = Math.max(0f, (rent * count) - currentPaid);
-                return new Object[]{debt, currentPaid, date.toString()};
+                return new Object[]{debt, currentPaid, date.toString(), 0};
             }
         }
         return null;
     }
-
 
     public static String getDatePlus(String txDate, int sum, int selec) {
         String newDate = "";
@@ -236,7 +244,7 @@ public class CalcCalendar {
             if (!txDate.isEmpty()) {
                 //Convierte Sting  a forrmato de fecha
                 LocalDate date = LocalDate.parse(txDate);
-                Basic.msg("selec"+selec+" txDate "+txDate);
+                //Basic.msg("selec"+selec+" txDate "+txDate);
                 //Para Dias
                 if (selec == 1) {
                     return txDate;

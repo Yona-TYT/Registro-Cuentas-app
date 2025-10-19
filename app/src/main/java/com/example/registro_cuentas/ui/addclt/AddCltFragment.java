@@ -10,7 +10,6 @@ import androidx.activity.OnBackPressedDispatcher;
 import androidx.annotation.NonNull;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.ViewModelProvider;
 
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -28,6 +27,7 @@ import com.example.registro_cuentas.BaseContext;
 import com.example.registro_cuentas.Basic;
 import com.example.registro_cuentas.BitsOper;
 import com.example.registro_cuentas.CalcCalendar;
+import com.example.registro_cuentas.DBListCreator;
 import com.example.registro_cuentas.db.Cliente;
 import com.example.registro_cuentas.db.Cuenta;
 import com.example.registro_cuentas.CurrencyEditText;
@@ -42,7 +42,6 @@ import com.example.registro_cuentas.StartVar;
 import com.example.registro_cuentas.databinding.FragmentAddcltBinding;
 
 import com.example.registro_cuentas.db.Pagos;
-import com.example.registro_cuentas.ui.addpay.AddPayViewModel;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import java.time.LocalDate;
@@ -134,8 +133,6 @@ public class AddCltFragment extends Fragment  implements View.OnClickListener, A
         onBackPressedDispatcher.addCallback(this.getActivity(), callback);
         //---------------------------------------------------------------------------------
 
-        AddPayViewModel addPayViewModel = new ViewModelProvider(this).get(AddPayViewModel.class);
-
         binding = FragmentAddcltBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
 
@@ -203,23 +200,7 @@ public class AddCltFragment extends Fragment  implements View.OnClickListener, A
         }
 
         //Para la lista del selector Cliente ----------------------------------------------------------------------------------------------
-        listCliente = daoCliente.getUsers();
-        List<String> mCltList = new ArrayList<>();
-        List<String> mAliList = new ArrayList<>();
-        List<String> mIdList = new ArrayList<>();
-        mCltList.add("Agregar");
-        mAliList.add("");
-        mIdList.add("");
-
-        for(Cliente mC : listCliente){
-            mCltList.add(mC.nombre);
-            mAliList.add(mC.alias);
-            mIdList.add(mC.cliente);
-        }
-        SelecAdapter adapt1 = new SelecAdapter(mContext, mCltList);
-        mSpin1.setAdapter(adapt1);
-        mSpin1.setSelection(currSel1); //Set default client
-        mInput3.setText(Basic.setFormatter("0"));
+        setAdapterClt();
 
         mSpin1.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @SuppressLint("SetTextI18n")
@@ -286,8 +267,8 @@ public class AddCltFragment extends Fragment  implements View.OnClickListener, A
                         mText3.setText("Uiltimo Pago: NA");
                         mInput3.setText("0,00");
                     }
-                    mInput1.setText(mCltList.get(i).toUpperCase());
-                    mInput2.setText(mAliList.get(i).toUpperCase());
+                    mInput1.setText(mClt.nombre.toUpperCase());
+                    mInput2.setText(mClt.alias.toUpperCase());
                     mInput3.setText(Basic.getValueFormatter(total.toString()));
                 }
                 else{
@@ -435,16 +416,19 @@ public class AddCltFragment extends Fragment  implements View.OnClickListener, A
             }
 
             //Actualisza la lista de fechas
-            CalcCalendar.startCalList(mContext);
+            CalcCalendar.addCurrentMonthIfAbsent(mContext);
 
             StartVar mVars = new StartVar(mContext);
             //Recarga La lista de la DB ----------------------------
             mVars.getCltListDB();
             //-------------------------------------------------------
 
-            //Esto inicia las actividad Main
-            startActivity(new Intent(mContext, MainActivity.class));
-            //finish(); //Finaliza la actividad y ya no se accede mas
+            Basic.msg("Se han GUARDADO los cambios");
+
+            setAdapterClt();
+            //mSpin1.setSelection(0); //Set default client
+
+            DBListCreator.createDbLists(); //Actualiza la lista para exportar csv
         }
     }
 
@@ -456,6 +440,22 @@ public class AddCltFragment extends Fragment  implements View.OnClickListener, A
     @Override
     public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
 
+    }
+
+    private void setAdapterClt(){
+        listCliente = daoCliente.getUsers();
+        List<String> mCltList = new ArrayList<>();
+        mCltList.add("Agregar");
+
+        for(Cliente mC : listCliente){
+            mCltList.add(mC.nombre);
+        }
+        SelecAdapter adapt1 = new SelecAdapter(mContext, mCltList);
+        mSpin1.setAdapter(adapt1);
+        mSpin1.setSelection(0); //Set default client
+        mInput1.setText("");
+        mInput2.setText("");
+        mInput3.setText(Basic.setFormatter("0"));
     }
 
     private void setChekboxStatus(Cliente mC){

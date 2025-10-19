@@ -144,9 +144,9 @@ public class CltDetailsActivity extends AppCompatActivity implements View.OnClic
 
         String mAccName = "";
         List<Cuenta> mAccList = StartVar.appDBall.daoAcc().getUsers();
-        if (mAccList.size() > 1) {
-            Cuenta mAcc = mAccList.get(accIndex+1);
-            mAccName = mAcc.nombre + " (" + mAcc.desc + ")";
+        if (!mAccList.isEmpty()) {
+            Cuenta mAcc = mAccList.get(accIndex);
+            mAccName = mAcc.nombre + (mAcc.desc.replaceAll("[^a-zA-Z0-9]", "").isEmpty()? "" : " ("+mAcc.desc+")");
         }
 
         List<Cliente> mCltList = StartVar.appDBall.daoClt().getUsers();
@@ -179,7 +179,7 @@ public class CltDetailsActivity extends AppCompatActivity implements View.OnClic
         int i = 0;
         mTextList.get(i).setText("Cuenta Actual: "+mAccName);
         i++;
-        mTextList.get(i).setText("Cliente: " + txName + " ("+txAlias+")");
+        mTextList.get(i).setText("Cliente: " + txName + (txAlias.replaceAll("[^a-zA-Z0-9]", "").isEmpty()? "" : " ("+txAlias+")"));
         i++;
         mTextList.get(i).setText("Ultimo Pago: " +txFech);
         i++;

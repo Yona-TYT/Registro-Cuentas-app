@@ -1,6 +1,7 @@
 package com.example.registro_cuentas.activitys;
 
 import android.annotation.SuppressLint;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
@@ -49,6 +50,8 @@ import java.util.List;
 import io.reactivex.annotations.NonNull;
 
 public class PayEditActivity extends AppCompatActivity implements View.OnClickListener {
+
+    private Context mContext = BaseContext.getContext();
 
     // DB
     private List<Pagos> appDBregistro = StartVar.appDBall.daoPay().getUsers();
@@ -151,7 +154,7 @@ public class PayEditActivity extends AppCompatActivity implements View.OnClickLi
 
         //--------------------------------------------------------------------------------------------
         //Para la lista del selector Tipo Operacion ----------------------------------------------------------------------------------------------
-        SelecAdapter adapt2 = new SelecAdapter(this, mSpinL1);
+        SelecAdapter adapt2 = new SelecAdapter(mContext, mSpinL1);
         mSpin1.setAdapter(adapt2);
         mSpin1.setSelection(mpay.oper); //Set default ingreso
 
@@ -253,7 +256,7 @@ public class PayEditActivity extends AppCompatActivity implements View.OnClickLi
                 else {
                     //Log.d("PhotoPicker", "Aqi hayyyyyyyyyyyyy5555----------------------------------: ");
                     bitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), currUri);
-                    sImage = mFileM.SavePhoto(bitmap, mpay.registro+StartVar.mCurrAcc, oldFile, this, this.getContentResolver());
+                    sImage = mFileM.SavePhoto(bitmap, mpay.pago +StartVar.mCurrAcc, oldFile, mContext, this.getContentResolver());
                 }
             }
             catch (IOException e) {
@@ -266,15 +269,10 @@ public class PayEditActivity extends AppCompatActivity implements View.OnClickLi
                 sImage = currDir;
             }
             DaoPay mDao = StartVar.appDBall.daoPay();
-            mDao.updatePay(mpay.registro, concep, rent, currSel1, (swPorc?1:0), sImage);
+            mDao.updatePay(mpay.pago, concep, rent, currSel1, (swPorc?1:0), sImage);
 
-            //Recarga La lista de la DB ----------------------------
-            StartVar mVars = new StartVar(BaseContext.getContext());
-            //mVars.getRegListDB();
-            //-------------------------------------------------------
-
-            //Esto inicia las actividad Main despues de tiempo de espera del preloder
-            startActivity(new Intent(this, MainActivity.class));
+            //Esto inicia las actividad Reload
+            startActivity(new Intent(mContext, ReloadActivity.class));
             this.finish(); //Finaliza la actividad y ya no se accede mas
         }
     }

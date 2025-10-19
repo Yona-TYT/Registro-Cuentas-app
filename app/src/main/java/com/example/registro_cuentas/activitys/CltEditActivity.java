@@ -1,6 +1,7 @@
 package com.example.registro_cuentas.activitys;
 
 import android.annotation.SuppressLint;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.MenuItem;
@@ -39,6 +40,8 @@ import java.util.List;
 import io.reactivex.annotations.NonNull;
 
 public class CltEditActivity extends AppCompatActivity implements View.OnClickListener{
+
+    private Context mContext = BaseContext.getContext();
 
     // DB
     private AllDao appDBcuenta = StartVar.appDBall;
@@ -117,7 +120,7 @@ public class CltEditActivity extends AppCompatActivity implements View.OnClickLi
 
         //------------------------------------------------------------------------------------------
         //Para la lista de Cuentas Activas para el cliente------------------------------------------
-        StartVar startVar = new StartVar(this);
+        StartVar startVar = new StartVar(mContext);
         startVar.setCltBit(mClt.bits);
 
         setCheckBoxes();
@@ -196,10 +199,8 @@ public class CltEditActivity extends AppCompatActivity implements View.OnClickLi
             x++;
         }
 
-        BoxAdapter adapt2 = new BoxAdapter(this, maccList, mSpin1);
+        BoxAdapter adapt2 = new BoxAdapter(mContext, maccList, mSpin1);
         mSpin1.setAdapter(adapt2);
-
-        //mSpin1.setSelection(); //Set default ingreso
     }
 
     @Override
@@ -239,18 +240,12 @@ public class CltEditActivity extends AppCompatActivity implements View.OnClickLi
             DaoClt mDao = StartVar.appDBall.daoClt();
             mDao.updateBits(mClt.cliente, BitsOper.mergeBitString(intList));
 
-            //Recarga La lista de la DB ----------------------------
-            StartVar mVars = new StartVar(BaseContext.getContext());
-            //mVars.getRegListDB();
-            //-------------------------------------------------------
-
             StartVar.bitList.clear();
 
-            //Esto inicia las actividad Main despues de tiempo de espera del preloder
-            startActivity(new Intent(this, MainActivity.class));
+            //Esto inicia las actividad Reload
+            startActivity(new Intent(mContext, ReloadActivity.class));
             this.finish(); //Finaliza la actividad y ya no se accede mas
         }
-
     }
     //------------------------------------------------------------
 }

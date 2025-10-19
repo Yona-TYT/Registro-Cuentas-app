@@ -53,7 +53,12 @@ public class SelecAdapter extends BaseAdapter {
         LinearLayout layout = new LinearLayout(mContex);
 
         // Se ajustan los parametros del Texto ----------------------------------
-        text.setText(textList.get(pos));
+        if(pos < textList.size()) {
+            text.setText(textList.get(pos));
+        }
+        else {
+            text.setText("Error");
+        }
         text.setTypeface(Typeface.DEFAULT_BOLD);
         text.setGravity(Gravity.CENTER);
         text.setWidth(R.dimen.spinner_w1);

@@ -163,7 +163,7 @@ public class PayDetailsActivity extends AppCompatActivity implements View.OnClic
             CalcCalendar cale = new CalcCalendar();
             listRegistro = StartVar.appDBall.daoPay().getUsers();
             Pagos reg = listRegistro.get(payIndex);
-            mUser = reg.registro;
+            mUser = reg.pago;
 
             DaoClt mDao = StartVar.appDBall.daoClt();
             String txName = mDao.getSaveName(reg.cltid);
