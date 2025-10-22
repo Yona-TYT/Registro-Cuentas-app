@@ -19,10 +19,12 @@ import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.Spinner;
 import android.widget.Switch;
 import android.widget.TextView;
 
+import com.airbnb.lottie.L;
 import com.example.registro_cuentas.BaseContext;
 import com.example.registro_cuentas.Basic;
 import com.example.registro_cuentas.BitsOper;
@@ -31,6 +33,7 @@ import com.example.registro_cuentas.DBListCreator;
 import com.example.registro_cuentas.db.Cliente;
 import com.example.registro_cuentas.db.Cuenta;
 import com.example.registro_cuentas.CurrencyEditText;
+import com.example.registro_cuentas.db.DatabaseUtils;
 import com.example.registro_cuentas.db.dao.DaoAcc;
 import com.example.registro_cuentas.db.dao.DaoClt;
 import com.example.registro_cuentas.db.dao.DaoDeb;
@@ -88,13 +91,20 @@ public class AddCltFragment extends Fragment  implements View.OnClickListener, A
 
     //Botones
     private Button mButt1;
+    private ImageButton buttNext;
+    private ImageButton buttPrev;
 
     //Todos los Spinner
     private Spinner mSpin1;
     private Spinner mSpin2;
+    private Spinner mSpin3;
+
     private int currSel1 = 0;
     private int currSel2 = 0;
-    private List<String> mSpinL2= Arrays.asList("Ingreso (+)", "Egreso (-)");
+    private int currSel3 = 0;
+    private List<String> mSpin1L = Arrays.asList("Todos", "Visibles", "Invisibles", "Activos", "Inactivos");
+    private List<String> mSpin3L = Arrays.asList("Ingreso (+)", "Egreso (-)");
+
     private List<String> mCurrencyList= Arrays.asList("$", "Bs");
     //---------------------------------------------------------------------
 
@@ -105,13 +115,11 @@ public class AddCltFragment extends Fragment  implements View.OnClickListener, A
     private boolean checkEstat = true;
     private String hexString = "0x00000000";
 
-    private String mIndex = "";
-
     // Para guardar los permisos de app comprobados en main
     private boolean mPermiss = false;
     // Index de cuenta actual
-    private int currtAcc = StartVar.mCurrAcc;
-    private int currtTyp = StartVar.mCurrTyp;
+    private int currtAcc = StartVar.accSelect;
+    private int currtTyp = StartVar.accCierre;
 
     private String mCurr = mCurrencyList.get(StartVar.mCurrency);
 
@@ -140,6 +148,7 @@ public class AddCltFragment extends Fragment  implements View.OnClickListener, A
 
         mSpin1 = binding.spinClt1;
         mSpin2 = binding.spinClt2;
+        mSpin3 = binding.spinClt3;
 
 
         mText1 = binding.txviewClt1;
@@ -154,11 +163,15 @@ public class AddCltFragment extends Fragment  implements View.OnClickListener, A
         mCheck = binding.checkClt1;
 
         mButt1 = binding.buttClt1;
+        buttNext = binding.buttNext;
+        buttPrev = binding.buttPrev;
 
         mInput1.setOnFocusChangeListener(this);
         mInput2.setOnFocusChangeListener(this);
         mConstrain.setOnClickListener(this);
         mButt1.setOnClickListener(this);
+        buttNext.setOnClickListener(this);
+        buttPrev.setOnClickListener(this);
         mSwActive.setOnClickListener(this);
         mCheck.setOnClickListener(this);
 
@@ -199,27 +212,41 @@ public class AddCltFragment extends Fragment  implements View.OnClickListener, A
             mText1.setText("Cuenta: " + mAcc.nombre + " (" + mAcc.desc + ")");
         }
 
-        //Para la lista del selector Cliente ----------------------------------------------------------------------------------------------
-        setAdapterClt();
+        //Para la lista del selector Mostrar ----------------------------------------------------------------------------------------------
+        SelecAdapter adapt1 = new SelecAdapter(mContext, mSpin1L);
+        mSpin1.setAdapter(adapt1);
+        mSpin1.setSelection(0); //Set default ingreso
 
         mSpin1.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @SuppressLint("SetTextI18n")
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
                 currSel1 = i;
+                setAdapterClt(0);    //Recarga el adapter de lista clientes
+            }
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+
+            }
+        });
+        //--------------------------------------------------------------------------------------------
+
+        //Para la lista del selector Cliente ----------------------------------------------------------------------------------------------
+        setAdapterClt(0);
+
+        mSpin2.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @SuppressLint("SetTextI18n")
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                currSel2 = i;
+                mDeb = null;
 
                 if (i > 0) {
                     mClt = listCliente.get(i-1);
 
                     setChekboxStatus(mClt);
 
-                    String accId = daoCuenta.getUsers().get(StartVar.mCurrAcc).cuenta;
-                    for(Deuda mD : daoDeuda.getListByGroupId(mClt.cliente)){
-                        if(mD.accid.equals(accId)){
-                            mDeb = mD;
-                            break;
-                        }
-                    }
+                    String accId = mAcc.cuenta;
+                    mDeb = daoDeuda.getDeudaByCltAndAcc(mClt.cliente, accId);
 
                     //mDeb = listDeuda.size() > currtAcc? StartVar.appDBall.daoDeb().getUsers(mIdList.get(i)) : null;
                     Float total = 0f;
@@ -261,8 +288,10 @@ public class AddCltFragment extends Fragment  implements View.OnClickListener, A
                         }
                     }
                     else {
-                        mInput3.setEnabled(false);
-                        mSwActive.setChecked(false);
+                        swEstat = false;
+                        mInput3.setEnabled(swEstat);
+                        mSwActive.setChecked(swEstat);
+
                         mText2.setText("Deuda: NA");
                         mText3.setText("Uiltimo Pago: NA");
                         mInput3.setText("0,00");
@@ -293,14 +322,14 @@ public class AddCltFragment extends Fragment  implements View.OnClickListener, A
         });
         //--------------------------------------------------------------------------------------------
         //Para la lista del selector Tipo Operacion ----------------------------------------------------------------------------------------------
-        SelecAdapter adapt2 = new SelecAdapter(mContext, mSpinL2);
-        mSpin2.setAdapter(adapt2);
-        mSpin2.setSelection(0); //Set default ingreso
+        SelecAdapter adapt2 = new SelecAdapter(mContext, mSpin3L);
+        mSpin3.setAdapter(adapt2);
+        mSpin3.setSelection(0); //Set default ingreso
 
-        mSpin2.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+        mSpin3.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                currSel2 = i;
+                currSel3 = i;
             }
             @Override
             public void onNothingSelected(AdapterView<?> adapterView) {
@@ -324,11 +353,11 @@ public class AddCltFragment extends Fragment  implements View.OnClickListener, A
             swEstat = !swEstat;
             if(swEstat){
                 mInput3.setEnabled(true);
-                mSpin2.setEnabled(true);
+                mSpin3.setEnabled(true);
             }
             else{
                 mInput3.setEnabled(false);
-                mSpin2.setEnabled(false);
+                mSpin3.setEnabled(false);
             }
         }
         if (itemId == R.id.check_clt1){
@@ -361,42 +390,42 @@ public class AddCltFragment extends Fragment  implements View.OnClickListener, A
                 currdate = LocalDate.now().toString();
             }
 
-            if (currSel1 == 0){
-                String cltId = "cltID"+listCliente.size();
-                String debId = "debID"+listDeuda.size();
-                String accId = daoCuenta.getUsers().get(StartVar.mCurrAcc).cuenta;
+            if (currSel2 == 0){
+                String cltId = DatabaseUtils.generateId("cltID", daoDeuda);
+                String debId = DatabaseUtils.generateId("debID", daoDeuda);
+                String accId = daoCuenta.getUsers().get(StartVar.accSelect).cuenta;
 
                 Cliente objClt = null;
 
                 //Datos basicos del cliente
                 objClt = new Cliente(
                         cltId, nombre, alias, "@null", 0,
-                        currdate,0f, currdate, currSel2, BitsOper.setBitInHexString(hexString, currtAcc, checkEstat)
+                        currdate,0f, currdate, currSel3, BitsOper.setBitInHexString(hexString, currtAcc, checkEstat)
                 );
-                daoCliente.insetUser(objClt);
+                daoCliente.insertUser(objClt);
 
                 //Datos de deudas y monto fijo
-                Basic.msg(""+swEstat);
                 Deuda objDeb = new Deuda(
-                        debId, accId, cltId, rent, 0, currdate,
-                        (swEstat?1:0), 0, CalcCalendar.getCorrectDate(currdate, currtTyp), 0,0f
+                        debId, accId, cltId, rent, 0, currdate, (swEstat?1:0), 0,
+                        CalcCalendar.getCorrectDate(currdate, currtTyp), 0,0f, (swEstat?"@null":currdate)
                 );
-                daoDeuda.insetUser(objDeb);
+                daoDeuda.insertUser(objDeb);
             }
             else {
 
                 String cltId = mClt.cliente;
 
                 if(mDeb == null){
-                    String debId = "debID"+daoDeuda.getUsers().size();
-                    String accId = daoCuenta.getUsers().get(StartVar.mCurrAcc).cuenta;
+                    String debId = DatabaseUtils.generateId("debID", daoDeuda);
+
+                    String accId = daoCuenta.getUsers().get(StartVar.accSelect).cuenta;
 
                     //Datos de deudas y monto fijo
                     Deuda objDeb = new Deuda(
-                            debId, accId, cltId, rent, 0, currdate,
-                            (swEstat?1:0), 0, CalcCalendar.getCorrectDate(currdate, currtTyp), 0,0f
+                            debId, accId, cltId, rent, 0, currdate, (swEstat?1:0), 0,
+                            CalcCalendar.getCorrectDate(currdate, currtTyp), currSel3,0f, (swEstat?"@null":currdate)
                     );
-                    daoDeuda.insetUser(objDeb);
+                    daoDeuda.insertUser(objDeb);
                 }
                 else {
                     Log.d("Monto", "-->>>>>>>>>>>>>>>>>>>>>>>>>>>> Aqui hayyyyyy: " + mClt.cliente);
@@ -408,9 +437,17 @@ public class AddCltFragment extends Fragment  implements View.OnClickListener, A
 
                     daoCliente.updateBits(cltId, BitsOper.setBitInHexString(hexString, currtAcc, checkEstat));
 
-                    daoDeuda.updateUser(
-                            mDeb.deuda, mDeb.accid, mClt.cliente, rent, 0, mDeb.fecha, (swEstat ? 1 : 0),
-                            mDeb.pagado, mDeb.ulfech, currSel2, 0f
+                    String mUltFec = mDeb.ulfech;
+                    if(!mDeb.disabfec.equals("@null") && swEstat){
+                        //Hace comparaciones de fecha para determinar si es necesario actualizar mUltFec
+                        String startMonthDate = CalcCalendar.getCorrectDate(mDeb.disabfec, currtTyp);
+                        if(CalcCalendar.getRangeMultiple(startMonthDate, currtTyp) > 0) {
+                            mUltFec = CalcCalendar.getCorrectDate(currdate, currtTyp);
+                        }
+                    }
+                    daoDeuda.updateFormCltWin(
+                            mDeb.deuda, rent, (swEstat ? 1 : 0), mUltFec,
+                            currSel3, (swEstat ? "@null" : currdate)
                     );
                 }
             }
@@ -425,11 +462,35 @@ public class AddCltFragment extends Fragment  implements View.OnClickListener, A
 
             Basic.msg("Se han GUARDADO los cambios");
 
-            setAdapterClt();
+            setAdapterClt(0);
             //mSpin1.setSelection(0); //Set default client
 
             DBListCreator.createDbLists(); //Actualiza la lista para exportar csv
         }
+
+        if(itemId == R.id.buttNext){
+            setAdapterClt(nextItem(listCliente, currSel2));
+        }
+
+        if(itemId == R.id.buttPrev){
+            setAdapterClt(prevItem(listCliente, currSel2));
+        }
+    }
+
+    private int nextItem(List<?> mList, int currentIndex) {
+        if (mList.isEmpty()) {
+            Basic.msg("La Lista esta VACIA!");
+            return 0;
+        }
+        return (currentIndex + 1) % mList.size();  // Wrap-around: si llega al final, vuelve al inicio
+    }
+
+    private int prevItem(List<?> mList, int currentIndex) {
+        if (mList.isEmpty()) {
+            Basic.msg("La Lista esta VACIA!");
+            return 0;
+        }
+        return (currentIndex - 1 + mList.size()) % mList.size();  // Wrap-around: si va antes del inicio, va al final
     }
 
     @Override
@@ -442,44 +503,99 @@ public class AddCltFragment extends Fragment  implements View.OnClickListener, A
 
     }
 
-    private void setAdapterClt(){
-        listCliente = daoCliente.getUsers();
+    private void setAdapterClt(int idx){
+        String accId = mAcc.cuenta;
+
+        listCliente.clear();
         List<String> mCltList = new ArrayList<>();
         mCltList.add("Agregar");
 
-        for(Cliente mC : listCliente){
-            mCltList.add(mC.nombre);
+        for(Cliente mC : daoCliente.getUsers()){
+
+            if(currSel1 == 0) {
+                mCltList.add(mC.nombre);
+                listCliente.add(mC);
+            }
+
+            else if (currSel1 == 1 ) {
+                if(BitsOper.isActiveBit( mC.bits, currtAcc)){
+                    mCltList.add(mC.nombre);
+                    listCliente.add(mC);
+                }
+            }
+
+            else if (currSel1 == 2) {
+                if(!BitsOper.isActiveBit( mC.bits, currtAcc)){
+                    mCltList.add(mC.nombre);
+                    listCliente.add(mC);
+                }
+            }
+
+            else if (currSel1 == 3) {
+                Deuda mD = daoDeuda.getDeudaByCltAndAcc(mC.cliente, accId);
+
+                if(mD != null && mD.estat == 1){
+                    mCltList.add(mC.nombre);
+                    listCliente.add(mC);
+                }
+            }
+
+            else if (currSel1 == 4) {
+                Deuda mD = daoDeuda.getDeudaByCltAndAcc(mC.cliente, accId);
+
+                if(mD == null || mD.estat == 0){
+                    mCltList.add(mC.nombre);
+                    listCliente.add(mC);
+                }
+            }
         }
         SelecAdapter adapt1 = new SelecAdapter(mContext, mCltList);
-        mSpin1.setAdapter(adapt1);
-        mSpin1.setSelection(0); //Set default client
-        mInput1.setText("");
-        mInput2.setText("");
-        mInput3.setText(Basic.setFormatter("0"));
+        mSpin2.setAdapter(adapt1);
+        mSpin2.setSelection(idx); //Set default client
+        if(idx == 0) {
+            mInput1.setText("");
+            mInput2.setText("");
+            mInput3.setText(Basic.setFormatter("0"));
+        }
     }
 
-    private void setChekboxStatus(Cliente mC){
-        int x = currtAcc;
-        int siz = 0;
-
+    private void setChekboxStatus(Cliente mC) {
         hexString = mC.bits;
         List<Integer> bitList = BitsOper.getBits(hexString);
-        int mByte = bitList.get(0);
-        if(x == 32){
-            x = 0;
-            siz ++;
-            if(siz < bitList.size()){
-                mByte = bitList.get(siz);
-            }
-            else{
-                mByte = 0x0;
-            }
+
+        if (bitList.isEmpty()) {
+            bitList.add(0);  // Caso base: al menos un grupo de 0
         }
 
-        //Basic.msg(String.format("%s - %x - %s - %d",listCliente.get(i).nombre, bitList.size(), Basic.bitR(mByte, x) == 1, currtAcc));
-        boolean mRes = BitsOper.bitR(mByte, x) == 1;
+        int globalPos = currtAcc;
+        if (globalPos < 0) {
+            // Ignora negativos: bit=0
+            mCheck.setChecked(false);
+            checkEstat = false;
+            mCheck.setText("Visible para: " + mAcc.nombre);
+            return;
+        }
+
+        // Cálculo correcto: grupo y offset
+        int group = globalPos / 32;
+        int offset = globalPos % 32;
+
+        // Padda con 0 si el grupo no existe
+        while (group >= bitList.size()) {
+            bitList.add(0);
+        }
+
+        int mByte = bitList.get(group);
+
+        // Extracción del bit
+        boolean mRes = BitsOper.bitR(mByte, offset) == 1;
+
         mCheck.setChecked(mRes);
         checkEstat = mRes;
-        mCheck.setText("Visible para: "+mAcc.nombre);
+        mCheck.setText("Visible para: " + mAcc.nombre);
+
+        // Debug opcional (usa Log.d en Android)
+        // Log.d("setChekboxStatus", String.format("%s - grupo:%d offset:%d - bit: %b - pos: %d",
+        //     mC.nombre, group, offset, mRes, globalPos));
     }
 }

@@ -68,7 +68,7 @@ public class PayDetailsActivity extends AppCompatActivity implements View.OnClic
     private Button mBtton2;
 
     public int payIndex = StartVar.payIndex;
-    public int accIndex = StartVar.mCurrAcc;
+    public int accIndex = StartVar.accSelect;
 
     private List<String> mCurrencyList= Arrays.asList("$", "Bs");
     private int mCindex = StartVar.mCurrency;

@@ -45,6 +45,8 @@ public class ReloadActivity extends AppCompatActivity {
 
         startVar.setAllListDB();
 
+        StartVar.reloadActivity = this;
+
         // Se agregan datos solo la primera vez a para las fechas ---------------------------------------------
         List<Fecha> listFecha = StartVar.listfec;
         if(listFecha.isEmpty()) {

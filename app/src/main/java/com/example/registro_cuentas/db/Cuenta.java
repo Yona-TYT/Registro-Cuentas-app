@@ -4,6 +4,10 @@ import io.reactivex.annotations.NonNull;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
 
+import com.example.registro_cuentas.db.dao.GenericDao;
+
+import java.util.List;
+
 @Entity
 public class Cuenta {
     @PrimaryKey(autoGenerate = true)

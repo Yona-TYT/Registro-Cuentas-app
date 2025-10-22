@@ -10,7 +10,7 @@ import com.example.registro_cuentas.db.Cliente;
 import java.util.List;
 
 @Dao
-public interface DaoClt {
+public interface DaoClt extends GenericDao<Cliente>{
     @Query("SELECT * FROM cliente")
     List<Cliente> getUsers();
 
@@ -28,7 +28,7 @@ public interface DaoClt {
     String getSaveBits(String user);
 
     @Insert
-    void insetUser(Cliente...clientes);
+    void insertUser(Cliente...clientes);
 
     @Query("UPDATE cliente SET nombre= :nombre, alias= :alias, defaulacc= :defaulacc, priority= :priority, fecha= :fecha, level= :level, ulfech= :ulfech WHERE cliente= :user")
     void updateUser(String user, String nombre, String alias, String defaulacc, Integer priority, String fecha, Float level, String ulfech);

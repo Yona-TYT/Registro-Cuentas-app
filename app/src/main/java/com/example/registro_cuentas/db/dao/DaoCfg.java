@@ -10,7 +10,7 @@ import com.example.registro_cuentas.db.Conf;
 import java.util.List;
 
 @Dao
-public interface DaoCfg {
+public interface DaoCfg extends GenericDao<Conf>{
     @Query("SELECT * FROM Conf")
     List<Conf> getUsers();
 
@@ -18,7 +18,7 @@ public interface DaoCfg {
     Conf getUsers(String user);
 
     @Insert
-    void insetUser(Conf...config);
+    void insertUser(Conf...config);
 
     @Query("UPDATE Conf SET version = :version, hexid= :hexid, date= :date, time= :time, curr= :save1, dolar= :save2, moneda= :save3, mes= :save4 WHERE config= :user")
     void updateUser(String user, String version, String hexid, String date, String time, Integer save1, String save2, Integer save3, Integer save4);

@@ -10,7 +10,7 @@ import com.example.registro_cuentas.db.Fecha;
 import java.util.List;
 
 @Dao
-public interface DaoDat {
+public interface DaoDat extends GenericDao<Fecha>{
     @Query("SELECT * FROM fecha")
     List<Fecha> getUsers();
 
@@ -22,7 +22,7 @@ public interface DaoDat {
     String getSaveAlias(String user);
 
     @Insert
-    void insetUser(Fecha...fechas);
+    void insertUser(Fecha...fechas);
 
     @Query("UPDATE fecha SET year= :year, mes= :mes, dia= :dia, hora= :hora, date= :date WHERE fecha= :user")
     void updateUser(String user, String year, String mes, String dia, String hora, String date);

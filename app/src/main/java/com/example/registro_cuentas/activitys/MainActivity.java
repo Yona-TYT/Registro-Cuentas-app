@@ -28,6 +28,8 @@ import com.example.registro_cuentas.FilesManager;
 import com.example.registro_cuentas.R;
 import com.example.registro_cuentas.StartVar;
 import com.example.registro_cuentas.databinding.ActivityMainBinding;
+import com.example.registro_cuentas.db.DatabaseUtils;
+import com.example.registro_cuentas.db.dao.DaoAcc;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationBarView;
 
@@ -100,6 +102,7 @@ public class MainActivity extends AppCompatActivity {
 //            Basic.msg(" MaxRent "+mObj[0]+" Pagado"+mObj[1]+" UltmFecha"+mObj[2]);
 //        }
 
+
         //-------------------------------------------------------
 
         startVar.setmPermiss(true);
@@ -123,7 +126,6 @@ public class MainActivity extends AppCompatActivity {
         View rootView = this.findViewById(android.R.id.content);
         startVar.setRootView(rootView);
         startVar.setNavBar(navView);
-
     }
 
     public void setBottomNavigationVisibility(int visibility) {
@@ -140,12 +142,6 @@ public class MainActivity extends AppCompatActivity {
 
         for(int i = 0; i < menu.size(); i++){
             MenuItem item = menu.getItem(i);
-//            Drawable drawable = item.getIcon();
-
-//            if(drawable != null) {
-////                drawable.mutate();
-////                drawable.setColorFilter(ContextCompat.getColor(this, R.color.inner_button), PorterDuff.Mode.SRC_ATOP);
-//            }
 
             SpannableString spannabl = new SpannableString(item.getTitle().toString());
             spannabl.setSpan(new ForegroundColorSpan(ContextCompat.getColor(this, R.color.black)),0 ,spannabl.length(),0);
@@ -209,7 +205,7 @@ public class MainActivity extends AppCompatActivity {
                     // call this to persist permission across decice reboots
                     getContentResolver().takePersistableUriPermission(uri, Intent.FLAG_GRANT_READ_URI_PERMISSION);
 
-                    DBListCreator.cvsToDB(this,uri, 1, "");
+                    DBListCreator.cvsToDB(StartVar.reloadActivity, uri, 1, "");
                 }
                 else {
                     Basic.msg("Solicitud Denegada!");

@@ -1,8 +1,14 @@
 package com.example.registro_cuentas.db;
 
 import io.reactivex.annotations.NonNull;
+
+import androidx.room.Dao;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
+
+import com.example.registro_cuentas.db.dao.GenericDao;
+
+import java.util.List;
 
 @Entity
 public class Pagos {

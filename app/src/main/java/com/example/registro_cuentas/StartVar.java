@@ -62,8 +62,8 @@ public class StartVar {
 
     // Var redundants
     public static boolean mPermiss = false;     //Permisos de gestion multimedia
-    public static int mCurrAcc = 0;      // Cuenta seleccionada
-    public static int mCurrTyp = 0;      // Cuenta seleccionada
+    public static int accSelect = 0;      // Cuenta seleccionada
+    public static int accCierre = 0;      // Cuenta seleccionada
     public static int mCurrency = 0;        //Moneda seleccionada
     public static int mCurrMes = 0;        //Mes seleccionado
 
@@ -99,6 +99,7 @@ public class StartVar {
 
     public static Context mContex;
     public static Activity mActivity;
+    public static Activity reloadActivity;
     public static UsuarioQueue usuarioQueue;
     public static int sendDate = 0;
 
@@ -150,7 +151,7 @@ public class StartVar {
 
             //configDatabase.daoConf().insertUser();
             Conf obj = new Conf(mConfID, "2", textID, date, time, 0, "0", 0, 0);
-            StartVar.appDBall.daoCfg().insetUser(obj);
+            StartVar.appDBall.daoCfg().insertUser(obj);
         }
 
 
@@ -178,11 +179,10 @@ public class StartVar {
         mPermiss = permiss;
     }
     public void setCurrentAcc(int idx){
-        mCurrAcc = idx;
+        accSelect = idx;
     }
     public void setCurrentTyp(int idx){
-        mCurrTyp = idx;
-    }
+        accCierre = idx;}
     public void setCurrency(int idx){
         mCurrency = idx;
     }

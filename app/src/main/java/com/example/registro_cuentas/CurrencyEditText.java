@@ -117,24 +117,35 @@ public class CurrencyEditText extends AppCompatEditText {
     @Override
     protected void onFocusChanged(boolean focused, int direction, Rect previouslyFocusedRect) {
         super.onFocusChanged(focused, direction, previouslyFocusedRect);
+        String currentText = getText().toString();
         if (focused) {
-            removeTextChangedListener(textWatcher);
-            addTextChangedListener(textWatcher);
-            if (getText().toString().isEmpty()) setText(currencySymbolPrefix);
+            if (currentText.isEmpty()) {
+                setText(currencySymbolPrefix);
+            }
+            // Auto-seleccionar todo el texto numérico (después del símbolo)
+            post(() -> {
+                int start = currencySymbolPrefix.length();
+                int end = getText().length();
+                if (start < end) { // Solo si hay texto para seleccionar
+                    setSelection(start, end);
+                } else {
+                    setSelection(start); // Cursor al final si no hay más texto
+                }
+            });
         } else {
-            removeTextChangedListener(textWatcher);
-            if (getText().toString().equals(currencySymbolPrefix)) setText("");
-
-            //Close keyboard
-            ((InputMethodManager) mContex.getSystemService(Context.INPUT_METHOD_SERVICE)).hideSoftInputFromWindow(this.getWindowToken(), 0);
+            if (currentText.equals(currencySymbolPrefix)) {
+                setText("");
+            }
+            // Ocultar teclado
+            InputMethodManager imm = (InputMethodManager) mContex.getSystemService(Context.INPUT_METHOD_SERVICE);
+            if (imm != null && getWindowToken() != null) {
+                imm.hideSoftInputFromWindow(getWindowToken(), 0);
+            }
         }
     }
 
     @Override
     public void onSelectionChanged(int selStart, int selEnd) {
-
-        Log.d("PhotoPicker", "noooooo hayyyyyyyyyy: " );
-
         if (currencySymbolPrefix == null){
             return;
         }

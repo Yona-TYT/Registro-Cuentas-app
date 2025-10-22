@@ -34,6 +34,7 @@ import com.example.registro_cuentas.activitys.ReloadActivity;
 import com.example.registro_cuentas.db.Cliente;
 import com.example.registro_cuentas.CurrencyEditText;
 import com.example.registro_cuentas.db.Cuenta;
+import com.example.registro_cuentas.db.DatabaseUtils;
 import com.example.registro_cuentas.db.dao.DaoAcc;
 import com.example.registro_cuentas.db.dao.DaoClt;
 import com.example.registro_cuentas.db.dao.DaoDeb;
@@ -105,8 +106,8 @@ public class AddPayFragment extends Fragment implements View.OnClickListener, Vi
     // Para guardar los permisos de app comprobados en main
     private boolean mPermiss = false;
     // Index de cuenta actual
-    private int currtAcc = StartVar.mCurrAcc;
-    private int currtTyp = StartVar.mCurrTyp;
+    private int currtAcc = StartVar.accSelect;
+    private int currtTyp = StartVar.accCierre;
 
     private String mCurr = mCurrencyList.get(StartVar.mCurrency);
 
@@ -185,10 +186,7 @@ public class AddPayFragment extends Fragment implements View.OnClickListener, Vi
 
         mPermiss = StartVar.mPermiss;
         if(daoPagos != null) {
-            mIndex = "" + daoPagos.getUsers().size();
-            if (mIndex.isEmpty()) {
-                mIndex = "0";
-            }
+            mIndex = DatabaseUtils.generateId("payID", daoPagos);
         }
         listCliente = daoCliente.getUsers();
 
@@ -198,30 +196,42 @@ public class AddPayFragment extends Fragment implements View.OnClickListener, Vi
         mCltList.add("Agregar");
         mAliList.add("");
         mIdList.add("");
-        int x = currtAcc;
-        int siz = 0;
-        for(int i = 0; i < listCliente.size(); i++){
-            List<Integer> bitList = BitsOper.getBits(listCliente.get(i).bits);
-            int mByte = bitList.get(0);
-            if(x == 32){
-                x = 0;
-                siz ++;
-                if(siz < bitList.size()){
-                    mByte = bitList.get(siz);
-                }
-                else{
-                    mByte = 0x0;
-                }
-            }
 
-            if(BitsOper.bitR(mByte, x) == 1) {
-                mCltList.add(listCliente.get(i).nombre);
-                mAliList.add(listCliente.get(i).alias);
-                mIdList.add(listCliente.get(i).cliente);
+        int pos = currtAcc;  // Posición global fija (mismo para todos clientes)
+        int group = pos / 32;
+        int offset = pos % 32;
+        for (int i = 0; i < listCliente.size(); i++) {
+            List<Integer> bitList = BitsOper.getBits(listCliente.get(i).bits);
+            if (bitList.isEmpty()) {
+                // Si no bits, asume unchecked (no agregar)
+                continue;
             }
-//            else {
-//                Basic.msg(String.format("%s - %x - %s - %d",listCliente.get(i).nombre, bitList.size(), Basic.bitR(mByte, x) == 1, currtAcc));
-//            }
+            // Padda con 0 si grupo no existe para este cliente
+            while (group >= bitList.size()) {
+                bitList.add(0);
+            }
+            int mByte = bitList.get(group);
+            // Extracción del bit
+            Cliente mClt = listCliente.get(i);
+            if (BitsOper.bitR(mByte, offset) == 1) {
+
+                Deuda mDeb = null;
+                String accId = daoCuenta.getUsers().get(StartVar.accSelect).cuenta;
+                for(Deuda mD : daoDeuda.getListByGroupId(mClt.cliente)){
+                    if(mD.accid.equals(accId)){
+                        mDeb = mD;
+                        break;
+                    }
+                }
+                if(mDeb != null && mDeb.estat == 1) {
+                    mCltList.add(mClt.nombre);
+                    mAliList.add(mClt.alias);
+                    mIdList.add(mClt.cliente);
+                }
+            }
+            // Debug opcional (usa Log.d en Android para evitar spam)
+            // Log.d("FilterClientes", String.format("%s - grupo:%d offset:%d - bit:%b - pos:%d",
+            //     listCliente.get(i).nombre, group, offset, BitsOper.bitR(mByte, offset) == 1, pos));
         }
         SelecAdapter adapt1 = new SelecAdapter(mContext, mCltList);
         mSpin1.setAdapter(adapt1);
@@ -244,14 +254,11 @@ public class AddPayFragment extends Fragment implements View.OnClickListener, Vi
                     }
 
                     Cliente mClt = daoCliente.getUsers(mIdList.get(i));
-                    Deuda mDeb = null;
-                    String accId = daoCuenta.getUsers().get(StartVar.mCurrAcc).cuenta;
-                    for(Deuda mD : daoDeuda.getListByGroupId(mClt.cliente)){
-                        if(mD.accid.equals(accId)){
-                            mDeb = mD;
-                            break;
-                        }
-                    }
+
+                    String accId = daoCuenta.getUsers().get(StartVar.accSelect).cuenta;
+
+                    Deuda mDeb = daoDeuda.getDeudaByCltAndAcc(mClt.cliente, accId);
+
                     if(mDeb != null) {
                         if (mDeb.estat == 1) {
                             String ultFec = mDeb.ulfech;
@@ -264,17 +271,11 @@ public class AddPayFragment extends Fragment implements View.OnClickListener, Vi
 
 
                             if (mult <= 0) {
-//                                mInput3.setEnabled(false);
-//                                mInput4.setEnabled(false);
-//                                mButt1.setEnabled(false);
                                 setEnabled(false);
                                 Basic.msg("Este cliente no Tine DEUDAS!");
                             }
                         }
                         else {
-//                            mInput3.setEnabled(false);
-//                            mInput4.setEnabled(false);
-//                            mButt1.setEnabled(false);
                             setEnabled(false);
                             Basic.msg("Este cliente esta INACTIVO!");
                         }
@@ -284,11 +285,6 @@ public class AddPayFragment extends Fragment implements View.OnClickListener, Vi
                     }
                 }
                 else{
-//                    mInput1.setEnabled(true);
-//                    mInput2.setEnabled(true);
-//                    mInput3.setEnabled(true);
-//                    mInput4.setEnabled(true);
-//                    mButt1.setEnabled(true);
                     setEnabled(true);
 
                     mInput1.setText("");
@@ -397,7 +393,7 @@ public class AddPayFragment extends Fragment implements View.OnClickListener, Vi
             String cltId = "0";
             boolean newClt = true;
             List<String> mList = new ArrayList<>();
-            mList.add("payID"+mIndex);
+            mList.add(mIndex);
 
             for(int i = 0; i < mInputList.size(); i++) {
                 String text = mInputList.get(i).getText().toString().toLowerCase();
@@ -449,20 +445,21 @@ public class AddPayFragment extends Fragment implements View.OnClickListener, Vi
                 mList.add(text);
             }
 
-            //Para Limpiar Todos Los inputs
-            for (int i = 0; i < mInputList.size(); i++) {
-                EditText mInput = mInputList.get(i);
-                if(mInput.isEnabled()) {
-                    mInput.setText("");
-                    mInput.setSelection(0);
-                    mInput.clearFocus();
-                }
-            }
-
             if (result) {
 
-                String debId = "debID"+listDeuda.size();
-                Cuenta mAcc = daoCuenta.getUsers().get(StartVar.mCurrAcc);
+                //Para Limpiar Todos Los inputs
+                for (int i = 0; i < mInputList.size(); i++) {
+                    EditText mInput = mInputList.get(i);
+                    if(mInput.isEnabled()) {
+                        mInput.setText("");
+                        mInput.setSelection(0);
+                        mInput.clearFocus();
+                    }
+                }
+
+                String debId = DatabaseUtils.generateId("debID", daoDeuda);
+
+                Cuenta mAcc = daoCuenta.getUsers().get(StartVar.accSelect);
                 String accId = mAcc.cuenta;
 
                 //Inicia la fecha actual
@@ -491,7 +488,7 @@ public class AddPayFragment extends Fragment implements View.OnClickListener, Vi
                     else {
                         //Log.d("PhotoPicker", "Aqi hayyyyyyyyyyyyy5555----------------------------------: ");
                         bitmap = MediaStore.Images.Media.getBitmap(mContext.getContentResolver(), currUri);
-                        sImage = mFileM.SavePhoto(bitmap, (mList.get(0)+StartVar.mCurrAcc), oldFile, mContext, mContext.getContentResolver());
+                        sImage = mFileM.SavePhoto(bitmap, (mList.get(0)+StartVar.accSelect), oldFile, mContext, mContext.getContentResolver());
                     }
                 }
                 catch (IOException e) {
@@ -502,39 +499,35 @@ public class AddPayFragment extends Fragment implements View.OnClickListener, Vi
                 //-------------------------------------------------------------------
 
                if(newClt){
-                   cltId = "cltID"+listCliente.size();
+                   cltId = DatabaseUtils.generateId("cltID", daoCliente);
                    Cliente objClt = null;
                    objClt = new Cliente(
                            cltId, mList.get(1), mList.get(2),"@null",
                            0, currdate, 0f, currdate, 0,
-                           BitsOper.saveNewBit(StartVar.mCurrAcc)
+                           BitsOper.saveNewBit(StartVar.accSelect)
                    );
-                   daoCliente.insetUser(objClt);
+                   daoCliente.insertUser(objClt);
 
                    Deuda objDeb = new Deuda(
                            debId, accId, cltId, 0f, 0, currdate,
-                           0, 0, CalcCalendar.getCorrectDate(currdate, currtTyp), 0,0f
+                           0, 0, CalcCalendar.getCorrectDate(currdate, currtTyp), 0,0f,"@null"
                            );
-                   daoDeuda.insetUser(objDeb);
+                   daoDeuda.insertUser(objDeb);
                }
                else {
                    //Actualiza la fecha del ultimo pago
                    daoCliente.updateUltfech(cltId, currdate);
 
-                   Deuda mDeb = null;
                    Cliente mClt = daoCliente.getUsers(cltId);
-                   for(Deuda mD : daoDeuda.getListByGroupId(mClt.cliente)){
-                       if(mD.accid.equals(accId)){
-                           mDeb = mD;
-                           break;
-                       }
-                   }
+
+                   Deuda mDeb = daoDeuda.getDeudaByCltAndAcc(cltId, accId);
+
                    if(mDeb == null){
                        Deuda objDeb = new Deuda(
                                debId, accId, cltId, 0f, 0, currdate,
-                               0, 0, CalcCalendar.getCorrectDate(currdate, currtTyp), 0,0f
+                               0, 0, CalcCalendar.getCorrectDate(currdate, currtTyp), 0,0f, "@null"
                        );
-                       daoDeuda.insetUser(objDeb);
+                       daoDeuda.insertUser(objDeb);
                    }
                    else if (mAcc.acctipo > 0){
                        int pagado = 1;
@@ -578,88 +571,12 @@ public class AddPayFragment extends Fragment implements View.OnClickListener, Vi
                              return;
                        }
                    }
-//
-//                   Cliente mClt = daoCliente.getUsers(cltId);
-//                   if(mClt != null) {
-//                       daoDeuda.getListByGroupId(mClt.cliente);
-//                   }
-//                   Deuda mDeb = daoDeuda.getUsers(cltId);
-//                   if (mDeb != null) {
-//                       int pagado = 1;
-//                       String debe = mDeb.debe;
-//                       String ultFec = mDeb.ulfech;
-//                       if (ultFec.isEmpty()){
-//                           ultFec = StartVar.appDBall.daoClt().getUsers(cltId).fecha;
-//                       }
-//                       if (mDeb.estat == 1) {
-//                           int mult = CalcCalendar.getRangeMultiple(ultFec, currtTyp);
-//                           float alldeb = Basic.getDebt(mult, mDeb.total, mDeb.debe);
-//                           if (alldeb > 0) {
-//                               float debt = Basic.parseFloat(debe);
-//                               float currMnt = Basic.parseFloat(monto);
-//                               float total = Basic.parseFloat(mDeb.total);
-//
-//                               currMnt += debt;
-//
-//                               int i = 1;
-//                               //Basic.msg(total+" : "+currMnt);
-//                               for (; i <= mult; i++) {
-//                                   if (currMnt < total) {
-//                                       debe = Float.toString(currMnt);
-//                                       i--;
-//                                       break;
-//                                   } else {
-//                                       currMnt -= total;
-//                                       debt -= total;
-//                                   }
-//                                   //La deuda no fue pagada
-//                                   if (currMnt == 0) {
-//                                       debe = Float.toString(0);
-//                                       break;
-//                                   }
-//                               }
-//                               //Deuda fue saldada
-//                               if (i == mult) {
-//                                   debe = "0";
-//                                   pagado = 2;
-//                                   ultFec = currdate;
-//                               } else if (i < 0) {
-//                                   Basic.msg("El MONTO es mayor a la deuda!");
-//                                   debe = Float.toString(currMnt);
-//                                   pagado = 2;
-//                                   ultFec = currdate;
-//                                   return;
-//                               } else {
-//                                   ultFec = CalcCalendar.getDatePlus(mDeb.ulfech, i, currtTyp);
-//                                   if (CalcCalendar.getRangeMultiple(ultFec, currtTyp) < 0) {
-//                                       Basic.msg("El MONTO es mayor a la deuda!");
-//                                       mInput4.setText(Basic.getValueFormatter(Float.toString(debt)));
-//                                       return;
-//                                   }
-//                               }
-//                           } else {
-//                               Basic.msg("Cliente sin deudas!");
-//                               pagado = 2;
-//                               StartVar.appDBall.daoDeb().updateDebt(cltId, pagado, ultFec, debe);
-//                               return;
-//                           }
-//                           //   Basic.msg(ulFech+" : "+  CalcCalendar.getRangeMultiple(ulFech, 0)+" : "+i );
-//                       }
-//                       StartVar.appDBall.daoDeb().updateDebt(cltId, pagado, ultFec, debe);
-//                   }
-//                   else {
-//                       Deuda objDeb = new Deuda(
-//                               debId, accId, cltId, "0", 0, currdate,
-//                               0, 0, CalcCalendar.getDateMinus(currdate,1, currtTyp), 0,"0"
-//                       );
-//                       StartVar.appDBall.daoDeb().insetUser(objDeb);
-//                   }
                }
                 Pagos obj = new Pagos(
                         mList.get(0), mList.get(1), mList.get(3), rent, currSel2, (swPorc?1:0),
-                        sImage, currdate, currtime, (newClt?"cltID"+listCliente.size():cltId), accId, 0, "0"
+                        sImage, currdate, currtime, cltId, accId, 0, "0"
                 );
-                StartVar.appDBall.daoPay().insetUser(obj);
+                StartVar.appDBall.daoPay().insertUser(obj);
 
                //Actualisza la lista de fechas
                CalcCalendar.addCurrentMonthIfAbsent(mContext);

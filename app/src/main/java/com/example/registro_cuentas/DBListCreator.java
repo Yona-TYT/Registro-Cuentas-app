@@ -1,8 +1,6 @@
 package com.example.registro_cuentas;
 
 
-import static com.example.registro_cuentas.StartVar.appDBall;
-
 import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
@@ -221,7 +219,7 @@ public class DBListCreator extends AppCompatActivity {
 
             //------------------------------------------------------
             // Se crea la lista para esportar a csv  ---------------
-            String[] txList = new String[11];
+            String[] txList = new String[12];
 
             txList[0] = myDeb.deuda;
             txList[1] = myDeb.accid;
@@ -234,6 +232,7 @@ public class DBListCreator extends AppCompatActivity {
             txList[8] = myDeb.ulfech;
             txList[9] = myDeb.oper.toString();
             txList[10] = myDeb.paid.toString();
+            txList[11] = myDeb.disabfec;
 
             mList.add(txList);
 
@@ -374,7 +373,6 @@ public class DBListCreator extends AppCompatActivity {
             //------------------------------------------
         }
 
-
         StartVar.setCsvList(mList);
 
         HashMap<String, HashMap<String, ArrayList<Object>>> allMaps = new HashMap<>();
@@ -387,15 +385,15 @@ public class DBListCreator extends AppCompatActivity {
         return allMaps;
     }
 
-    public static void cvsToDB(Activity myThis, Uri uri, int importType, String mMsg) {
-        cvsToDBInternal(myThis, uri, importType, mMsg, true);
+    public static void cvsToDB(Activity mActivity, Uri uri, int importType, String mMsg) {
+        cvsToDBInternal(mActivity, uri, importType, mMsg, true);
     }
 
-    public static void cvsToDbNotFinish(Activity myThis, Uri uri, int importType, String mMsg) {
-        cvsToDBInternal(myThis, uri, importType, mMsg,false);
+    public static void cvsToDbNotFinish(Activity mActivity, Uri uri, int importType, String mMsg) {
+        cvsToDBInternal(mActivity, uri, importType, mMsg,false);
     }
 
-    public static void cvsToDBInternal(Activity myThis, Uri uri, int importType, String mMsg, boolean finish){
+    public static void cvsToDBInternal(Activity mActivity, Uri uri, int importType, String mMsg, boolean finish){
         StringBuilder stringBuilder = new StringBuilder();
         try {
 
@@ -478,35 +476,35 @@ public class DBListCreator extends AppCompatActivity {
                             spl[0], spl[1], spl[2], spl[3], Integer.parseInt(spl[4]), Integer.parseInt(spl[5]),
                             Integer.parseInt(spl[6]), Integer.parseInt(spl[7]), spl[8], spl[9]
                     );
-                    daoCuenta.insetUser(obj);
+                    daoCuenta.insertUser(obj);
                 }
                 else if(opt==2) {
                     Cliente obj = new Cliente(
                             spl[0], spl[1], spl[2], spl[3], Integer.parseInt(spl[4]), spl[5], Float.parseFloat(spl[6]),
                             spl[7], Integer.parseInt(spl[8]), spl[9]
                     );
-                    daoCliente.insetUser(obj);
+                    daoCliente.insertUser(obj);
                 }
                 else if(opt==3){
                     Deuda obj = new Deuda(
                             spl[0], spl[1], spl[2], Float.parseFloat(spl[3]), Integer.parseInt(spl[4]), spl[5],
-                            Integer.parseInt(spl[6]), Integer.parseInt(spl[7]), spl[8], Integer.parseInt(spl[9]), Float.parseFloat(spl[10])
+                            Integer.parseInt(spl[6]), Integer.parseInt(spl[7]), spl[8], Integer.parseInt(spl[9]), Float.parseFloat(spl[10]), "@null"
                     );
-                    daoDeuda.insetUser(obj);
+                    daoDeuda.insertUser(obj);
                 }
 
                 else if(opt==4){
                     Fecha obj = new Fecha(
                             spl[0], spl[1], spl[2], spl[3], spl[4], spl[5]
                     );
-                    daoFecha.insetUser(obj);
+                    daoFecha.insertUser(obj);
                 }
                 else {
                     Pagos obj = new Pagos(
                             spl[0], spl[1], spl[2], Float.parseFloat(spl[3]), Integer.parseInt(spl[4]), Integer.parseInt(spl[5]),
                             spl[6], spl[7], spl[8], spl[9], spl[10], Integer.parseInt(spl[11]), spl[12]
                     );
-                    daoPagos.insetUser(obj);
+                    daoPagos.insertUser(obj);
                 }
 
                 stringBuilder.append(line);
@@ -522,11 +520,13 @@ public class DBListCreator extends AppCompatActivity {
             throw new RuntimeException(e);
         }
 
+
+
         if(finish) {
-            Intent mIntent = new Intent(StartVar.mContex, myThis.getClass());
-            myThis.startActivity(mIntent);
+            Intent mIntent = new Intent(StartVar.mContex, mActivity.getClass());
+            mActivity.startActivity(mIntent);
             Basic.msg(mMsg);
-            myThis.finish();
+            mActivity.finish();
         }
     }
 

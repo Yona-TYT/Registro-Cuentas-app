@@ -160,5 +160,4 @@ public class CurrencyInputWatcher implements TextWatcher {
         int noOfCharactersAfterDecimalPoint = number.length() - number.indexOf(this.decimalFormatSymbols.getDecimalSeparator()) - 1;
         return "0".repeat(Math.min(noOfCharactersAfterDecimalPoint, this.maxNumberOfDecimalPlaces));
     }
-
 }

@@ -64,7 +64,7 @@ public class CltEditActivity extends AppCompatActivity implements View.OnClickLi
     private Button mBtton1;
 
     public int cltIndex = StartVar.cltIndex;
-    public int accIndex = StartVar.mCurrAcc;
+    public int accIndex = StartVar.accSelect;
 
     @SuppressLint("SetTextI18n")
     @Override
@@ -160,43 +160,39 @@ public class CltEditActivity extends AppCompatActivity implements View.OnClickLi
         return super.onOptionsItemSelected(item);
     }
 
-    void setCheckBoxes(){
+    void setCheckBoxes() {
         List<Cuenta> mAcc = StartVar.appDBall.daoAcc().getUsers();
         List<Object[]> maccList = new ArrayList<>();
-        List<Integer> bitList = BitsOper.getBits(mClt.bits);//0x0;//Basic.toHex(testBit[0]);
-        //Basic.msg(String.format("- %s ", mClt.bits));
 
-        //daoClt.updateBits(mClt.cliente, "0x0");
+        List<Integer> bitList = BitsOper.getBits(mClt.bits);
+        if (bitList.isEmpty()) {
+            bitList.add(0);  // Caso base: al menos un grupo de 0
+        }
 
-        int x = 0;
-        int siz = 0;
-        int mByte = bitList.get(0);
+        for (int i = 0; i < mAcc.size(); i++) {
+            // Cálculo correcto: grupo y offset para bit i
+            int group = i / 32;
+            int offset = i % 32;
 
-        //Basic.msg(String.format("currB %x mByte %x", 0, mByte));
-
-
-        for (int i = 0; i < mAcc.size(); i++){
-
-            if(x == 32){
-                x = 0;
-                siz ++;
-                if(siz < bitList.size()){
-                    mByte = bitList.get(siz);
-                }
-                else{
-                    mByte = 0x0;
-                }
+            // Padda con 0 si grupo no existe
+            while (group >= bitList.size()) {
+                bitList.add(0);
             }
-            //Basic.msg(String.format("%x - %s ",bitList.size(), Basic.bitR(mByte, x) == 1 ));
-            Object[] stList= new Object[3];
-            stList[0] = i;
-            stList[1] = BitsOper.bitR(mByte, x) == 1;
-            List<Integer> list = BitsOper.getBits(i);
 
-            stList[2] = mAcc.get(i).nombre+" ("+mAcc.get(i).desc+")";
+            int mByte = bitList.get(group);
+
+            // Extracción del bit (usa tu bitR)
+            boolean isChecked = BitsOper.bitR(mByte, offset) == 1;
+
+            Object[] stList = new Object[3];
+            stList[0] = i;
+            stList[1] = isChecked;
+            // Removido: List<Integer> list = BitsOper.getBits(i);  // No usado, eliminar
+            stList[2] = mAcc.get(i).nombre + " (" + mAcc.get(i).desc + ")";
             maccList.add(stList);
 
-            x++;
+            // Debug opcional
+            // Log.d("setCheckBoxes", String.format("Cuenta %d: grupo=%d, offset=%d, bit=%b", i, group, offset, isChecked));
         }
 
         BoxAdapter adapt2 = new BoxAdapter(mContext, maccList, mSpin1);

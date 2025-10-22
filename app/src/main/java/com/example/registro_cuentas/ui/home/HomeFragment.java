@@ -30,6 +30,7 @@ import com.example.registro_cuentas.db.Cliente;
 import com.example.registro_cuentas.adapters.CltAdapter;
 import com.example.registro_cuentas.db.Cuenta;
 import com.example.registro_cuentas.CurrencyEditText;
+import com.example.registro_cuentas.db.DatabaseUtils;
 import com.example.registro_cuentas.db.dao.DaoAcc;
 import com.example.registro_cuentas.db.dao.DaoClt;
 import com.example.registro_cuentas.db.dao.DaoDeb;
@@ -87,7 +88,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener, Adap
     private Spinner mSpin4;
 
     private int currSel1 = StartVar.mCurrency;
-    private int currSel2 = StartVar.mCurrAcc;
+    private int currSel2 = StartVar.accSelect;
     private int currSel3 = StartVar.mCurrMes;
     private int currSel4 = StartVar.currSel4;
 
@@ -294,6 +295,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener, Adap
         String curY = "";
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
 
+            //Esto realiza una inversion en la lista de fechas
             dateOrderedList.sort(Comparator.comparing((Fecha fecha) -> LocalDate.parse(fecha.getDate())).reversed());
 
             LocalDate currdate = LocalDate.now();
@@ -487,21 +489,10 @@ public class HomeFragment extends Fragment implements View.OnClickListener, Adap
         List<Cliente> listClt = daoCliente.getUsers();
         List<Object[]> cltList = new ArrayList<>();
 
-//        for (Deuda mD : daoDeuda.getUsers()) {
-//            Basic.msg("" + mD.cltid);
-//        }
-
         //Basic.msg(""+listDeb.size());
         for (int i = 0; i < listClt.size(); i++) {
-            Cliente clt = listClt.get(i);
-            Deuda mDeb = null;
-
-            for (Deuda mD : daoDeuda.getListByGroupId(clt.cliente)){
-                if(mD.accid.equals(mAcc.cuenta)){
-                    mDeb = mD;
-                    break;
-                }
-            }
+            Cliente mClt = listClt.get(i);
+            Deuda mDeb = daoDeuda.getDeudaByCltAndAcc(mClt.cliente, mAcc.cuenta);
 
             if(mDeb==null){
                 continue;
@@ -511,12 +502,12 @@ public class HomeFragment extends Fragment implements View.OnClickListener, Adap
 
             String ultFec = mDeb.ulfech;
             if (ultFec.isEmpty()){
-                ultFec = clt.fecha;
+                ultFec = mClt.fecha;
             }
             Float debe = mDeb.paid;
             Float rent = mDeb.rent;
             int isDeb = mDeb.pagado;
-            int mTyp =  StartVar.mCurrTyp;
+            int mTyp =  StartVar.accCierre;
             int mult = CalcCalendar.getRangeMultiple(ultFec, mTyp);
             String monto = Float.toString(Basic.getDebt(mult, rent, debe));
 
@@ -531,7 +522,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener, Adap
                     txA = " [Sin Registros] "+ ultFec;
                     txB = "[NA]";
                 } else if (isDeb == 1 || mult > 0) {
-                    txA = " [" + (mDeb.oper == 0 ? "+" : "-") + Basic.setFormatter(monto) + " " + mCurr + "] ";
+                    txA = " [" + (mDeb.oper == 0 ? "+" : "-") + Basic.setFormatter(Basic.getConverteValue(monto)) + " " + mCurr + "] ";
                     txB = " [PENDIENTE]";
                 } else {
                     txA = " [Pagado] ";
@@ -548,7 +539,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener, Adap
                     txB = " Ult: " + ultFec;
                 }
             }
-            stList[1] = clt.nombre;
+            stList[1] = mClt.nombre;
             stList[2] = txA;
             stList[3] = txB;
 

@@ -172,7 +172,6 @@ public class CurrencyInput implements View.OnClickListener, View.OnFocusChangeLi
 
                           // Basic.msg("gr" + gr+" "+text);
 
-
                        }
 
 

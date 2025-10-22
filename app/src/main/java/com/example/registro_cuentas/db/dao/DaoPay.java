@@ -10,7 +10,7 @@ import com.example.registro_cuentas.db.Pagos;
 import java.util.List;
 
 @Dao
-public interface DaoPay {
+public interface DaoPay extends GenericDao<Pagos>{
     @Query("SELECT * FROM Pagos")
     List<Pagos> getUsers();
 
@@ -26,7 +26,7 @@ public interface DaoPay {
     Pagos getUsers(String user);
 
     @Insert
-    void insetUser(Pagos...registros);
+    void insertUser(Pagos...registros);
 
     @Query("UPDATE Pagos SET nombre= :nombre, concep= :concep, monto= :monto, oper= :oper, porc= :porc, imagen= :imagen, fecha= :fecha, time= :time, cltid= :cltid, accid= :accid, more4= :more4, more5= :more5 WHERE pago= :user")
     void updateUser(String user, String nombre, String concep, Float monto, Integer oper, Integer porc, String imagen, String fecha, String time , String cltid, String accid, Integer more4, String more5 );

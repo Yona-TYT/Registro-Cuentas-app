@@ -16,10 +16,8 @@ import androidx.activity.OnBackPressedDispatcher;
 import androidx.annotation.NonNull;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.ViewModelProvider;
 
 import com.example.registro_cuentas.activitys.ReloadActivity;
-import com.example.registro_cuentas.db.AllDao;
 import com.example.registro_cuentas.BaseContext;
 import com.example.registro_cuentas.Basic;
 import com.example.registro_cuentas.db.Cuenta;
@@ -29,6 +27,8 @@ import com.example.registro_cuentas.R;
 import com.example.registro_cuentas.adapters.SelecAdapter;
 import com.example.registro_cuentas.StartVar;
 import com.example.registro_cuentas.databinding.FragmentAddaccBinding;
+import com.example.registro_cuentas.db.DatabaseUtils;
+import com.example.registro_cuentas.db.dao.DaoAcc;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import java.time.LocalDate;
@@ -43,7 +43,7 @@ public class AddAccFragment extends Fragment implements View.OnClickListener, Vi
     private Context mContext = BaseContext.getContext();
 
     // DB
-    private AllDao appDBcuenta = StartVar.appDBall;
+    private DaoAcc daoCuenta = StartVar.appDBall.daoAcc();
 
     //Todos los Inputs
     private EditText mInput1;
@@ -136,11 +136,8 @@ public class AddAccFragment extends Fragment implements View.OnClickListener, Vi
         //--------------------------------------------------------------------------------------------
 
         mPermiss = StartVar.mPermiss;
-        mIndex = "" + StartVar.appDBall.daoAcc().getUsers().size();
-        if (mIndex.isEmpty()) {
-            mIndex = "0";
-        }
-        
+        mIndex = DatabaseUtils.generateId("accID", daoCuenta);
+
         return root;
     }
 
@@ -157,7 +154,7 @@ public class AddAccFragment extends Fragment implements View.OnClickListener, Vi
             boolean result = true;
             int msgIdx = 0;
             List<String> mList = new ArrayList<>();
-            mList.add("accID"+mIndex);
+            mList.add(mIndex);
             for(int i = 0; i < mInputList.size(); i++) {
                 String text = mInputList.get(i).getText().toString();
                 text = Basic.inputProcessor(text); //Elimina caracteres que afectan a los csv
@@ -197,7 +194,7 @@ public class AddAccFragment extends Fragment implements View.OnClickListener, Vi
                 }
 
                 Cuenta obj = new Cuenta(mList.get(0), mList.get(1), mList.get(2), monto, currSel1, 0, 0,0,"0", currdate);
-                StartVar.appDBall.daoAcc().insetUser(obj);
+                daoCuenta.insertUser(obj);
                 //SE Limpia la lista
                 mList.clear();
 

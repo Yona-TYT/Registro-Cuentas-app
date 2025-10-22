@@ -50,6 +50,7 @@ public class CltDetailsActivity extends AppCompatActivity implements View.OnClic
     private TextView mText4;
     private TextView mText5;
     private TextView mText6;
+    private TextView mText7;
     private List<TextView> mTextList = new ArrayList<>();
     //---------------------------------------------------------------------
 
@@ -61,7 +62,7 @@ public class CltDetailsActivity extends AppCompatActivity implements View.OnClic
     private Button mBtton2;
 
     public int cltIndex = StartVar.cltIndex;
-    public int accIndex = StartVar.mCurrAcc;
+    public int accIndex = StartVar.accSelect;
 
     private List<String> mCurrencyList= Arrays.asList("$", "Bs");
     private int mCindex = StartVar.mCurrency;
@@ -105,6 +106,7 @@ public class CltDetailsActivity extends AppCompatActivity implements View.OnClic
         mText4 = findViewById(R.id.txview_cdts4);
         mText5 = findViewById(R.id.txview_cdts5);
         mText6 = findViewById(R.id.txview_cdts6);
+        mText7 = findViewById(R.id.txview_cdts7);
 
         mBtton1 = findViewById(R.id.butt_cdts1);
         mBtton2  = findViewById(R.id.butt_cdts2);
@@ -118,6 +120,7 @@ public class CltDetailsActivity extends AppCompatActivity implements View.OnClic
         mTextList.add(mText4);
         mTextList.add(mText5);
         mTextList.add(mText6);
+        mTextList.add(mText7);
 
         // Se llenan los textView
         setTextViewList();
@@ -174,12 +177,15 @@ public class CltDetailsActivity extends AppCompatActivity implements View.OnClic
 
 
         String txOpt = (mClt.oper==0?"+ ":"- ");
+        String txCreate = mClt.fecha;
         String txFech = mClt.ulfech;
 
         int i = 0;
         mTextList.get(i).setText("Cuenta Actual: "+mAccName);
         i++;
         mTextList.get(i).setText("Cliente: " + txName + (txAlias.replaceAll("[^a-zA-Z0-9]", "").isEmpty()? "" : " ("+txAlias+")"));
+        i++;
+        mTextList.get(i).setText("Fecha de Creado: " +txCreate);
         i++;
         mTextList.get(i).setText("Ultimo Pago: " +txFech);
         i++;

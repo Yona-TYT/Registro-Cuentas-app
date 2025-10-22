@@ -256,7 +256,7 @@ public class PayEditActivity extends AppCompatActivity implements View.OnClickLi
                 else {
                     //Log.d("PhotoPicker", "Aqi hayyyyyyyyyyyyy5555----------------------------------: ");
                     bitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), currUri);
-                    sImage = mFileM.SavePhoto(bitmap, mpay.pago +StartVar.mCurrAcc, oldFile, mContext, this.getContentResolver());
+                    sImage = mFileM.SavePhoto(bitmap, mpay.pago +StartVar.accSelect, oldFile, mContext, this.getContentResolver());
                 }
             }
             catch (IOException e) {

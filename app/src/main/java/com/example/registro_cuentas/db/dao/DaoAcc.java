@@ -10,15 +10,11 @@ import com.example.registro_cuentas.db.Cuenta;
 import java.util.List;
 
 @Dao
-public interface DaoAcc {
+public interface DaoAcc extends GenericDao<Cuenta>{
 
     // Nuevo: @Insert simple con parámetro directo (para inferencia)
     @Insert
     void insert(Cuenta cuenta);  // Room infiere Deuda del parámetro
-
-    // Nuevo: @Query simple para List (si no lo tienes ya)
-    @Query("SELECT * FROM cuenta")
-    List<Cuenta> getAllCuentas();  // Renombra si quieres evitar conflicto con getUsers
 
     //-------------------------------------------------------------------------------------
 
@@ -32,7 +28,7 @@ public interface DaoAcc {
     //----------------------------------------------------------------------------------------------
 
     @Insert
-    void insetUser(Cuenta...cuentas);
+    void insertUser(Cuenta...cuentas);
 
     @Query("UPDATE cuenta SET nombre= :nombre, desc= :desc, monto= :monto, acctipo= :acctipo, fecselc = :fecselc, moneda= :moneda, dolar= :dolar WHERE cuenta= :user")
     void updateUser(String user, String nombre, String desc, String monto, Integer acctipo, Integer fecselc, Integer moneda, String dolar );

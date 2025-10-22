@@ -54,6 +54,33 @@ public class BitsOper {
         return list;
     }
 
+    public static boolean isActiveBit(String hexString, int globalPos){
+
+        List<Integer> bitList = BitsOper.getBits(hexString);
+
+        if (bitList.isEmpty()) {
+            bitList.add(0);  // Caso base: al menos un grupo de 0
+        }
+
+        if (globalPos < 0) {
+            return false;
+        }
+
+        // Cálculo correcto: grupo y offset
+        int group = globalPos / 32;
+        int offset = globalPos % 32;
+
+        // Padda con 0 si el grupo no existe
+        while (group >= bitList.size()) {
+            bitList.add(0);
+        }
+
+        int mByte = bitList.get(group);
+
+        // Extracción del bit
+        return BitsOper.bitR(mByte, offset) == 1;
+    }
+
     public static String saveBits(List<Integer> list, int accNr, boolean b) {
         String text = "";
         for (Integer val: list){
@@ -67,31 +94,6 @@ public class BitsOper {
     }
 
 
-    public static String saveBits(List<Integer> list) {
-        String text = "";
-        for (Integer val: list){
-            text = String.format("%x",val);
-            if(!text.startsWith("0x")){
-                text = "0x"+text;
-            }
-            //msg(text);
-        }
-        return text;
-    }
-
-    public static String getStringBit(List<Integer> list) {
-        String text = "";
-        int bits = 0;
-        for (Integer val: list){
-            bits |= val;
-            //msg(text);
-        }
-        text = String.format("%x",bits);
-        if(!text.startsWith("0x")){
-            text = "0x"+text;
-        }
-        return text;
-    }
 
 //    public static String saveNewBit(int r){
 //        String bit = "0x1";

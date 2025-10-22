@@ -97,7 +97,7 @@ public class CalcCalendar {
             Fecha obj = new Fecha("dateID" + listFecha.size(), "" + currdate.getYear(),
                     currdate.getMonth().toString(), "" + currdate.getDayOfMonth(),
                     CalcCalendar.getTime(currtime.toString()), currdate.toString());
-            daoFecha.insetUser(obj);
+            daoFecha.insertUser(obj);
             // Recarga la lista de la DB ----------------------------
             StartVar var = new StartVar(mContext);
             var.getFecListDB();

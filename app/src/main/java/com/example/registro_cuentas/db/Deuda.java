@@ -19,8 +19,9 @@ public class Deuda {
     public String ulfech;
     public Integer oper;
     public Float paid;
+    public String disabfec;
 
-    public Deuda(@NonNull String deuda, String accid, String cltid, Float rent, Integer porc, String fecha, Integer estat, Integer pagado, String ulfech, Integer oper, Float paid)
+    public Deuda(@NonNull String deuda, String accid, String cltid, Float rent, Integer porc, String fecha, Integer estat, Integer pagado, String ulfech, Integer oper, Float paid, String disabfec)
     {
         this.deuda = deuda;
         this.accid = accid;
@@ -33,5 +34,6 @@ public class Deuda {
         this.ulfech = ulfech;
         this.oper = oper;
         this.paid = paid;
+        this.disabfec = disabfec;
     }
 }
