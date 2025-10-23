@@ -20,19 +20,19 @@ public interface DaoCfg extends GenericDao<Conf>{
     @Insert
     void insertUser(Conf...config);
 
-    @Query("UPDATE Conf SET version = :version, hexid= :hexid, date= :date, time= :time, curr= :save1, dolar= :save2, moneda= :save3, mes= :save4 WHERE config= :user")
-    void updateUser(String user, String version, String hexid, String date, String time, Integer save1, String save2, Integer save3, Integer save4);
+    @Query("UPDATE Conf SET version = :version, hexid= :hexid, date= :date, time= :time, curr= :save1, dolar= :dolar, moneda= :save3, mes= :save4 WHERE config= :user")
+    void updateUser(String user, String version, String hexid, String date, String time, Integer save1, Double dolar, Integer save3, Integer save4);
 
     @Query("UPDATE Conf SET date= :date, time= :time WHERE config= :user")
     void updateDateTime(String user, String date, String time);
 
-    @Query("UPDATE Conf SET curr= :save1, dolar= :save2, moneda= :save3, mes= :save4 WHERE config= :user")
-    void updateSaves(String user, Integer save1, String save2, Integer save3, Integer save4);
+    @Query("UPDATE Conf SET curr= :save1, dolar= :dolar, moneda= :save3, mes= :save4 WHERE config= :user")
+    void updateSaves(String user, Integer save1, Double dolar, Integer save3, Integer save4);
 
     @Query("UPDATE Conf SET curr= :save1 WHERE config= :user")
     void updateCurrAcc(String user, Integer save1);
-    @Query("UPDATE Conf SET curr= dolar= :save2 WHERE config= :user")
-    void updateDolar(String user, String save2);
+    @Query("UPDATE Conf SET curr= dolar= :dolar WHERE config= :user")
+    void updateDolar(String user, Double dolar);
     @Query("UPDATE Conf SET moneda= :save3 WHERE config= :user")
     void updateMoneda(String user, Integer save3);
     @Query("UPDATE Conf SET mes= :save4 WHERE config= :user")

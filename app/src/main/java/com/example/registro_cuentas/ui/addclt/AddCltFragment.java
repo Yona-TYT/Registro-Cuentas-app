@@ -24,7 +24,6 @@ import android.widget.Spinner;
 import android.widget.Switch;
 import android.widget.TextView;
 
-import com.airbnb.lottie.L;
 import com.example.registro_cuentas.BaseContext;
 import com.example.registro_cuentas.Basic;
 import com.example.registro_cuentas.BitsOper;
@@ -246,10 +245,10 @@ public class AddCltFragment extends Fragment  implements View.OnClickListener, A
                     setChekboxStatus(mClt);
 
                     String accId = mAcc.cuenta;
-                    mDeb = daoDeuda.getDeudaByCltAndAcc(mClt.cliente, accId);
+                    mDeb = daoDeuda.getUserByCltAndAcc(mClt.cliente, accId);
 
                     //mDeb = listDeuda.size() > currtAcc? StartVar.appDBall.daoDeb().getUsers(mIdList.get(i)) : null;
-                    Float total = 0f;
+                    Double total = 0d;
                     //Log.d("PhotoPicker", "-->>>>>>>>>>>>>>>>>>>>>>>>>>>> year: "+mDeb );
                     if (mDeb != null) {
 
@@ -257,7 +256,7 @@ public class AddCltFragment extends Fragment  implements View.OnClickListener, A
                         total = mDeb.rent;
                         if (currtTyp > 0) {
                             int mult = CalcCalendar.getRangeMultiple(mDeb.ulfech, currtTyp);
-                            float monto = Basic.getDebt(mult, mDeb.rent, mDeb.paid);
+                            Double monto = Basic.getDebt(mult, mDeb.rent, mDeb.paid);
 
                             int isDeb = mDeb.pagado;
                             String tx = "";
@@ -376,7 +375,7 @@ public class AddCltFragment extends Fragment  implements View.OnClickListener, A
             String alias = mInput2.getText().toString().toLowerCase();
             alias = Basic.inputProcessor(alias); //Elimina caracteres que afectan a los csv
 
-            Float rent = (float) mInput3.getNumericValue();
+            Double rent = mInput3.getNumericValue();
 
             if (rent < 0.0) {
                 //MSG Para entrada de monto
@@ -407,7 +406,7 @@ public class AddCltFragment extends Fragment  implements View.OnClickListener, A
                 //Datos de deudas y monto fijo
                 Deuda objDeb = new Deuda(
                         debId, accId, cltId, rent, 0, currdate, (swEstat?1:0), 0,
-                        CalcCalendar.getCorrectDate(currdate, currtTyp), 0,0f, (swEstat?"@null":currdate)
+                        CalcCalendar.getCorrectDate(currdate, currtTyp), 0,0d, (swEstat?"@null":currdate)
                 );
                 daoDeuda.insertUser(objDeb);
             }
@@ -423,7 +422,7 @@ public class AddCltFragment extends Fragment  implements View.OnClickListener, A
                     //Datos de deudas y monto fijo
                     Deuda objDeb = new Deuda(
                             debId, accId, cltId, rent, 0, currdate, (swEstat?1:0), 0,
-                            CalcCalendar.getCorrectDate(currdate, currtTyp), currSel3,0f, (swEstat?"@null":currdate)
+                            CalcCalendar.getCorrectDate(currdate, currtTyp), currSel3,0d, (swEstat?"@null":currdate)
                     );
                     daoDeuda.insertUser(objDeb);
                 }
@@ -469,11 +468,13 @@ public class AddCltFragment extends Fragment  implements View.OnClickListener, A
         }
 
         if(itemId == R.id.buttNext){
-            setAdapterClt(nextItem(listCliente, currSel2));
+            // 2 = next
+            setAdapterClt(2);
         }
 
         if(itemId == R.id.buttPrev){
-            setAdapterClt(prevItem(listCliente, currSel2));
+            // 1 = prev
+            setAdapterClt(1);
         }
     }
 
@@ -503,7 +504,7 @@ public class AddCltFragment extends Fragment  implements View.OnClickListener, A
 
     }
 
-    private void setAdapterClt(int idx){
+    private void setAdapterClt(int dir){
         String accId = mAcc.cuenta;
 
         listCliente.clear();
@@ -532,7 +533,7 @@ public class AddCltFragment extends Fragment  implements View.OnClickListener, A
             }
 
             else if (currSel1 == 3) {
-                Deuda mD = daoDeuda.getDeudaByCltAndAcc(mC.cliente, accId);
+                Deuda mD = daoDeuda.getUserByCltAndAcc(mC.cliente, accId);
 
                 if(mD != null && mD.estat == 1){
                     mCltList.add(mC.nombre);
@@ -541,7 +542,7 @@ public class AddCltFragment extends Fragment  implements View.OnClickListener, A
             }
 
             else if (currSel1 == 4) {
-                Deuda mD = daoDeuda.getDeudaByCltAndAcc(mC.cliente, accId);
+                Deuda mD = daoDeuda.getUserByCltAndAcc(mC.cliente, accId);
 
                 if(mD == null || mD.estat == 0){
                     mCltList.add(mC.nombre);
@@ -551,8 +552,15 @@ public class AddCltFragment extends Fragment  implements View.OnClickListener, A
         }
         SelecAdapter adapt1 = new SelecAdapter(mContext, mCltList);
         mSpin2.setAdapter(adapt1);
-        mSpin2.setSelection(idx); //Set default client
-        if(idx == 0) {
+
+        if(dir == 1){
+            mSpin2.setSelection(prevItem(mCltList, currSel2));
+        }
+        else if(dir == 2){
+            mSpin2.setSelection(nextItem(mCltList, currSel2));
+        }
+        else {
+            mSpin2.setSelection(0);
             mInput1.setText("");
             mInput2.setText("");
             mInput3.setText(Basic.setFormatter("0"));

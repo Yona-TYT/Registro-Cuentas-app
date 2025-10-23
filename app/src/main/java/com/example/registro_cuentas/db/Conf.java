@@ -14,13 +14,13 @@ public class Conf {
     public String date;
     public String time;
     public Integer curr;
-    public String dolar;
+    public Double dolar;
     public Integer moneda;
     public Integer mes;
 
 
 
-    public Conf(@NonNull String config, String version, String hexid, String date, String time, Integer curr, String dolar, Integer moneda, Integer mes) {
+    public Conf(@NonNull String config, String version, String hexid, String date, String time, Integer curr, Double dolar, Integer moneda, Integer mes) {
         this.config = config;
         this.version = version;
         this.hexid = hexid;

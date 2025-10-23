@@ -30,7 +30,6 @@ import com.example.registro_cuentas.db.Cliente;
 import com.example.registro_cuentas.adapters.CltAdapter;
 import com.example.registro_cuentas.db.Cuenta;
 import com.example.registro_cuentas.CurrencyEditText;
-import com.example.registro_cuentas.db.DatabaseUtils;
 import com.example.registro_cuentas.db.dao.DaoAcc;
 import com.example.registro_cuentas.db.dao.DaoClt;
 import com.example.registro_cuentas.db.dao.DaoDeb;
@@ -158,7 +157,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener, Adap
             @Override
             public void onFocusChange(View view, boolean b) {
                 if(!b){
-                    String value = Double.toString(mInput1.getNumericValue());
+                    Double value = mInput1.getNumericValue();
                     // Actualiza y guarda el Precio del dolar ------------------------
                     StartVar.appDBall.daoCfg().updateDolar(StartVar.mConfID, value);
                     StartVar mVars = new StartVar(mContext);
@@ -437,6 +436,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener, Adap
         }
     }
 
+    //Configura la lista de pagos por cuenta
     public void setPayList(){
         if(mAcc == null){
             return;
@@ -446,7 +446,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener, Adap
         List<Fecha> listFecha = dateOrderedList;
         int idx = currSel3;
         Fecha selFecha = listFecha.get(idx);
-        List<Object[]> mregList = new ArrayList<>();
+        List<Object[]> mPayList = new ArrayList<>();
         for (int i = 0; i < listPagos.size(); i++) {
             Pagos mPay = listPagos.get(i);
             String name = daoCliente.getSaveName(mPay.cltid);
@@ -458,7 +458,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener, Adap
                 stList[2] = mPay.monto;
                 stList[3] = fecha;
                 stList[4] = mPay.oper;
-                mregList.add(stList);
+                mPayList.add(stList);
             }
             else {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -471,17 +471,18 @@ public class HomeFragment extends Fragment implements View.OnClickListener, Adap
                         stList[2] = mPay.monto;
                         stList[3] = fecha;
                         stList[4] = mPay.oper;
-                        mregList.add(stList);
+                        mPayList.add(stList);
                     }
                 }
             }
         }
         //Para configurar la lista de pagos
-        mPayadapter = new PayAdapter(mContext, mregList);
+        mPayadapter = new PayAdapter(mContext, mPayList);
         mLv1.setAdapter(mPayadapter);
         mPayadapter.getFilter().filter("");
     }
 
+    //Configura la lista de clientes por cuenta
     public void setCltList(){
         if(mAcc == null){
             return;
@@ -492,7 +493,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener, Adap
         //Basic.msg(""+listDeb.size());
         for (int i = 0; i < listClt.size(); i++) {
             Cliente mClt = listClt.get(i);
-            Deuda mDeb = daoDeuda.getDeudaByCltAndAcc(mClt.cliente, mAcc.cuenta);
+            Deuda mDeb = daoDeuda.getUserByCltAndAcc(mClt.cliente, mAcc.cuenta);
 
             if(mDeb==null){
                 continue;
@@ -504,21 +505,26 @@ public class HomeFragment extends Fragment implements View.OnClickListener, Adap
             if (ultFec.isEmpty()){
                 ultFec = mClt.fecha;
             }
-            Float debe = mDeb.paid;
-            Float rent = mDeb.rent;
+            Double debe = mDeb.paid;
+            Double rent = mDeb.rent;
             int isDeb = mDeb.pagado;
             int mTyp =  StartVar.accCierre;
             int mult = CalcCalendar.getRangeMultiple(ultFec, mTyp);
-            String monto = Float.toString(Basic.getDebt(mult, rent, debe));
+            String monto = String.valueOf(Basic.getDebt(mult, rent, debe));
 
             String txA = "";
             String txB = "";
             //Basic.msg(mult+" "+clt.nombre+" t"+monto);
             if(mTyp != 0) {
-                if(mDeb.rent == 0 || mDeb.estat == 0) {
-                    continue;
+                if(mDeb.rent == 0) {
+                    txA = " [Sin Renta]";
+                    txB = "";
                 }
-                if (isDeb == 0 && rent <= 0) {
+                else if (mDeb.estat == 0){
+                    txA = " [Inactivo]";
+                    txB = "";
+                }
+                else if (isDeb == 0 && rent <= 0) {
                     txA = " [Sin Registros] "+ ultFec;
                     txB = "[NA]";
                 } else if (isDeb == 1 || mult > 0) {

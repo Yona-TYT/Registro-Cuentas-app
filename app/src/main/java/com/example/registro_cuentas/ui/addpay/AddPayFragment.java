@@ -257,7 +257,7 @@ public class AddPayFragment extends Fragment implements View.OnClickListener, Vi
 
                     String accId = daoCuenta.getUsers().get(StartVar.accSelect).cuenta;
 
-                    Deuda mDeb = daoDeuda.getDeudaByCltAndAcc(mClt.cliente, accId);
+                    Deuda mDeb = daoDeuda.getUserByCltAndAcc(mClt.cliente, accId);
 
                     if(mDeb != null) {
                         if (mDeb.estat == 1) {
@@ -267,7 +267,7 @@ public class AddPayFragment extends Fragment implements View.OnClickListener, Vi
                             }
                             mInput4.setText(Basic.getValueFormatter(mDeb.rent.toString()));
                             int mult = CalcCalendar.getRangeMultiple(ultFec, currtTyp);
-                            float monto = Basic.getDebt(mult, mDeb.rent, mDeb.paid);
+                            Double monto = Basic.getDebt(mult, mDeb.rent, mDeb.paid);
 
 
                             if (mult <= 0) {
@@ -470,7 +470,7 @@ public class AddPayFragment extends Fragment implements View.OnClickListener, Vi
                     currdate = LocalDate.now().toString();
                 }
 
-                float rent = (float)mInput4.getNumericValue();
+                Double rent = Basic.setValue(mInput4.getNumericValue());
 
                 if(rent <= 0.0){
                     //MSG Para entrada de monto
@@ -509,8 +509,8 @@ public class AddPayFragment extends Fragment implements View.OnClickListener, Vi
                    daoCliente.insertUser(objClt);
 
                    Deuda objDeb = new Deuda(
-                           debId, accId, cltId, 0f, 0, currdate,
-                           0, 0, CalcCalendar.getCorrectDate(currdate, currtTyp), 0,0f,"@null"
+                           debId, accId, cltId, 0d, 0, currdate,
+                           0, 0, CalcCalendar.getCorrectDate(currdate, currtTyp), 0,0d,"@null"
                            );
                    daoDeuda.insertUser(objDeb);
                }
@@ -520,12 +520,12 @@ public class AddPayFragment extends Fragment implements View.OnClickListener, Vi
 
                    Cliente mClt = daoCliente.getUsers(cltId);
 
-                   Deuda mDeb = daoDeuda.getDeudaByCltAndAcc(cltId, accId);
+                   Deuda mDeb = daoDeuda.getUserByCltAndAcc(cltId, accId);
 
                    if(mDeb == null){
                        Deuda objDeb = new Deuda(
-                               debId, accId, cltId, 0f, 0, currdate,
-                               0, 0, CalcCalendar.getCorrectDate(currdate, currtTyp), 0,0f, "@null"
+                               debId, accId, cltId, 0d, 0, currdate,
+                               0, 0, CalcCalendar.getCorrectDate(currdate, currtTyp), 0,0d, "@null"
                        );
                        daoDeuda.insertUser(objDeb);
                    }
@@ -534,15 +534,15 @@ public class AddPayFragment extends Fragment implements View.OnClickListener, Vi
                        Object[] mObj = CalcCalendar.dateToMoney(mDeb.ulfech, mAcc.acctipo, mDeb.rent, (mDeb.paid + rent));
                        if(mObj != null){
                            //Basic.msg(" ulfech "+mDeb.ulfech+" "+mObj[1]+" "+mObj[2]);
-                           float maxRent = (float)mObj[0];
-                           float currPaid = (float)mObj[1];
+                           Double maxRent = (double)mObj[0];
+                           Double currPaid = (double)mObj[1];
                            String startDate = (String) mObj[2];
 
                            //Basic.msg("maxRent: "+maxRent+" currPaid "+currPaid);
 
                            if (currPaid > 0) {
                                    Basic.msg("El MONTO es mayor a la deuda!");
-                                   mInput4.setText(Basic.getValueFormatter(Float.toString(mDeb.rent - mDeb.paid)));
+                                   mInput4.setText(Basic.getValueFormatter(String.valueOf(mDeb.rent - mDeb.paid)));
                                    return;
                            }
                            else {

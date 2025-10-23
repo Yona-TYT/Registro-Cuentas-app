@@ -71,11 +71,11 @@ public class GetDollar {
                                 String sKey = "promedio";
                                 if (mObjA.equals(sKey)) {
                                     String price = json.get(sKey).toString();
-                                    Float mValue = Basic.floatFormat(price);
+                                    double mValue = Double.parseDouble(price);
                                     StartVar startVar = new StartVar(mContext);
 
                                     if(mValue > 0) {
-                                        startVar.setDollar(price);
+                                        startVar.setDollar(mValue);
                                         mInput1.setText(Basic.setFormatter(price));
                                     }
                                     //Basic.msg("Precio del dolar Actualizado: " + price);

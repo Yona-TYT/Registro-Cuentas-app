@@ -17,7 +17,7 @@ public class Pagos {
     public String pago;
     public String nombre;
     public String concep;
-    public Float monto;
+    public Double monto;
     public Integer oper;
     public Integer porc;
     public String imagen;
@@ -28,7 +28,7 @@ public class Pagos {
     public Integer more4;
     public String more5;
 
-    public Pagos(@NonNull String pago, String nombre, String concep, Float monto, Integer oper,
+    public Pagos(@NonNull String pago, String nombre, String concep, Double monto, Integer oper,
                  Integer porc, String imagen, String fecha, String time, String cltid, String accid,
                  Integer more4, String more5
                     )

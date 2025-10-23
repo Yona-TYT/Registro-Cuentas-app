@@ -58,49 +58,49 @@ public class Basic {
 
     public void keyboardEvent(ConstraintLayout mConstrain, View elm,  List<View> mViewList, int opt) {
         // Para eventos al mostrar o ocultar el teclado
-        mConstrain.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
-            @Override
-            public void onGlobalLayout() {
-                // on below line we are creating a variable for rect
-                Rect rect = new Rect();
-                View contain = StartVar.mRootView;
-                // on below line getting frame for our relative layout.
-                contain.getWindowVisibleDisplayFrame(rect);
-                // on below line getting screen height for relative layout.
-                int screenHeight = contain.getRootView().getHeight();
-                // on below line getting keypad height.
-                int keypadHeight = screenHeight - rect.bottom;
-                if (keypadHeight > screenHeight * 0.15) {
-                    isDow = false;
-                    isUp = true;
-
-                    for (View mView : mViewList) {
-                        if(mView != null) {
-                            mView.setVisibility(View.INVISIBLE);
-                        }
-                    }
-                    //Toast.makeText(MainActivity.this, "Keyboard is +", Toast.LENGTH_LONG).show();
-                }
-                else {
-                    isDow = true;
-                    isUp = false;
-                    //Toast.makeText(mContex, "Keyboard is -", Toast.LENGTH_LONG).show();
-
-                    if (elm != null) {
-                        //Toast.makeText(mContex, "Aqui hayyyyyyyy?  " , Toast.LENGTH_LONG).show();
-                        elm.clearFocus();
-                    }
-
-                    for (View mView : mViewList) {
-                        if(mView != null) {
-                            mView.setVisibility(View.VISIBLE);
-                        }
-                    }
-                    mConstrain.getViewTreeObserver().removeOnGlobalLayoutListener(this);
-
-                }
-            }
-        });
+//        mConstrain.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+//            @Override
+//            public void onGlobalLayout() {
+//                // on below line we are creating a variable for rect
+//                Rect rect = new Rect();
+//                View contain = StartVar.mRootView;
+//                // on below line getting frame for our relative layout.
+//                contain.getWindowVisibleDisplayFrame(rect);
+//                // on below line getting screen height for relative layout.
+//                int screenHeight = contain.getRootView().getHeight();
+//                // on below line getting keypad height.
+//                int keypadHeight = screenHeight - rect.bottom;
+//                if (keypadHeight > screenHeight * 0.15) {
+//                    isDow = false;
+//                    isUp = true;
+//
+//                    for (View mView : mViewList) {
+//                        if(mView != null) {
+//                            mView.setVisibility(View.INVISIBLE);
+//                        }
+//                    }
+//                    //Toast.makeText(MainActivity.this, "Keyboard is +", Toast.LENGTH_LONG).show();
+//                }
+//                else {
+//                    isDow = true;
+//                    isUp = false;
+//                    //Toast.makeText(mContex, "Keyboard is -", Toast.LENGTH_LONG).show();
+//
+//                    if (elm != null) {
+//                        //Toast.makeText(mContex, "Aqui hayyyyyyyy?  " , Toast.LENGTH_LONG).show();
+//                        elm.clearFocus();
+//                    }
+//
+//                    for (View mView : mViewList) {
+//                        if(mView != null) {
+//                            mView.setVisibility(View.VISIBLE);
+//                        }
+//                    }
+//                    mConstrain.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+//
+//                }
+//            }
+//        });
     }
 
     public void steAllKeyEvent(ConstraintLayout mConstrain, List<EditText> mInputList) {
@@ -147,9 +147,9 @@ public class Basic {
         if (value.isEmpty()){
             value = "0";
         }
-        return setFormatter(Float.parseFloat(value));
+        return setFormatter(Double.parseDouble(value));
     }
-    public static String setFormatter(Float value){
+    public static String setFormatter(Double value){
         NumberFormat nf = NumberFormat.getNumberInstance(Locale.forLanguageTag("ES"));
         DecimalFormat formatter = (DecimalFormat) nf;
         formatter.applyPattern("###,##0.00");
@@ -162,12 +162,20 @@ public class Basic {
         if (value.isEmpty()){
             value = "0";
         }
-        float precDoll = floatFormat(StartVar.mDollar);
-        float number = Float.parseFloat(value);
+        Double precDoll = StartVar.mDollar;
+        Double number = Double.parseDouble(value);
         if (StartVar.mCurrency == 1) {    //Selector en Bs
             number = number / precDoll;
         }
-        return Float.toString(number);
+        return String.valueOf(number);
+    }
+
+    public static Double setValue(double value) {
+        Double precDoll = StartVar.mDollar;
+        if (StartVar.mCurrency == 1) {    //Selector en Bs
+            value = value / precDoll;
+        }
+        return value;
     }
 
     @SuppressLint("DefaultLocale")
@@ -178,25 +186,24 @@ public class Basic {
         if (value.isEmpty()){
             value = "0";
         }
-        float number = Float.parseFloat(value);
-        return Float.toString(getConverteValue(number));
+        Double number = Double.parseDouble(value);
+        return String.valueOf(getConverteValue(number));
     }
 
-    public static Float getConverteValue(Float value) {
+    public static Double getConverteValue(Double value) {
 
-        float precDoll = floatFormat(StartVar.mDollar);
-        float number = value;
+        Double precDoll = StartVar.mDollar;
         if (StartVar.mCurrency == 1) {    //Selector en Bs
-            number = number * precDoll;
+            value = value * precDoll;
         }
-        return number;
+        return value;
     }
 
     @SuppressLint("DefaultLocale")
     public static String getValueFormatter(String value) {
         return setFormatter(getConverteValue(value));
     }
-    public static String getValueFormatter(Float value) {
+    public static String getValueFormatter(Double value) {
         return setFormatter(getConverteValue(value).toString());
     }
 
@@ -207,15 +214,15 @@ public class Basic {
         return mValue.isEmpty() ? (float)0 : Float.parseFloat(mValue);
     }
 
-    public static float getDebt(int mult, Float mont, Float debt) {
+    public static Double getDebt(int mult, Double mont, Double debt) {
 //        mont = mont.replaceAll("([^.0-9]+)", "");
 //        debt = debt.replaceAll("([^.0-9]+)", "");
 
-        float precDoll = Basic.floatFormat(StartVar.mDollar);
-        float numA = mont;
-        float numB = debt;
+        Double precDoll = StartVar.mDollar;
+        double numA = mont;
+        double numB = debt;
 
-        float result = numA*mult;
+        double result = numA*mult;
 
         result -= numB;
 

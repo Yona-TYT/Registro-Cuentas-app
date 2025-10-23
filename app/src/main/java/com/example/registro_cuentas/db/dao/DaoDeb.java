@@ -22,7 +22,7 @@ public interface DaoDeb extends GenericDao<Deuda>{
     List<Deuda> getListByGroupId(String cltid);
 
     @Query("SELECT * FROM Deuda WHERE cltid = :cltId AND accid = :accId LIMIT 1")
-    Deuda getDeudaByCltAndAcc(String cltId, String accId);
+    Deuda getUserByCltAndAcc(String cltId, String accId);
 
     // Se obtinen valores individuales de accselc, moneda, dolar------------------------------------
 
@@ -30,13 +30,13 @@ public interface DaoDeb extends GenericDao<Deuda>{
     void insertUser(Deuda...deudas);
 
     @Query("UPDATE deuda SET accid= :accid, cltid= :cltid, rent= :rent, porc= :porc, fecha= :fecha, estat= :estat, pagado= :pagado, ulfech= :ulfech, oper= :oper, paid= :paid WHERE deuda= :user")
-    void updateUser(String user, String accid, String cltid, Float rent, Integer porc, String fecha, Integer estat, Integer pagado, String ulfech, Integer oper, Float paid);
+    void updateUser(String user, String accid, String cltid, Double rent, Integer porc, String fecha, Integer estat, Integer pagado, String ulfech, Integer oper, Double paid);
 
     @Query("UPDATE deuda SET  pagado= :pagado, ulfech= :ulfech, paid= :paid WHERE deuda= :user")
-    void updateDebt(String user, Integer pagado, String ulfech, Float paid);
+    void updateDebt(String user, Integer pagado, String ulfech, Double paid);
 
     @Query("UPDATE deuda SET  rent= :rent, estat= :estat, ulfech= :ulfech, oper= :oper, disabfec= :disabfec WHERE deuda= :user")
-    void updateFormCltWin(String user, Float rent, Integer estat, String ulfech, Integer oper, String disabfec);
+    void updateFormCltWin(String user, Double rent, Integer estat, String ulfech, Integer oper, String disabfec);
 
     @Query("DELETE FROM deuda WHERE  deuda= :user")
     void removerUser(String user);

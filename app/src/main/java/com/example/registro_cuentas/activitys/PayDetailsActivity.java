@@ -48,7 +48,7 @@ public class PayDetailsActivity extends AppCompatActivity implements View.OnClic
     private AllDao appDBcuenta = StartVar.appDBall;
     private List<Cuenta> listCuenta;
     private List<Pagos> appDBregistro = StartVar.appDBall.daoPay().getUsers();
-    private List<Pagos> listRegistro;
+    private List<Pagos> listPagos;
     //--------------------------------------------------------------------
 
     //Todos los View
@@ -161,24 +161,30 @@ public class PayDetailsActivity extends AppCompatActivity implements View.OnClic
     public void setTextViewList(){
         if(!appDBregistro.isEmpty()) {
             CalcCalendar cale = new CalcCalendar();
-            listRegistro = StartVar.appDBall.daoPay().getUsers();
-            Pagos reg = listRegistro.get(payIndex);
-            mUser = reg.pago;
+
+            List<Cuenta> mAccList = StartVar.appDBall.daoAcc().getUsers();
+            String accId = "";
+            if(!mAccList.isEmpty()){
+                accId = mAccList.get(accIndex).cuenta;
+            }
+            listPagos = StartVar.appDBall.daoPay().getListByGroupId(accId);
+            Pagos mPay = listPagos.get(payIndex);
+            mUser = mPay.pago;
 
             DaoClt mDao = StartVar.appDBall.daoClt();
-            String txName = mDao.getSaveName(reg.cltid);
-            String txAlias = mDao.getSaveAlias(reg.cltid);
+            String txName = mDao.getSaveName(mPay.cltid);
+            String txAlias = mDao.getSaveAlias(mPay.cltid);
 
-            String txConc = reg.concep;
-            String txMont = reg.monto.toString();
-            String txOpt = (reg.oper==0?"+ ":"- ");
-            String txFech = reg.fecha;
-            String txHora = CalcCalendar.getTime(reg.time);
+            String txConc = mPay.concep;
+            String txMont = mPay.monto.toString();
+            String txOpt = (mPay.oper==0?"+ ":"- ");
+            String txFech = mPay.fecha;
+            String txHora = CalcCalendar.getTime(mPay.time);
 
             int i = 0;
-            mTextList.get(i).setText("Cliente: " + txName + " ("+txAlias+")");
+            mTextList.get(i).setText("Cliente: " + txName + (txAlias.replaceAll("[^a-zA-Z0-9]", "").isEmpty()? "" : " ("+txAlias+")"));
             i++;
-            mTextList.get(i).setText("Concepto: " + txConc);
+            mTextList.get(i).setText(txConc.isEmpty() ? "" : "Concepto: " + txConc);
             i++;
             mTextList.get(i).setText("Monto: "+txOpt+ Basic.getValueFormatter(txMont)+mCurrencyList.get(mCindex));
             i++;
@@ -186,7 +192,7 @@ public class PayDetailsActivity extends AppCompatActivity implements View.OnClic
             i++;
             mTextList.get(i).setText("Hora: "+ txHora);
 
-            currDir = mFileM.getImage(reg.imagen, mImage1);
+            currDir = mFileM.getImage(mPay.imagen, mImage1);
         }
     }
 

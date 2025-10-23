@@ -1,243 +1,239 @@
-<?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/constrainClt"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:fillViewport="true"
     tools:context=".ui.addclt.AddCltFragment">
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/constrainClt"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
 
+        <TextView
+            android:id="@+id/txview_clt0"
+            android:layout_width="@dimen/txview_wm"
+            android:layout_height="@dimen/txview_h1"
+            android:layout_marginTop="20dp"
+            android:padding="5dp"
+            android:text="Mostrar:"
+            android:textSize="@dimen/inner_text_1"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toStartOf="@+id/guideline2"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="@+id/guideline"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:ignore="MissingConstraints" />
 
-    <TextView
-        android:id="@+id/txview_clt0"
-        android:layout_width="@dimen/txview_wm"
-        android:layout_height="@dimen/txview_h1"
-        android:layout_marginTop="20dp"
+        <Spinner
+            android:id="@+id/spin_clt1"
+            android:layout_width="@dimen/spinner_w1"
+            android:layout_height="@dimen/spinner_h1"
+            android:textSize="@dimen/selec_text"
+            android:textStyle="bold"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintEnd_toStartOf="@+id/guideline2"
+            app:layout_constraintStart_toStartOf="@+id/guideline"
+            app:layout_constraintTop_toBottomOf="@+id/txview_clt0" />
 
-        android:padding="5dp"
-        android:text="Mostrar:"
-        android:textSize="@dimen/inner_text_1"
-        android:textStyle="bold"
-        app:layout_constraintEnd_toStartOf="@+id/guideline2"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="@+id/guideline"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:ignore="MissingConstraints" />
+        <TextView
+            android:id="@+id/txview_clt1"
+            android:layout_width="@dimen/txview_w1"
+            android:layout_height="@dimen/txview_h2"
+            android:background="@color/text_background"
+            android:padding="@dimen/txview_pad2"
+            android:text="Cuenta: NA"
+            android:textSize="@dimen/inner_text_2"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toStartOf="@+id/guideline2"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="@+id/guideline"
+            app:layout_constraintTop_toBottomOf="@+id/spin_clt1"
+            tools:ignore="MissingConstraints" />
 
-    <Spinner
-        android:id="@+id/spin_clt1"
-        android:layout_width="@dimen/spinner_w1"
-        android:layout_height="@dimen/spinner_h1"
-        android:textSize="@dimen/selec_text"
-        android:textStyle="bold"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintEnd_toStartOf="@+id/guideline2"
-        app:layout_constraintStart_toStartOf="@+id/guideline"
-        app:layout_constraintTop_toBottomOf="@+id/txview_clt0" />
+        <TextView
+            android:id="@+id/txview_clt2"
+            android:layout_width="@dimen/txview_w1"
+            android:layout_height="@dimen/txview_h2"
+            android:background="@color/text_background"
+            android:padding="@dimen/txview_pad2"
+            android:text="Deuda: No Apliaca"
+            android:textSize="@dimen/inner_text_2"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toStartOf="@+id/guideline2"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="@+id/guideline"
+            app:layout_constraintTop_toBottomOf="@+id/txview_clt1"
+            tools:ignore="MissingConstraints" />
 
-    <TextView
-        android:id="@+id/txview_clt1"
-        android:layout_width="@dimen/txview_w1"
-        android:layout_height="@dimen/txview_h2"
-        android:background="@color/text_background"
-        android:padding="@dimen/txview_pad2"
-        android:text="Cuenta: NA"
-        android:textSize="@dimen/inner_text_2"
-        android:textStyle="bold"
-        app:layout_constraintEnd_toStartOf="@+id/guideline2"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="@+id/guideline"
-        app:layout_constraintTop_toBottomOf="@+id/spin_clt1"
-        tools:ignore="MissingConstraints" />
+        <TextView
+            android:id="@+id/txview_clt3"
+            android:layout_width="@dimen/txview_w1"
+            android:layout_height="@dimen/txview_h2"
+            android:background="@color/text_background"
+            android:padding="@dimen/txview_pad2"
+            android:text="Ultimo Pago: NA"
+            android:textSize="@dimen/inner_text_2"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toStartOf="@+id/guideline2"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="@+id/guideline"
+            app:layout_constraintTop_toBottomOf="@+id/txview_clt2"
+            tools:ignore="MissingConstraints" />
 
-    <TextView
-        android:id="@+id/txview_clt2"
-        android:layout_width="@dimen/txview_w1"
-        android:layout_height="@dimen/txview_h2"
-        android:background="@color/text_background"
-        android:padding="@dimen/txview_pad2"
-        android:text="Deuda: No Apliaca"
-        android:textSize="@dimen/inner_text_2"
-        android:textStyle="bold"
-        app:layout_constraintEnd_toStartOf="@+id/guideline2"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="@+id/guideline"
-        app:layout_constraintTop_toBottomOf="@+id/txview_clt1"
-        tools:ignore="MissingConstraints" />
+        <Spinner
+            android:id="@+id/spin_clt2"
+            android:layout_width="@dimen/spinner_w1"
+            android:layout_height="@dimen/spinner_h1"
+            android:padding="5dp"
+            android:textSize="@dimen/selec_text"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/guideline2"
+            app:layout_constraintHorizontal_bias="0.576"
+            app:layout_constraintStart_toEndOf="@+id/input_clt1"
+            app:layout_constraintTop_toBottomOf="@+id/txview_clt3"
+            app:layout_constraintVertical_bias="0.0" />
 
-    <TextView
-        android:id="@+id/txview_clt3"
-        android:layout_width="@dimen/txview_w1"
-        android:layout_height="@dimen/txview_h2"
-        android:background="@color/text_background"
-        android:padding="@dimen/txview_pad2"
-        android:text="Ultimo Pago: NA"
-        android:textSize="@dimen/inner_text_2"
-        android:textStyle="bold"
-        app:layout_constraintEnd_toStartOf="@+id/guideline2"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="@+id/guideline"
-        app:layout_constraintTop_toBottomOf="@+id/txview_clt2"
-        tools:ignore="MissingConstraints" />
+        <Spinner
+            android:id="@+id/spin_clt3"
+            android:layout_width="@dimen/spinner_w1"
+            android:layout_height="@dimen/spinner_h1"
+            android:layout_marginTop="56dp"
+            android:padding="5dp"
+            android:textSize="@dimen/selec_text"
+            app:layout_constraintEnd_toStartOf="@+id/guideline2"
+            app:layout_constraintHorizontal_bias="0.576"
+            app:layout_constraintStart_toEndOf="@+id/input_clt4"
+            app:layout_constraintTop_toBottomOf="@+id/spin_clt2" />
 
-    <Spinner
-        android:id="@+id/spin_clt2"
-        android:layout_width="@dimen/spinner_w1"
-        android:layout_height="@dimen/spinner_h1"
-        android:padding="5dp"
-        android:textSize="@dimen/selec_text"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/guideline2"
-        app:layout_constraintHorizontal_bias="0.576"
-        app:layout_constraintStart_toEndOf="@+id/input_clt1"
-        app:layout_constraintTop_toBottomOf="@+id/txview_clt3"
-        app:layout_constraintVertical_bias="0.0" />
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/input_clt1"
+            android:layout_width="@dimen/input_wm"
+            android:layout_height="@dimen/input_h1"
+            android:hint="Nombre Cliente"
+            android:inputType="textCapWords"
+            android:maxLength="10"
+            android:padding="10dp"
+            android:textSize="@dimen/inner_text_2"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/guideline2"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="@+id/guideline"
+            app:layout_constraintTop_toBottomOf="@+id/txview_clt3"
+            app:layout_constraintVertical_bias="0.0"
+            tools:ignore="MissingConstraints" />
 
-    <Spinner
-        android:id="@+id/spin_clt3"
-        android:layout_width="@dimen/spinner_w1"
-        android:layout_height="@dimen/spinner_h1"
-        android:layout_marginTop="56dp"
-        android:padding="5dp"
-        android:textSize="@dimen/selec_text"
-        app:layout_constraintEnd_toStartOf="@+id/guideline2"
-        app:layout_constraintHorizontal_bias="0.576"
-        app:layout_constraintStart_toEndOf="@+id/input_clt4"
-        app:layout_constraintTop_toBottomOf="@+id/spin_clt2" />
+        <com.example.registro_cuentas.CurrencyEditText
+            android:id="@+id/input_clt4"
+            android:layout_width="@dimen/input_wm"
+            android:layout_height="@dimen/input_h1"
+            android:hint="Monto"
+            android:imeOptions="actionDone"
+            android:maxLength="20"
+            android:padding="10dp"
+            android:textSize="@dimen/inner_text_2"
+            app:localeTag="ES"
+            app:maxNumberOfDecimalDigits="2"
+            app:useCurrencySymbolAsHint="true"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/guideline2"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="@+id/guideline"
+            app:layout_constraintTop_toBottomOf="@+id/input_clt2"
+            app:layout_constraintVertical_bias="0.0"
+            tools:ignore="MissingConstraints" />
 
-    <com.google.android.material.textfield.TextInputEditText
-        android:id="@+id/input_clt1"
-        android:layout_width="@dimen/input_wm"
-        android:layout_height="@dimen/input_h1"
-        android:hint="Nombre Cliente"
-        android:inputType="textCapWords"
-        android:maxLength="10"
-        android:padding="10dp"
-        android:textSize="@dimen/inner_text_2"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/guideline2"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="@+id/guideline"
-        app:layout_constraintTop_toBottomOf="@+id/txview_clt3"
-        app:layout_constraintVertical_bias="0.0"
-        tools:ignore="MissingConstraints" />
+        <Switch
+            android:id="@+id/sw_clt1"
+            android:layout_width="@dimen/input_w1"
+            android:layout_height="@dimen/input_h1"
+            android:layout_marginTop="8dp"
+            android:padding="10dp"
+            android:text="Activar Cliente"
+            app:layout_constraintEnd_toStartOf="@+id/guideline2"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="@+id/guideline"
+            app:layout_constraintTop_toBottomOf="@+id/input_clt4"
+            tools:ignore="UseSwitchCompatOrMaterialXml" />
 
-    <com.example.registro_cuentas.CurrencyEditText
-        android:id="@+id/input_clt4"
-        android:layout_width="@dimen/input_wm"
-        android:layout_height="@dimen/input_h1"
-        android:hint="Monto"
-        android:imeOptions="actionDone"
-        android:maxLength="20"
-        android:padding="10dp"
-        android:textSize="@dimen/inner_text_2"
-        app:localeTag="ES"
-        app:maxNumberOfDecimalDigits="2"
-        app:useCurrencySymbolAsHint="true"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/guideline2"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="@+id/guideline"
-        app:layout_constraintTop_toBottomOf="@+id/input_clt2"
-        app:layout_constraintVertical_bias="0.0"
-        tools:ignore="MissingConstraints" />
+        <CheckBox
+            android:id="@+id/check_clt1"
+            android:layout_width="@dimen/input_w1"
+            android:layout_height="@dimen/input_h1"
+            android:text="Visible para:"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintEnd_toStartOf="@+id/guideline2"
+            app:layout_constraintStart_toStartOf="@+id/guideline"
+            app:layout_constraintTop_toBottomOf="@+id/sw_clt1" />
 
-    <Switch
-        android:id="@+id/sw_clt1"
-        android:layout_width="@dimen/input_w1"
-        android:layout_height="@dimen/input_h1"
-        android:layout_marginTop="8dp"
-        android:padding="10dp"
-        android:text="Activar Cliente"
-        app:layout_constraintEnd_toStartOf="@+id/guideline2"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="@+id/guideline"
-        app:layout_constraintTop_toBottomOf="@+id/input_clt4"
-        tools:ignore="UseSwitchCompatOrMaterialXml" />
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/input_clt2"
+            android:layout_width="@dimen/input_wm"
+            android:layout_height="@dimen/input_h1"
+            android:layout_marginTop="4dp"
+            android:hint="Alias (Opcional)"
+            android:inputType="textCapWords"
+            android:maxLength="20"
+            android:padding="10dp"
+            android:textSize="@dimen/inner_text_2"
+            app:layout_constraintEnd_toStartOf="@+id/guideline2"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="@+id/guideline"
+            app:layout_constraintTop_toBottomOf="@+id/input_clt1"
+            tools:ignore="MissingConstraints" />
 
-    <CheckBox
-        android:id="@+id/check_clt1"
-        android:layout_width="@dimen/input_w1"
-        android:layout_height="@dimen/input_h1"
-        android:text="Visible para:"
-        app:layout_constraintHorizontal_bias="0.0"
+        <ImageButton
+            android:id="@+id/buttNext"
+            android:layout_width="90dp"
+            android:layout_height="40dp"
+            android:backgroundTint="@color/button"
+            app:layout_constraintEnd_toStartOf="@+id/guideline2"
+            app:layout_constraintHorizontal_bias="1.0"
+            app:layout_constraintStart_toEndOf="@+id/buttPrev"
+            app:layout_constraintTop_toTopOf="@+id/buttPrev"
+            app:srcCompat="@android:drawable/ic_media_next" />
 
-        app:layout_constraintEnd_toStartOf="@+id/guideline2"
-        app:layout_constraintStart_toStartOf="@+id/guideline"
-        app:layout_constraintTop_toBottomOf="@+id/sw_clt1" />
+        <ImageButton
+            android:id="@+id/buttPrev"
+            android:layout_width="90dp"
+            android:layout_height="40dp"
+            android:layout_marginTop="10dp"
+            android:backgroundTint="@color/button"
+            app:layout_constraintEnd_toStartOf="@+id/guideline2"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="@+id/guideline"
+            app:layout_constraintTop_toBottomOf="@+id/check_clt1"
+            app:srcCompat="@android:drawable/ic_media_previous" />
 
-    <com.google.android.material.textfield.TextInputEditText
-        android:id="@+id/input_clt2"
-        android:layout_width="@dimen/input_wm"
-        android:layout_height="@dimen/input_h1"
-        android:layout_marginTop="4dp"
-        android:hint="Alias (Opcional)"
-        android:inputType="textCapWords"
-        android:maxLength="20"
-        android:padding="10dp"
-        android:textSize="@dimen/inner_text_2"
-        app:layout_constraintEnd_toStartOf="@+id/guideline2"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="@+id/guideline"
-        app:layout_constraintTop_toBottomOf="@+id/input_clt1"
-        tools:ignore="MissingConstraints" />
+        <Button
+            android:id="@+id/butt_clt1"
+            android:layout_width="@dimen/button_w1"
+            android:layout_height="@dimen/button_h1"
+            android:layout_marginTop="10dp"
+            android:padding="2dp"
+            android:text="Guardar"
+            android:textSize="@dimen/inner_text_2"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/guideline2"
+            app:layout_constraintHorizontal_bias="0.476"
+            app:layout_constraintStart_toStartOf="@+id/guideline"
+            app:layout_constraintTop_toBottomOf="@+id/buttPrev"
+            app:layout_constraintVertical_bias="0.169" />
 
-    <ImageButton
-        android:id="@+id/buttNext"
-        android:layout_width="90dp"
-        android:layout_height="40dp"
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/guideline"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintGuide_begin="30dp" />
 
-        android:backgroundTint="@color/button"
-        app:layout_constraintEnd_toStartOf="@+id/guideline2"
-        app:layout_constraintHorizontal_bias="1.0"
-        app:layout_constraintStart_toEndOf="@+id/buttPrev"
-        app:layout_constraintTop_toTopOf="@+id/buttPrev"
-        app:srcCompat="@android:drawable/ic_media_next" />
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/guideline2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintGuide_end="30dp" />
 
-    <ImageButton
-        android:id="@+id/buttPrev"
-        android:layout_width="90dp"
-        android:layout_height="40dp"
-
-        android:layout_marginTop="10dp"
-        android:backgroundTint="@color/button"
-        app:layout_constraintEnd_toStartOf="@+id/guideline2"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="@+id/guideline"
-        app:layout_constraintTop_toBottomOf="@+id/check_clt1"
-        app:srcCompat="@android:drawable/ic_media_previous" />
-
-    <Button
-        android:id="@+id/butt_clt1"
-        android:layout_width="@dimen/button_w1"
-        android:layout_height="@dimen/button_h1"
-        android:layout_marginTop="10dp"
-
-        android:padding="2dp"
-        android:text="Guardar"
-        android:textSize="@dimen/inner_text_2"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/guideline2"
-        app:layout_constraintHorizontal_bias="0.476"
-        app:layout_constraintStart_toStartOf="@+id/guideline"
-        app:layout_constraintTop_toBottomOf="@+id/buttPrev"
-        app:layout_constraintVertical_bias="0.169" />
-
-    <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/guideline"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        app:layout_constraintGuide_begin="30dp" />
-
-    <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/guideline2"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        app:layout_constraintGuide_end="30dp" />
-
-
-
-
-</androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</ScrollView>

@@ -55,7 +55,7 @@ public class DBListCreator extends AppCompatActivity {
         mList.add(new String[]{"<0>"});// Etiqueta para config
         //Instancia de la base de datos
         Conf mConf =  daoConf.getUsers(StartVar.mConfID);
-        mList.add(new String[]{mConf.config, mConf.version, mConf.hexid, mConf.date, mConf.time, mConf.curr.toString(), mConf.dolar, mConf.moneda.toString(),mConf.mes.toString() });
+        mList.add(new String[]{mConf.config, mConf.version, mConf.hexid, mConf.date, mConf.time, mConf.curr.toString(), String.valueOf(mConf.dolar), mConf.moneda.toString(),mConf.mes.toString() });
 
         //=================================== Cuenta DB Lista =====================================================
 
@@ -468,7 +468,7 @@ public class DBListCreator extends AppCompatActivity {
                 }
                 if(opt==0) {
                     version = spl[1];
-                    daoConf.updateUser("confID0", spl[1], spl[2], spl[3], spl[4], Integer.parseInt(spl[5]), spl[6] ,Integer.parseInt(spl[7]), Integer.parseInt(spl[8]));
+                    daoConf.updateUser("confID0", spl[1], spl[2], spl[3], spl[4], Integer.parseInt(spl[5]), Double.parseDouble(spl[6]) ,Integer.parseInt(spl[7]), Integer.parseInt(spl[8]));
                 }
                 else if(opt==1){
                     //Basic.msg(spl[10] +" "+name+" "+spl[1]);
@@ -487,8 +487,8 @@ public class DBListCreator extends AppCompatActivity {
                 }
                 else if(opt==3){
                     Deuda obj = new Deuda(
-                            spl[0], spl[1], spl[2], Float.parseFloat(spl[3]), Integer.parseInt(spl[4]), spl[5],
-                            Integer.parseInt(spl[6]), Integer.parseInt(spl[7]), spl[8], Integer.parseInt(spl[9]), Float.parseFloat(spl[10]), "@null"
+                            spl[0], spl[1], spl[2], Double.parseDouble(spl[3]), Integer.parseInt(spl[4]), spl[5],
+                            Integer.parseInt(spl[6]), Integer.parseInt(spl[7]), spl[8], Integer.parseInt(spl[9]), Double.parseDouble(spl[10]), "@null"
                     );
                     daoDeuda.insertUser(obj);
                 }
@@ -501,7 +501,7 @@ public class DBListCreator extends AppCompatActivity {
                 }
                 else {
                     Pagos obj = new Pagos(
-                            spl[0], spl[1], spl[2], Float.parseFloat(spl[3]), Integer.parseInt(spl[4]), Integer.parseInt(spl[5]),
+                            spl[0], spl[1], spl[2], Double.parseDouble(spl[3]), Integer.parseInt(spl[4]), Integer.parseInt(spl[5]),
                             spl[6], spl[7], spl[8], spl[9], spl[10], Integer.parseInt(spl[11]), spl[12]
                     );
                     daoPagos.insertUser(obj);
@@ -519,9 +519,7 @@ public class DBListCreator extends AppCompatActivity {
             Basic.msg("ErrorB: "+ e.getMessage());
             throw new RuntimeException(e);
         }
-
-
-
+        
         if(finish) {
             Intent mIntent = new Intent(StartVar.mContex, mActivity.getClass());
             mActivity.startActivity(mIntent);

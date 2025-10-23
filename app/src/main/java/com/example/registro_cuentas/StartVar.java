@@ -67,7 +67,7 @@ public class StartVar {
     public static int mCurrency = 0;        //Moneda seleccionada
     public static int mCurrMes = 0;        //Mes seleccionado
 
-    public static String mDollar = "";       //Precio del dolar
+    public static Double mDollar = 0d;       //Precio del dolar
 
     public static ArrayList<String> textList;
     public static ArrayList<String> dirList;
@@ -150,7 +150,7 @@ public class StartVar {
             }
 
             //configDatabase.daoConf().insertUser();
-            Conf obj = new Conf(mConfID, "2", textID, date, time, 0, "0", 0, 0);
+            Conf obj = new Conf(mConfID, "2", textID, date, time, 0, 0d, 0, 0);
             StartVar.appDBall.daoCfg().insertUser(obj);
         }
 
@@ -193,8 +193,8 @@ public class StartVar {
         mCurrMes = idx;
     }
 
-    public void setDollar(String idx){
-        mDollar = idx;
+    public void setDollar(Double value){
+        StartVar.mDollar = value;
     }
     public void setNavBar(BottomNavigationView view){mNavBar = view;}
     public void setRootView(View view){mRootView = view;}

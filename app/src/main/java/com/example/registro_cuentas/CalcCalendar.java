@@ -132,7 +132,7 @@ public class CalcCalendar {
         return (int)num;
     }
 
-    public static Object[] dateToMoney(String startDate, int select, float rent, float paid) {
+    public static Object[] dateToMoney(String startDate, int select, Double rent, Double paid) {
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
             if (rent <= 0) {
                 return null;
@@ -167,7 +167,7 @@ public class CalcCalendar {
                 // Simula pagos desde la fecha original (garantiza date >= startDate)
                 LocalDate date = originalDate;
                 int count = 0;
-                float currentPaid = paid;
+                Double currentPaid = paid;
                 //Basic.msg("currentPaid "+currentPaid+" numOwed: "+numOwed+ "count: "+count);
 
                 for (long i = numOwed; i > 0; i--) {
@@ -186,7 +186,7 @@ public class CalcCalendar {
                 }
                 //Basic.msg("startDate "+startDate+" date: "+date.toString()+ "count: "+count);
 
-                float debt = Math.max(0f, (rent * count) - currentPaid);
+                double debt = Math.max(0f, (rent * count) - currentPaid);
                 return new Object[]{debt, currentPaid, date.toString(), 0};
             }
         }

@@ -11,17 +11,17 @@ public class Deuda {
     public String deuda;
     public String accid;
     public String cltid;
-    public Float rent;
+    public Double rent;
     public Integer porc;
     public String fecha;
     public Integer estat;
     public Integer pagado;
     public String ulfech;
     public Integer oper;
-    public Float paid;
+    public Double paid;
     public String disabfec;
 
-    public Deuda(@NonNull String deuda, String accid, String cltid, Float rent, Integer porc, String fecha, Integer estat, Integer pagado, String ulfech, Integer oper, Float paid, String disabfec)
+    public Deuda(@NonNull String deuda, String accid, String cltid, Double rent, Integer porc, String fecha, Integer estat, Integer pagado, String ulfech, Integer oper, Double paid, String disabfec)
     {
         this.deuda = deuda;
         this.accid = accid;

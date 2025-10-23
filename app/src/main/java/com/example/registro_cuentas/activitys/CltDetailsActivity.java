@@ -24,6 +24,7 @@ import com.example.registro_cuentas.Basic;
 import com.example.registro_cuentas.db.Cliente;
 import com.example.registro_cuentas.db.Cuenta;
 import com.example.registro_cuentas.R;
+import com.example.registro_cuentas.db.Deuda;
 import com.example.registro_cuentas.db.Pagos;
 import com.example.registro_cuentas.StartVar;
 import com.example.registro_cuentas.db.AllDao;
@@ -40,7 +41,6 @@ public class CltDetailsActivity extends AppCompatActivity implements View.OnClic
     private AllDao appDBcuenta = StartVar.appDBall;
     private List<Cuenta> listCuenta;
     private List<Pagos> appDBregistro = StartVar.appDBall.daoPay().getUsers();
-    private List<Pagos> listRegistro;
     //--------------------------------------------------------------------
 
     //Todos los View
@@ -51,6 +51,7 @@ public class CltDetailsActivity extends AppCompatActivity implements View.OnClic
     private TextView mText5;
     private TextView mText6;
     private TextView mText7;
+    private TextView mText8;
     private List<TextView> mTextList = new ArrayList<>();
     //---------------------------------------------------------------------
 
@@ -107,6 +108,7 @@ public class CltDetailsActivity extends AppCompatActivity implements View.OnClic
         mText5 = findViewById(R.id.txview_cdts5);
         mText6 = findViewById(R.id.txview_cdts6);
         mText7 = findViewById(R.id.txview_cdts7);
+        mText8 = findViewById(R.id.txview_cdts8);
 
         mBtton1 = findViewById(R.id.butt_cdts1);
         mBtton2  = findViewById(R.id.butt_cdts2);
@@ -121,6 +123,7 @@ public class CltDetailsActivity extends AppCompatActivity implements View.OnClic
         mTextList.add(mText5);
         mTextList.add(mText6);
         mTextList.add(mText7);
+        mTextList.add(mText8);
 
         // Se llenan los textView
         setTextViewList();
@@ -146,35 +149,39 @@ public class CltDetailsActivity extends AppCompatActivity implements View.OnClic
     public void setTextViewList(){
 
         String mAccName = "";
+        String accId = "";
+        String cltId = "";
+
         List<Cuenta> mAccList = StartVar.appDBall.daoAcc().getUsers();
         if (!mAccList.isEmpty()) {
             Cuenta mAcc = mAccList.get(accIndex);
+            accId = mAcc.cuenta;
             mAccName = mAcc.nombre + (mAcc.desc.replaceAll("[^a-zA-Z0-9]", "").isEmpty()? "" : " ("+mAcc.desc+")");
         }
 
         List<Cliente> mCltList = StartVar.appDBall.daoClt().getUsers();
         Cliente mClt = mCltList.get(cltIndex);
+        cltId = mClt.cliente;
 
-        listRegistro = StartVar.appDBall.daoPay().getUsers();
+        List<Pagos> listPagos = StartVar.appDBall.daoPay().getListByCltAndAcc(cltId, accId);
 
-        float cred = 0;
-        float debi = 0;
+        Double cred = 0d;
+        Double debi = 0d;
         int totalPay = 0;
-        for (Pagos r : listRegistro){
-            if(r.cltid.equals(mClt.cliente)){
-                totalPay++;
-                if(r.oper == 0){
-                    cred += Basic.getConverteValue(r.monto);
-                }
-                else {
-                    debi -= Basic.getConverteValue(r.monto);
-                }
+        for (Pagos mPay : listPagos){
+            totalPay++;
+            if(mPay.oper == 0){
+                cred += mPay.monto;
+            }
+            else {
+                debi -= mPay.monto;
             }
         }
 
+        Deuda mDeb = StartVar.appDBall.daoDeb().getUserByCltAndAcc(cltId, accId);
+
         String txName = mClt.nombre;
         String txAlias = mClt.alias;
-
 
         String txOpt = (mClt.oper==0?"+ ":"- ");
         String txCreate = mClt.fecha;
@@ -189,11 +196,13 @@ public class CltDetailsActivity extends AppCompatActivity implements View.OnClic
         i++;
         mTextList.get(i).setText("Ultimo Pago: " +txFech);
         i++;
+        mTextList.get(i).setText("Renta: "+ Basic.getConverteValue(mDeb.rent)+mCurrencyList.get(mCindex));
+        i++;
         mTextList.get(i).setText("Pagos Totales: "+ totalPay);
         i++;
-        mTextList.get(i).setText("Total Credito: "+ cred+mCurrencyList.get(mCindex));
+        mTextList.get(i).setText("Total Credito: "+ Basic.getConverteValue(cred)+mCurrencyList.get(mCindex));
         i++;
-        mTextList.get(i).setText("Total Debito: "+ debi+mCurrencyList.get(mCindex));
+        mTextList.get(i).setText("Total Debito: "+ Basic.getConverteValue(debi)+mCurrencyList.get(mCindex));
     }
 
     @Override
