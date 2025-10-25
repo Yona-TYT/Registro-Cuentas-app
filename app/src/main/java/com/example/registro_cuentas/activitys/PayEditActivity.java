@@ -142,7 +142,35 @@ public class PayEditActivity extends AppCompatActivity implements View.OnClickLi
         mSw.setOnClickListener(this);
 
         //Set Picker and Camera Launchers
-        setLauncher(mBtnImg1, imageView1);
+        Launcher mLaunch = new Launcher(this.getActivityResultRegistry(), this.getApplicationContext(), new Launcher.OnCapture() {
+            @Override
+            public void invoke(List<Uri> uris) {
+                if (!uris.isEmpty()) {
+                    Uri uri = uris.get(0);
+                    try {
+                        Log.d("PhotoPicker", "Selected URI: " + uri);
+                        if(imageView1 != null){
+                            imageView1.setImageURI(uri);
+                        }
+                        currUri = uri;
+                    }
+                    catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+                else {
+                    Basic.msg("No hay imagen seleccionada!");
+                }
+            }
+        });
+
+        getLifecycle().addObserver(mLaunch);
+
+        // Adjunta al botón para el picker
+        mLaunch.attachToViewPicker(mBtnImg1, false, false);
+
+        // Adjunta al botón para la camara
+        mLaunch.attachToViewCam(mBtnImg1, true);
 
         //Efecto moneda
         //-------------------------------------------------------------------------------------------------------
@@ -185,50 +213,6 @@ public class PayEditActivity extends AppCompatActivity implements View.OnClickLi
         }
         return super.onOptionsItemSelected(item);
     }
-
-    private void setLauncher(View mObj, ImageView mImg){
-        Launcher mLaunch = new Launcher(this.getActivityResultRegistry(), this.getApplicationContext(), new Launcher.OnCapture() {
-            @Override
-            public void invoke(Uri uri) {
-                if (uri != null) {
-                    try {
-                        Log.d("PhotoPicker", "Selected URI: " + uri);
-                        if(mImg != null){
-                            mImg.setImageURI(uri);
-                        }
-                        currUri = uri;
-                    }
-                    catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                }
-                else {
-                    Basic.msg("No hay imagen seleccionada!");
-                }
-            }
-        });
-        getLifecycle().addObserver(mLaunch);
-        mObj.setOnClickListener(v -> {
-            try {
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                    mLaunch.launchPicker();
-                }
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-        });
-        mObj.setOnLongClickListener(v -> {
-            try {
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                    mLaunch.launchCamera();
-                }
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-            return false;
-        });
-    }
-
 
     @Override
     public void onClick(View view) {
