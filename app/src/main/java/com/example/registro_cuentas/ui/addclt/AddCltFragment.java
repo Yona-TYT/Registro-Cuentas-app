@@ -59,22 +59,17 @@ public class AddCltFragment extends Fragment  implements View.OnClickListener, A
     private Context mContext = BaseContext.getContext();
 
     // DB
-    private List<Pagos> appDBregistro = StartVar.listreg;
-    private DaoClt daoCliente = StartVar.appDBall.daoClt();
+    private DaoClt daoCliente;
+    private DaoDeb daoDeuda;
+    private DaoAcc daoCuenta;
 
-    private DaoDeb daoDeuda = StartVar.appDBall.daoDeb();
-    private List<Deuda> listDeuda = new ArrayList<>();
 
     private List<Cliente> listCliente = new ArrayList<>();
     private Cliente mClt = null;
     private Deuda mDeb = null;
     private Cuenta mAcc = null;
 
-
-    private DaoAcc daoCuenta = StartVar.appDBall.daoAcc();
-
     private ConstraintLayout mConstrain;
-    private BottomNavigationView mNavBar = StartVar.mNavBar;
 
     private TextView mText1;
     private TextView mText2;
@@ -182,7 +177,10 @@ public class AddCltFragment extends Fragment  implements View.OnClickListener, A
         mInputList.add(mInput2);
         mInputList.add(mInput3);
 
-        listDeuda = daoDeuda.getUsers();
+        //Inicializa los dao
+        daoCliente = StartVar.appDBall.daoClt();
+        daoDeuda = StartVar.appDBall.daoDeb();
+        daoCuenta = StartVar.appDBall.daoAcc();
 
         List<Cuenta> mAccList = StartVar.appDBall.daoAcc().getUsers();
         if (!mAccList.isEmpty()) {
@@ -194,15 +192,6 @@ public class AddCltFragment extends Fragment  implements View.OnClickListener, A
         mInput3.setCurrencySymbol(mCurr, true);
         mInput3.setText("0");
         List<View> mViewL1 = new ArrayList<>();
-        mViewL1.add(mNavBar);
-        // Para eventos al mostrar o ocultar el teclado
-        Basic mKeyBoardEvent = new Basic(mContext);
-        mKeyBoardEvent.keyboardEvent(mConstrain, mInput1, mViewL1, 0); //opt = 0 is clear elm focus
-        //-------------------------------------------------------------------------------------
-
-        // Para eventos al mostrar o ocultar el teclado-----
-        mBasic.steAllKeyEvent(mConstrain, mInputList);
-        //-----------------------------------------------
 
         //Inicia el sw dependiendo de swEstat
         mSwActive.setChecked(swEstat);
@@ -238,6 +227,7 @@ public class AddCltFragment extends Fragment  implements View.OnClickListener, A
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
                 currSel2 = i;
                 mDeb = null;
+                mClt = null;
 
                 if (i > 0) {
                     mClt = listCliente.get(i-1);
@@ -359,6 +349,7 @@ public class AddCltFragment extends Fragment  implements View.OnClickListener, A
                 mSpin3.setEnabled(false);
             }
         }
+
         if (itemId == R.id.check_clt1){
             checkEstat = !checkEstat;
         }
@@ -389,8 +380,18 @@ public class AddCltFragment extends Fragment  implements View.OnClickListener, A
                 currdate = LocalDate.now().toString();
             }
 
-            if (currSel2 == 0){
-                String cltId = DatabaseUtils.generateId("cltID", daoDeuda);
+            if(mClt == null){
+                for(Cliente mC : daoCliente.getUsers()){
+                    if(mC.nombre.equals(nombre.toLowerCase())){
+                        mInput1.setText("");
+                        Basic.msg("El Nombre Ya EXISTE!");
+                        return;
+                    }
+                }
+            }
+
+            if (currSel2 == 0 && mClt == null){
+                String cltId = DatabaseUtils.generateId("cltID", daoCliente);
                 String debId = DatabaseUtils.generateId("debID", daoDeuda);
                 String accId = daoCuenta.getUsers().get(StartVar.accSelect).cuenta;
 
@@ -425,6 +426,13 @@ public class AddCltFragment extends Fragment  implements View.OnClickListener, A
                             CalcCalendar.getCorrectDate(currdate, currtTyp), currSel3,0d, (swEstat?"@null":currdate)
                     );
                     daoDeuda.insertUser(objDeb);
+
+                    daoCliente.updateUser(
+                            cltId, nombre, alias, "@null", 0,
+                            mClt.fecha, 0f,  mClt.ulfech
+                    );
+
+                    daoCliente.updateBits(cltId, BitsOper.setBitInHexString(hexString, currtAcc, checkEstat));
                 }
                 else {
                     Log.d("Monto", "-->>>>>>>>>>>>>>>>>>>>>>>>>>>> Aqui hayyyyyy: " + mClt.cliente);
@@ -454,15 +462,7 @@ public class AddCltFragment extends Fragment  implements View.OnClickListener, A
             //Actualisza la lista de fechas
             CalcCalendar.addCurrentMonthIfAbsent(mContext);
 
-            StartVar mVars = new StartVar(mContext);
-            //Recarga La lista de la DB ----------------------------
-            mVars.getCltListDB();
-            //-------------------------------------------------------
-
             Basic.msg("Se han GUARDADO los cambios");
-
-            setAdapterClt(0);
-            //mSpin1.setSelection(0); //Set default client
 
             DBListCreator.createDbLists(); //Actualiza la lista para exportar csv
         }
@@ -479,7 +479,7 @@ public class AddCltFragment extends Fragment  implements View.OnClickListener, A
     }
 
     private int nextItem(List<?> mList, int currentIndex) {
-        if (mList.isEmpty()) {
+        if (mList.size() < 2) {
             Basic.msg("La Lista esta VACIA!");
             return 0;
         }
@@ -487,7 +487,7 @@ public class AddCltFragment extends Fragment  implements View.OnClickListener, A
     }
 
     private int prevItem(List<?> mList, int currentIndex) {
-        if (mList.isEmpty()) {
+        if (mList.size() < 2) {
             Basic.msg("La Lista esta VACIA!");
             return 0;
         }
@@ -576,13 +576,6 @@ public class AddCltFragment extends Fragment  implements View.OnClickListener, A
         }
 
         int globalPos = currtAcc;
-        if (globalPos < 0) {
-            // Ignora negativos: bit=0
-            mCheck.setChecked(false);
-            checkEstat = false;
-            mCheck.setText("Visible para: " + mAcc.nombre);
-            return;
-        }
 
         // Cálculo correcto: grupo y offset
         int group = globalPos / 32;

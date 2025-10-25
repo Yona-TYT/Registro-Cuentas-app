@@ -21,6 +21,7 @@ import android.widget.SearchView;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
 
+import com.example.registro_cuentas.BitsOper;
 import com.example.registro_cuentas.activitys.AccDtailsActivity;
 import com.example.registro_cuentas.db.AllDao;
 import com.example.registro_cuentas.BaseContext;
@@ -52,33 +53,26 @@ import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 
-public class HomeFragment extends Fragment implements View.OnClickListener, AdapterView.OnItemClickListener, View.OnFocusChangeListener{
+public class HomeFragment extends Fragment implements View.OnClickListener, AdapterView.OnItemClickListener{
 
     private FragmentHomeBinding binding;
 
     private Context mContext;
 
     // DB ----------------------------------------------------------------
-    private AllDao appDBcuenta = StartVar.appDBall;
-
-    private List<Cuenta> listCuenta;
+    private DaoPay daoPagos;
+    private DaoDeb daoDeuda;
+    private DaoClt daoCliente;
+    private DaoAcc daoCuenta;
+    private List<Cuenta> listCuenta = new ArrayList<>();
     private List<Pagos> listPagos = new ArrayList<>();
     //--------------------------------------------------------------------
 
-    //--------------------------
-    private DaoPay daoPagos = StartVar.appDBall.daoPay();
-    private DaoDeb daoDeuda = StartVar.appDBall.daoDeb();
-    private List<Deuda> listDeuda = new ArrayList<>();
 
-    private DaoClt daoCliente = StartVar.appDBall.daoClt();
-    private List<Cliente> listCliente = new ArrayList<>();
-
-    private DaoAcc daoCuenta = StartVar.appDBall.daoAcc();
     private Cuenta mAcc;
     //------------------------------------
 
     private ConstraintLayout mConstrain;
-    private BottomNavigationView mNavBar = StartVar.mNavBar;
 
     //Todos los Spinner
     private Spinner mSpin1;
@@ -92,7 +86,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener, Adap
     private int currSel4 = StartVar.currSel4;
 
     private boolean allSel3 = false;
-    List<Fecha> dateOrderedList = StartVar.appDBall.daoDat().getUsers();
+    List<Fecha> dateOrderedList;
 
 
     private List<String> mSpinL1= Arrays.asList("Dolar", "Bolivar");
@@ -143,7 +137,6 @@ public class HomeFragment extends Fragment implements View.OnClickListener, Adap
 
         mLv1.setOnItemClickListener(this);
         mConstrain.setOnClickListener(this);
-        mSearch1.setOnFocusChangeListener(this);
 
         GetDollar mGet = new GetDollar(mContext, getActivity(), 0, mInput1);
         try {
@@ -151,6 +144,14 @@ public class HomeFragment extends Fragment implements View.OnClickListener, Adap
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+
+        //Inicializa los dao
+        daoCuenta = StartVar.appDBall.daoAcc();
+        daoPagos = StartVar.appDBall.daoPay();
+        daoCliente = StartVar.appDBall.daoClt();
+        daoDeuda = StartVar.appDBall.daoDeb();
+
+        dateOrderedList = StartVar.appDBall.daoDat().getUsers();
 
         //Para guardar el precio del dolar
         mInput1.setOnFocusChangeListener(new View.OnFocusChangeListener() {
@@ -174,12 +175,6 @@ public class HomeFragment extends Fragment implements View.OnClickListener, Adap
                         setCltList();
                     }
                     //----------------------------------------------------------------------------------
-                }
-                else{
-                    // Para eventos al mostrar o ocultar el teclado
-                    List<View> mViewL1 = Arrays.asList(mLv1, mNavBar, mSearch1);
-                    setHiddenObjc(mViewL1, mInput1);
-                    //-----------------------------------------------
                 }
             }
         });
@@ -262,7 +257,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener, Adap
                 StartVar mVars = new StartVar(mContext);
                 int idx = i;
                 if(!listCuenta.isEmpty()) {
-                    mAcc = appDBcuenta.daoAcc().getUsers().get(idx);
+                    mAcc = daoCuenta.getUsers().get(idx);
                     StartVar.appDBall.daoCfg().updateCurrAcc(StartVar.mConfID, idx);
                     mVars.setCurrentTyp(mAcc.acctipo);
                 }
@@ -453,7 +448,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener, Adap
             String fecha = mPay.fecha;
             if(allSel3) {
                 Object[] stList = new Object[5];
-                stList[0] = i;
+                stList[0] = mPay.pago;
                 stList[1] = name;
                 stList[2] = mPay.monto;
                 stList[3] = fecha;
@@ -466,7 +461,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener, Adap
 
                     if(date.getMonth().toString().equals(selFecha.mes)){
                         Object[] stList = new Object[5];
-                        stList[0] = i;
+                        stList[0] = mPay.pago;
                         stList[1] = name;
                         stList[2] = mPay.monto;
                         stList[3] = fecha;
@@ -495,9 +490,10 @@ public class HomeFragment extends Fragment implements View.OnClickListener, Adap
             Cliente mClt = listClt.get(i);
             Deuda mDeb = daoDeuda.getUserByCltAndAcc(mClt.cliente, mAcc.cuenta);
 
-            if(mDeb==null){
+            if(mDeb==null || !BitsOper.isActiveBit(mClt.bits , currSel2 )){
                 continue;
             }
+
             Object[] stList = new Object[4];
             stList[0] = i;
 
@@ -560,27 +556,6 @@ public class HomeFragment extends Fragment implements View.OnClickListener, Adap
     public void empyLists(){
         accnameList.clear();
         regdirList.clear();
-    }
-
-    @Override
-    public void onFocusChange(View view, boolean b) {
-        //Toast.makeText(mContext, "Siz is "+b, Toast.LENGTH_LONG).show();
-        int itemId = view.getId();
-        if (itemId == R.id.searchBar) {
-            if (b) {
-                mNavBar.setVisibility(View.INVISIBLE);
-            }
-            else {
-                mNavBar.setVisibility(View.VISIBLE);
-            }
-        }
-    }
-
-    public void setHiddenObjc(List<View> mList, View objc){
-        //----------------------------------------------------------------------------------------------------
-        Basic mKeyBoardEvent = new Basic(mContext);
-        mKeyBoardEvent.keyboardEvent(mConstrain, objc, mList, 0); //opt = 0 is clear elm focus
-        //-------------------------------------------------------------------------------------
     }
 
 }

@@ -15,7 +15,6 @@ import com.example.registro_cuentas.db.Fecha;
 import com.example.registro_cuentas.db.Pagos;
 import com.example.registro_cuentas.db.UsuarioQueue;
 import com.example.registro_cuentas.drive.SetWorkResult;
-import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import java.nio.ByteBuffer;
 import java.time.LocalDate;
@@ -77,7 +76,7 @@ public class StartVar {
     public static List<Object[]> bitList = new ArrayList<>();
 
     public static int currSel4 = 0;
-    public static int payIndex = 0;
+    public static String currPayId = "";
     public static int cltIndex = 0;
     public static String cltBit = "0x0";
 
@@ -87,8 +86,6 @@ public class StartVar {
 
     public static final String dirAppName = "/.accdata/";
 
-    //Barra de navegacion
-    public static BottomNavigationView mNavBar;
     //Root View
     public static View mRootView;
 
@@ -196,7 +193,6 @@ public class StartVar {
     public void setDollar(Double value){
         StartVar.mDollar = value;
     }
-    public void setNavBar(BottomNavigationView view){mNavBar = view;}
     public void setRootView(View view){mRootView = view;}
 
     public void setArrayList(ArrayList<String> listA, ArrayList<String> listB, ArrayList<String> listC){
@@ -208,8 +204,8 @@ public class StartVar {
     public void setCurrSel4(int value){
         StartVar.currSel4 = value;
     }
-    public void setPayIndex(int value){
-        StartVar.payIndex = value;
+    public void setPayId(String value){
+        StartVar.currPayId = value;
     }
     public void setCltIndex(int value){
         StartVar.cltIndex = value;

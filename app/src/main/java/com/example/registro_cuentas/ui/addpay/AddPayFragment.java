@@ -57,24 +57,21 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class AddPayFragment extends Fragment implements View.OnClickListener, View.OnFocusChangeListener{
+public class AddPayFragment extends Fragment implements View.OnClickListener {
 
     private FragmentAddpayBinding binding;
 
     private Context mContext = BaseContext.getContext();
 
     // DB
-    private DaoPay daoPagos = StartVar.appDBall.daoPay();
-    private DaoDeb daoDeuda = StartVar.appDBall.daoDeb();
-    private List<Deuda> listDeuda = new ArrayList<>();
+    private DaoAcc daoCuenta;
+    private DaoPay daoPagos;
+    private DaoDeb daoDeuda;
+    private DaoClt daoCliente;
 
-    private DaoClt daoCliente = StartVar.appDBall.daoClt();
     private List<Cliente> listCliente = new ArrayList<>();
 
-    private DaoAcc daoCuenta = StartVar.appDBall.daoAcc();
-
     private ConstraintLayout mConstrain;
-    private BottomNavigationView mNavBar = StartVar.mNavBar;
 
     //Todos los Inputs
     private EditText mInput1;
@@ -157,9 +154,6 @@ public class AddPayFragment extends Fragment implements View.OnClickListener, Vi
         mBtnImg1 = binding.buttPay2;
         imageView1 = binding.imagePay1;
 
-        mInput1.setOnFocusChangeListener(this);
-        mInput2.setOnFocusChangeListener(this);
-        mInput3.setOnFocusChangeListener(this);
         mConstrain.setOnClickListener(this);
         mButt1.setOnClickListener(this);
         //mBtnImg1.setOnClickListener(this);
@@ -173,24 +167,22 @@ public class AddPayFragment extends Fragment implements View.OnClickListener, Vi
         mInputList.add(mInput3);
         //mInputList.add(mInput4);
 
+        //Inicializa los dao
+        daoCuenta = StartVar.appDBall.daoAcc();
+        daoPagos = StartVar.appDBall.daoPay();
+        daoCliente = StartVar.appDBall.daoClt();
+        daoDeuda = StartVar.appDBall.daoDeb();
+
         //Efecto moneda
         //-------------------------------------------------------------------------------------------------------
         mInput4.setCurrencySymbol(mCurr, true);
         mInput4.setText(Basic.setFormatter("0"));
-        List<View> mViewL1 = new ArrayList<>();
-        mViewL1.add(mNavBar);
-        // Para eventos al mostrar o ocultar el teclado
-        Basic mKeyBoardEvent = new Basic(mContext);
-        mKeyBoardEvent.keyboardEvent(mConstrain, mInput1, mViewL1, 0); //opt = 0 is clear elm focus
-        //-------------------------------------------------------------------------------------
 
         mPermiss = StartVar.mPermiss;
         if(daoPagos != null) {
             mIndex = DatabaseUtils.generateId("payID", daoPagos);
         }
         listCliente = daoCliente.getUsers();
-
-        listDeuda = daoDeuda.getUsers();
 
         //Para la lista del selector Cliente ----------------------------------------------------------------------------------------------
         mCltList.add("Agregar");
@@ -240,6 +232,8 @@ public class AddPayFragment extends Fragment implements View.OnClickListener, Vi
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
                 currSel1 = i;
+                mInput2.setHint("Alias (Opcional)");
+
                 if (i > 0) {
 
                     setEnabled(true);
@@ -248,14 +242,17 @@ public class AddPayFragment extends Fragment implements View.OnClickListener, Vi
                     mInput1.setEnabled(false);
 
                     String alias = mAliList.get(i).toUpperCase();
-                    if (!alias.isEmpty()) {
-                        mInput2.setText(alias);
-                        mInput2.setEnabled(false);
+                    mInput2.setText(alias);
+                    mInput2.setEnabled(false);
+                    if(alias.isEmpty()){
+                        mInput2.setHint("Vacio");
                     }
 
                     Cliente mClt = daoCliente.getUsers(mIdList.get(i));
 
-                    String accId = daoCuenta.getUsers().get(StartVar.accSelect).cuenta;
+                    Cuenta mAcc = daoCuenta.getUsers().get(StartVar.accSelect);
+
+                    String accId = mAcc.cuenta;
 
                     Deuda mDeb = daoDeuda.getUserByCltAndAcc(mClt.cliente, accId);
 
@@ -269,10 +266,15 @@ public class AddPayFragment extends Fragment implements View.OnClickListener, Vi
                             int mult = CalcCalendar.getRangeMultiple(ultFec, currtTyp);
                             Double monto = Basic.getDebt(mult, mDeb.rent, mDeb.paid);
 
-
-                            if (mult <= 0) {
-                                setEnabled(false);
-                                Basic.msg("Este cliente no Tine DEUDAS!");
+                            if (mAcc.acctipo > 0) {
+                                if(mDeb.rent == 0){
+                                    setEnabled(false);
+                                    Basic.msg("Cliente sin RENTA");
+                                }
+                                else if (monto <= 0) {
+                                    setEnabled(false);
+                                    Basic.msg("Este cliente no Tiene DEUDAS!");
+                                }
                             }
                         }
                         else {
@@ -499,6 +501,14 @@ public class AddPayFragment extends Fragment implements View.OnClickListener, Vi
                 //-------------------------------------------------------------------
 
                if(newClt){
+                   for(Cliente mC : daoCliente.getUsers()){
+                       if(mC.nombre.equals(mList.get(1).toLowerCase())){
+                           mInput1.setText("");
+                           Basic.msg("El Nombre Ya EXISTE!");
+                           return;
+                       }
+                   }
+
                    cltId = DatabaseUtils.generateId("cltID", daoCliente);
                    Cliente objClt = null;
                    objClt = new Cliente(
@@ -510,7 +520,7 @@ public class AddPayFragment extends Fragment implements View.OnClickListener, Vi
 
                    Deuda objDeb = new Deuda(
                            debId, accId, cltId, 0d, 0, currdate,
-                           0, 0, CalcCalendar.getCorrectDate(currdate, currtTyp), 0,0d,"@null"
+                           1, 0, CalcCalendar.getCorrectDate(currdate, currtTyp), 0,0d,"@null"
                            );
                    daoDeuda.insertUser(objDeb);
                }
@@ -607,16 +617,6 @@ public class AddPayFragment extends Fragment implements View.OnClickListener, Vi
         }
         else if(idx == 3){
             Basic.msg("Primero debe registrar una CUENTA!");
-        }
-    }
-
-    @Override
-    public void onFocusChange(View view, boolean b) {
-        //Toast.makeText(mContext, "Siz is "+b, Toast.LENGTH_LONG).show();
-        if (b) {
-            mNavBar.setVisibility(View.INVISIBLE);
-        } else {
-            mNavBar.setVisibility(View.VISIBLE);
         }
     }
 }

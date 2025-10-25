@@ -60,7 +60,6 @@ public class AccEditActivity extends AppCompatActivity implements View.OnClickLi
     //---------------------------------------------------------------------
 
     private ConstraintLayout mConstrain;
-    private BottomNavigationView mNavBar = StartVar.mNavBar;
 
     //Botones
     private Button mButt1;

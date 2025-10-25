@@ -5,29 +5,23 @@ import static android.widget.GridLayout.spec;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Rect;
 import android.graphics.Typeface;
 import android.os.Build;
+import android.os.Handler;
 import android.util.DisplayMetrics;
 import android.view.Gravity;
-import android.view.View;
-import android.view.ViewTreeObserver;
-import android.widget.EditText;
 import android.widget.GridLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.cardview.widget.CardView;
-import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.content.ContextCompat;
 
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.text.NumberFormat;
 import java.text.ParseException;
-import java.util.ArrayList;
 import java.util.IllformedLocaleException;
-import java.util.List;
 import java.util.Locale;
 
 public class Basic {
@@ -41,6 +35,8 @@ public class Basic {
     private static final String EXTRA_SENDER_TYPE = "sender_type";
     private static final String EVENT_FILE_UPLOADED = "file_uploaded";
 
+    private static String oldMsg = "";
+    private static long lastShowTime = 0;
 
     public Basic(Context mContex) {
         this.mContex = mContex;
@@ -54,77 +50,6 @@ public class Basic {
         DisplayMetrics metrics = new DisplayMetrics();
         float scaledDensity = mContex.getResources().getDisplayMetrics().scaledDensity;
         return getPixelSiz(id) / scaledDensity;
-    }
-
-    public void keyboardEvent(ConstraintLayout mConstrain, View elm,  List<View> mViewList, int opt) {
-        // Para eventos al mostrar o ocultar el teclado
-//        mConstrain.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
-//            @Override
-//            public void onGlobalLayout() {
-//                // on below line we are creating a variable for rect
-//                Rect rect = new Rect();
-//                View contain = StartVar.mRootView;
-//                // on below line getting frame for our relative layout.
-//                contain.getWindowVisibleDisplayFrame(rect);
-//                // on below line getting screen height for relative layout.
-//                int screenHeight = contain.getRootView().getHeight();
-//                // on below line getting keypad height.
-//                int keypadHeight = screenHeight - rect.bottom;
-//                if (keypadHeight > screenHeight * 0.15) {
-//                    isDow = false;
-//                    isUp = true;
-//
-//                    for (View mView : mViewList) {
-//                        if(mView != null) {
-//                            mView.setVisibility(View.INVISIBLE);
-//                        }
-//                    }
-//                    //Toast.makeText(MainActivity.this, "Keyboard is +", Toast.LENGTH_LONG).show();
-//                }
-//                else {
-//                    isDow = true;
-//                    isUp = false;
-//                    //Toast.makeText(mContex, "Keyboard is -", Toast.LENGTH_LONG).show();
-//
-//                    if (elm != null) {
-//                        //Toast.makeText(mContex, "Aqui hayyyyyyyy?  " , Toast.LENGTH_LONG).show();
-//                        elm.clearFocus();
-//                    }
-//
-//                    for (View mView : mViewList) {
-//                        if(mView != null) {
-//                            mView.setVisibility(View.VISIBLE);
-//                        }
-//                    }
-//                    mConstrain.getViewTreeObserver().removeOnGlobalLayoutListener(this);
-//
-//                }
-//            }
-//        });
-    }
-
-    public void steAllKeyEvent(ConstraintLayout mConstrain, List<EditText> mInputList) {
-        for (int i = 0; i < mInputList.size(); i++) {
-            // Para eventos al mostrar o ocultar el teclado
-            keyboardEvent(mConstrain, mInputList.get(i), new ArrayList<>(), 0); //opt = 0 is clear elm focus
-            //-------------------------------------------------------------------------------------
-        }
-    }
-
-    public void setAllfocusEvent(View elm, List<EditText> mInputList) {
-        for (int i = 0; i < mInputList.size(); i++) {
-            mInputList.get(i).setOnFocusChangeListener(new View.OnFocusChangeListener() {
-                @Override
-                public void onFocusChange(View view, boolean b) {
-                    //Toast.makeText(mContext, "Siz is "+b, Toast.LENGTH_LONG).show();
-                    if (b) {
-                        elm.setVisibility(View.INVISIBLE);
-                    } else {
-                        elm.setVisibility(View.VISIBLE);
-                    }
-                }
-            });
-        }
     }
 
     public static Float parseFloat(String value){
@@ -249,6 +174,16 @@ public class Basic {
 
     public static void msg(String msg)
     {
+        long currentTime = System.currentTimeMillis();
+        long fiveSecondsAgo = currentTime - 3000;  // 5s en ms
+
+        if (oldMsg.equals(msg) && lastShowTime > fiveSecondsAgo) {
+            return;  // No mostrar
+        }
+        // Actualiza el mensaje anterior y el tiempo de muestra
+        oldMsg = msg;
+        lastShowTime = currentTime;
+
         TextView text = new TextView(mContex);
         // Se ajustan los parametros del Texto ----------------------------------
         text.setText(msg);
@@ -315,6 +250,4 @@ public class Basic {
         intent.putExtra(EXTRA_SENDER_TYPE, senderType);
         context.sendBroadcast(intent);
     }
-
-
 }

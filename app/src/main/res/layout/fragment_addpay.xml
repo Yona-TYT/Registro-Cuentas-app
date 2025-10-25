@@ -1,188 +1,193 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/constrainPay"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:fillViewport="true"
     tools:context=".ui.addpay.AddPayFragment">
+    <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:id="@+id/constrainPay"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:context=".ui.addpay.AddPayFragment">
 
-    <Spinner
-        android:id="@+id/spin_pay1"
-        android:layout_width="@dimen/spinner_w1"
-        android:layout_height="@dimen/spinner_h1"
-        android:layout_marginTop="45dp"
-        android:padding="5dp"
-        android:textSize="@dimen/selec_text"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/guideline2"
-        app:layout_constraintHorizontal_bias="0.576"
-        app:layout_constraintStart_toEndOf="@+id/input_pay1"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.039" />
+        <Spinner
+            android:id="@+id/spin_pay1"
+            android:layout_width="@dimen/spinner_w1"
+            android:layout_height="@dimen/spinner_h1"
+            android:layout_marginTop="45dp"
+            android:padding="5dp"
+            android:textSize="@dimen/selec_text"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/guideline2"
+            app:layout_constraintHorizontal_bias="0.576"
+            app:layout_constraintStart_toEndOf="@+id/input_pay1"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.039" />
 
-    <Spinner
-        android:id="@+id/spin_pay2"
-        android:layout_width="@dimen/spinner_w1"
-        android:layout_height="@dimen/spinner_h1"
-        android:layout_marginTop="120dp"
-        android:padding="5dp"
-        android:textSize="@dimen/selec_text"
-        app:layout_constraintEnd_toStartOf="@+id/guideline2"
-        app:layout_constraintHorizontal_bias="0.576"
-        app:layout_constraintStart_toEndOf="@+id/input_pay4"
-        app:layout_constraintTop_toBottomOf="@+id/spin_pay1" />
+        <Spinner
+            android:id="@+id/spin_pay2"
+            android:layout_width="@dimen/spinner_w1"
+            android:layout_height="@dimen/spinner_h1"
+            android:layout_marginTop="120dp"
+            android:padding="5dp"
+            android:textSize="@dimen/selec_text"
+            app:layout_constraintEnd_toStartOf="@+id/guideline2"
+            app:layout_constraintHorizontal_bias="0.576"
+            app:layout_constraintStart_toEndOf="@+id/input_pay4"
+            app:layout_constraintTop_toBottomOf="@+id/spin_pay1" />
 
-    <TextView
-        android:id="@+id/txview_pay1"
-        android:layout_width="@dimen/txview_wm"
-        android:layout_height="@dimen/txview_h1"
-        android:layout_marginTop="50dp"
-        android:padding="5dp"
-        android:text="Seleccione Imagen / Capture"
-        android:textSize="@dimen/inner_text_1"
-        android:textStyle="bold"
-        app:layout_constraintEnd_toStartOf="@+id/guideline2"
-        app:layout_constraintHorizontal_bias="0.96"
-        app:layout_constraintStart_toStartOf="@+id/guideline"
-        app:layout_constraintTop_toBottomOf="@+id/spin_pay2"
-        tools:ignore="MissingConstraints" />
+        <TextView
+            android:id="@+id/txview_pay1"
+            android:layout_width="@dimen/txview_wm"
+            android:layout_height="@dimen/txview_h1"
+            android:layout_marginTop="50dp"
+            android:padding="5dp"
+            android:text="Seleccione Imagen / Capture"
+            android:textSize="@dimen/inner_text_1"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toStartOf="@+id/guideline2"
+            app:layout_constraintHorizontal_bias="0.96"
+            app:layout_constraintStart_toStartOf="@+id/guideline"
+            app:layout_constraintTop_toBottomOf="@+id/spin_pay2"
+            tools:ignore="MissingConstraints" />
 
-    <ImageButton
-        android:id="@+id/butt_pay2"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="28dp"
-        android:layout_marginEnd="52dp"
-        android:src="@android:drawable/ic_menu_gallery"
-        app:layout_constraintEnd_toStartOf="@+id/guideline2"
-        app:layout_constraintHorizontal_bias="0.82"
-        app:layout_constraintStart_toEndOf="@+id/image_pay1"
-        app:layout_constraintTop_toBottomOf="@+id/txview_pay1" />
+        <ImageButton
+            android:id="@+id/butt_pay2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="28dp"
+            android:layout_marginEnd="52dp"
+            android:src="@android:drawable/ic_menu_gallery"
+            app:layout_constraintEnd_toStartOf="@+id/guideline2"
+            app:layout_constraintHorizontal_bias="0.82"
+            app:layout_constraintStart_toEndOf="@+id/image_pay1"
+            app:layout_constraintTop_toBottomOf="@+id/txview_pay1" />
 
-    <com.google.android.material.textfield.TextInputEditText
-        android:id="@+id/input_pay1"
-        android:layout_width="@dimen/input_wm"
-        android:layout_height="@dimen/input_h1"
-        android:layout_marginTop="50dp"
-        android:hint="Nombre Cliente"
-        android:inputType="textCapWords"
-        android:maxLength="10"
-        android:padding="10dp"
-        android:textSize="@dimen/inner_text_2"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/guideline2"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="@+id/guideline"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.018"
-        tools:ignore="MissingConstraints" />
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/input_pay1"
+            android:layout_width="@dimen/input_wm"
+            android:layout_height="@dimen/input_h1"
+            android:layout_marginTop="50dp"
+            android:hint="Nombre Cliente"
+            android:inputType="textNoSuggestions|textCapWords"
+            android:maxLength="10"
+            android:padding="10dp"
+            android:textSize="@dimen/inner_text_2"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/guideline2"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="@+id/guideline"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.018"
+            tools:ignore="MissingConstraints" />
 
-    <com.example.registro_cuentas.CurrencyEditText
-        android:id="@+id/input_pay4"
-        android:layout_width="@dimen/input_wm"
-        android:layout_height="@dimen/input_h1"
-        android:layout_marginTop="5dp"
-        android:hint="Monto"
-        android:ems="10"
-        android:imeOptions="actionDone"
-        android:maxLength="20"
-        android:textSize="@dimen/inner_text_2"
-        app:localeTag="ES"
-        app:maxNumberOfDecimalDigits="2"
-        app:useCurrencySymbolAsHint="true"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/guideline2"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="@+id/guideline"
-        app:layout_constraintTop_toBottomOf="@+id/input_pay3"
-        app:layout_constraintVertical_bias="0.005"
-        tools:ignore="MissingConstraints" />
+        <com.example.registro_cuentas.CurrencyEditText
+            android:id="@+id/input_pay4"
+            android:layout_width="@dimen/input_wm"
+            android:layout_height="@dimen/input_h1"
+            android:layout_marginTop="5dp"
+            android:hint="Monto"
+            android:ems="10"
+            android:imeOptions="actionDone"
+            android:maxLength="20"
+            android:textSize="@dimen/inner_text_2"
+            app:localeTag="ES"
+            app:maxNumberOfDecimalDigits="2"
+            app:useCurrencySymbolAsHint="true"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/guideline2"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="@+id/guideline"
+            app:layout_constraintTop_toBottomOf="@+id/input_pay3"
+            app:layout_constraintVertical_bias="0.005"
+            tools:ignore="MissingConstraints" />
 
-    <Switch
-        android:id="@+id/sw_pay1"
-        android:layout_width="@dimen/input_wm"
-        android:layout_height="@dimen/input_h1"
-        android:layout_marginTop="8dp"
-        android:padding="10dp"
-        android:text="Modo (%)"
-        app:layout_constraintEnd_toStartOf="@+id/guideline2"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="@+id/guideline"
-        app:layout_constraintTop_toBottomOf="@+id/input_pay4"
-        tools:ignore="UseSwitchCompatOrMaterialXml" />
+        <Switch
+            android:id="@+id/sw_pay1"
+            android:layout_width="@dimen/input_wm"
+            android:layout_height="@dimen/input_h1"
+            android:layout_marginTop="8dp"
+            android:padding="10dp"
+            android:text="Modo (%)"
+            app:layout_constraintEnd_toStartOf="@+id/guideline2"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="@+id/guideline"
+            app:layout_constraintTop_toBottomOf="@+id/input_pay4"
+            tools:ignore="UseSwitchCompatOrMaterialXml" />
 
-    <com.google.android.material.textfield.TextInputEditText
-        android:id="@+id/input_pay3"
-        android:layout_width="@dimen/input_wm"
-        android:layout_height="@dimen/input_h1"
-        android:layout_marginTop="4dp"
-        android:hint="Concepto (Opcional)"
-        android:inputType="textCapWords"
-        android:maxLength="20"
-        android:padding="10dp"
-        android:textSize="@dimen/inner_text_2"
-        app:layout_constraintEnd_toStartOf="@+id/guideline2"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="@+id/guideline"
-        app:layout_constraintTop_toBottomOf="@+id/input_pay2"
-        tools:ignore="MissingConstraints" />
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/input_pay3"
+            android:layout_width="@dimen/input_wm"
+            android:layout_height="@dimen/input_h1"
+            android:layout_marginTop="4dp"
+            android:hint="Concepto (Opcional)"
+            android:inputType="textNoSuggestions|textCapWords"
+            android:maxLength="20"
+            android:padding="10dp"
+            android:textSize="@dimen/inner_text_2"
+            app:layout_constraintEnd_toStartOf="@+id/guideline2"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="@+id/guideline"
+            app:layout_constraintTop_toBottomOf="@+id/input_pay2"
+            tools:ignore="MissingConstraints" />
 
-    <com.google.android.material.textfield.TextInputEditText
-        android:id="@+id/input_pay2"
-        android:layout_width="@dimen/input_wm"
-        android:layout_height="@dimen/input_h1"
-        android:layout_marginTop="4dp"
-        android:hint="Alias (Opcional)"
-        android:inputType="textCapWords"
-        android:maxLength="20"
-        android:padding="10dp"
-        android:textSize="@dimen/inner_text_2"
-        app:layout_constraintEnd_toStartOf="@+id/guideline2"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="@+id/guideline"
-        app:layout_constraintTop_toBottomOf="@+id/input_pay1"
-        tools:ignore="MissingConstraints" />
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/input_pay2"
+            android:layout_width="@dimen/input_wm"
+            android:layout_height="@dimen/input_h1"
+            android:layout_marginTop="4dp"
+            android:hint="Alias (Opcional)"
+            android:inputType="textNoSuggestions|textCapWords"
+            android:maxLength="20"
+            android:padding="10dp"
+            android:textSize="@dimen/inner_text_2"
+            app:layout_constraintEnd_toStartOf="@+id/guideline2"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="@+id/guideline"
+            app:layout_constraintTop_toBottomOf="@+id/input_pay1"
+            tools:ignore="MissingConstraints" />
 
-    <ImageView
-        android:id="@+id/image_pay1"
-        android:layout_width="177dp"
-        android:layout_height="125dp"
-        android:layout_marginTop="12dp"
-        app:layout_constraintBottom_toTopOf="@+id/butt_pay1"
-        app:layout_constraintStart_toStartOf="@+id/guideline"
-        app:layout_constraintTop_toBottomOf="@+id/sw_pay1"
-        tools:src="@tools:sample/backgrounds/scenic" />
+        <ImageView
+            android:id="@+id/image_pay1"
+            android:layout_width="177dp"
+            android:layout_height="125dp"
+            android:layout_marginTop="12dp"
+            app:layout_constraintBottom_toTopOf="@+id/butt_pay1"
+            app:layout_constraintStart_toStartOf="@+id/guideline"
+            app:layout_constraintTop_toBottomOf="@+id/sw_pay1"
+            tools:src="@tools:sample/backgrounds/scenic" />
 
-    <Button
-        android:id="@+id/butt_pay1"
-        android:layout_width="@dimen/button_w1"
-        android:layout_height="@dimen/button_h1"
-        android:padding="2dp"
-        android:text="Pagar"
-        android:textSize="@dimen/inner_text_2"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/guideline2"
-        app:layout_constraintHorizontal_bias="0.476"
-        app:layout_constraintStart_toStartOf="@+id/guideline"
-        app:layout_constraintTop_toBottomOf="@+id/input_pay4"
-        app:layout_constraintVertical_bias="0.607" />
+        <Button
+            android:id="@+id/butt_pay1"
+            android:layout_width="@dimen/button_w1"
+            android:layout_height="@dimen/button_h1"
+            android:padding="2dp"
+            android:text="Pagar"
+            android:textSize="@dimen/inner_text_2"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/guideline2"
+            app:layout_constraintHorizontal_bias="0.476"
+            app:layout_constraintStart_toStartOf="@+id/guideline"
+            app:layout_constraintTop_toBottomOf="@+id/input_pay4"
+            app:layout_constraintVertical_bias="0.607" />
 
-    <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/guideline"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        app:layout_constraintGuide_begin="30dp" />
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/guideline"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintGuide_begin="30dp" />
 
-    <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/guideline2"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        app:layout_constraintGuide_end="30dp" />
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/guideline2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintGuide_end="30dp" />
 
-
-
-
-</androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</ScrollView>

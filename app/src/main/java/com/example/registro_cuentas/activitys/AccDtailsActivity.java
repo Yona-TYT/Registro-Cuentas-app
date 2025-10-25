@@ -82,7 +82,7 @@ public class AccDtailsActivity extends AppCompatActivity implements View.OnClick
     private Button mBtton1;
     private Button mBtton2;
 
-    public int payIndex = StartVar.payIndex;
+    public String payId = StartVar.currPayId;
     public int accIndex = StartVar.accSelect;
 
     private List<String> mCurrencyList= Arrays.asList("$", "Bs");

@@ -36,14 +36,14 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class AddAccFragment extends Fragment implements View.OnClickListener, View.OnFocusChangeListener{
+public class AddAccFragment extends Fragment implements View.OnClickListener{
 
     private FragmentAddaccBinding binding;
 
     private Context mContext = BaseContext.getContext();
 
     // DB
-    private DaoAcc daoCuenta = StartVar.appDBall.daoAcc();
+    private DaoAcc daoCuenta;
 
     //Todos los Inputs
     private EditText mInput1;
@@ -58,7 +58,6 @@ public class AddAccFragment extends Fragment implements View.OnClickListener, Vi
     //---------------------------------------------------------------------
 
     private ConstraintLayout mConstrain;
-    private BottomNavigationView mNavBar = StartVar.mNavBar;
 
     //Botones
     private Button mButt1;
@@ -100,22 +99,16 @@ public class AddAccFragment extends Fragment implements View.OnClickListener, Vi
         mButt1 = binding.buttAdd1;
 
         mButt1.setOnClickListener(this);
-        mInput1.setOnFocusChangeListener(this);
-        mInput2.setOnFocusChangeListener(this);
 
         mInputList.add(mInput1);
         mInputList.add(mInput2);
+
+        daoCuenta = StartVar.appDBall.daoAcc();
 
         //Efecto moneda
         //-------------------------------------------------------------------------------------------------------
         mInput3.setCurrencySymbol(mCurr, true);
         mInput3.setText(Basic.setFormatter("0"));
-        List<View> mViewL1 = new ArrayList<>();
-        mViewL1.add(mNavBar);
-        // Para eventos al mostrar o ocultar el teclado
-        Basic mKeyBoardEvent = new Basic(mContext);
-        mKeyBoardEvent.keyboardEvent(mConstrain, mInput1, mViewL1, 0); //opt = 0 is clear elm focus
-        //-------------------------------------------------------------------------------------
 
         //--------------------------------------------------------------------------------------------
         //Para la lista del selector Tipo De Cuenta ----------------------------------------------------------------------------------------------
@@ -220,16 +213,6 @@ public class AddAccFragment extends Fragment implements View.OnClickListener, Vi
         }
         else if(idx == 3){
             Basic.msg("");
-        }
-    }
-
-    @Override
-    public void onFocusChange(View view, boolean b) {
-        //Toast.makeText(mContext, "Siz is "+b, Toast.LENGTH_LONG).show();
-        if (b) {
-            mNavBar.setVisibility(View.INVISIBLE);
-        } else {
-            mNavBar.setVisibility(View.VISIBLE);
         }
     }
 }

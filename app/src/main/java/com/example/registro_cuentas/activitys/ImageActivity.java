@@ -125,11 +125,10 @@ public class ImageActivity extends AppCompatActivity {
 
         mVisible = true;
 
-        listRegistro = StartVar.appDBall.daoPay().getUsers();
-        Pagos mpay = listRegistro.get(StartVar.payIndex);
+        Pagos mPay = StartVar.appDBall.daoPay().getUsers(StartVar.currPayId);
 
         FilesManager mFileM = new FilesManager();
-        mFileM.getImage(mpay.imagen, mImg);
+        mFileM.getImage(mPay.imagen, mImg);
     }
 
     @Override

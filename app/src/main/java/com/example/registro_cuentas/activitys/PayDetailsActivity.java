@@ -45,9 +45,7 @@ public class PayDetailsActivity extends AppCompatActivity implements View.OnClic
     private  Context mContext = BaseContext.getContext();
 
     // DB ----------------------------------------------------------------
-    private AllDao appDBcuenta = StartVar.appDBall;
     private List<Cuenta> listCuenta;
-    private List<Pagos> appDBregistro = StartVar.appDBall.daoPay().getUsers();
     private List<Pagos> listPagos;
     //--------------------------------------------------------------------
 
@@ -67,7 +65,7 @@ public class PayDetailsActivity extends AppCompatActivity implements View.OnClic
     private Button mBtton1;
     private Button mBtton2;
 
-    public int payIndex = StartVar.payIndex;
+    public String payId = StartVar.currPayId;
     public int accIndex = StartVar.accSelect;
 
     private List<String> mCurrencyList= Arrays.asList("$", "Bs");
@@ -159,18 +157,16 @@ public class PayDetailsActivity extends AppCompatActivity implements View.OnClic
 
     @SuppressLint("SetTextI18n")
     public void setTextViewList(){
-        if(!appDBregistro.isEmpty()) {
+        List<Cuenta> mAccList = StartVar.appDBall.daoAcc().getUsers();
+        String accId = "";
+        if(!mAccList.isEmpty()){
+            accId = mAccList.get(accIndex).cuenta;
+        }
+        Pagos mPay = StartVar.appDBall.daoPay().getUsers(payId);
+
+        if(mPay != null) {
             CalcCalendar cale = new CalcCalendar();
-
-            List<Cuenta> mAccList = StartVar.appDBall.daoAcc().getUsers();
-            String accId = "";
-            if(!mAccList.isEmpty()){
-                accId = mAccList.get(accIndex).cuenta;
-            }
-            listPagos = StartVar.appDBall.daoPay().getListByGroupId(accId);
-            Pagos mPay = listPagos.get(payIndex);
             mUser = mPay.pago;
-
             DaoClt mDao = StartVar.appDBall.daoClt();
             String txName = mDao.getSaveName(mPay.cltid);
             String txAlias = mDao.getSaveAlias(mPay.cltid);

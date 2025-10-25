@@ -1,118 +1,127 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/constrainAcc"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:fillViewport="true"
     tools:context=".ui.addacc.AddAccFragment">
 
-    <TextView
-        android:id="@+id/txview1"
-        android:layout_width="@dimen/txview_wm"
-        android:layout_height="@dimen/txview_h1"
-        android:layout_marginEnd="156dp"
-        android:padding="5dp"
-        android:text="Tipo de Cuenta:"
-        android:textSize="@dimen/inner_text_1"
-        android:textStyle="bold"
-        app:layout_constraintEnd_toStartOf="@+id/guideline2"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="@+id/guideline"
-        app:layout_constraintTop_toBottomOf="@+id/input_add3"
-        tools:ignore="MissingConstraints" />
+    <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:id="@+id/constrainAcc"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:context=".ui.addacc.AddAccFragment">
 
-    <Spinner
-        android:id="@+id/spin_add1"
-        android:layout_width="@dimen/spinner_w1"
-        android:layout_height="@dimen/spinner_h1"
-        android:layout_marginEnd="144dp"
-        android:textSize="@dimen/selec_text"
-        android:textStyle="bold"
-        app:layout_constraintEnd_toStartOf="@+id/guideline2"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="@+id/guideline"
-        app:layout_constraintTop_toBottomOf="@+id/txview1" />
+        <TextView
+            android:id="@+id/txview1"
+            android:layout_width="@dimen/txview_wm"
+            android:layout_height="@dimen/txview_h1"
+            android:layout_marginEnd="156dp"
+            android:padding="5dp"
+            android:text="Tipo de Cuenta:"
+            android:textSize="@dimen/inner_text_1"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toStartOf="@+id/guideline2"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="@+id/guideline"
+            app:layout_constraintTop_toBottomOf="@+id/input_add3"
+            tools:ignore="MissingConstraints" />
 
-    <com.google.android.material.textfield.TextInputEditText
-        android:id="@+id/input_add1"
-        android:layout_width="@dimen/input_wm"
-        android:layout_height="@dimen/input_h1"
-        android:layout_marginTop="200dp"
-        android:hint="Nombre Cuenta"
-        android:inputType="textCapWords"
-        android:maxLength="20"
-        android:padding="10dp"
-        android:textSize="@dimen/inner_text_2"
-        app:layout_constraintEnd_toStartOf="@+id/guideline2"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="@+id/guideline"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:ignore="MissingConstraints" />
+        <Spinner
+            android:id="@+id/spin_add1"
+            android:layout_width="@dimen/spinner_w1"
+            android:layout_height="@dimen/spinner_h1"
+            android:layout_marginEnd="144dp"
+            android:textSize="@dimen/selec_text"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toStartOf="@+id/guideline2"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="@+id/guideline"
+            app:layout_constraintTop_toBottomOf="@+id/txview1" />
 
-    <com.google.android.material.textfield.TextInputEditText
-        android:id="@+id/input_add2"
-        android:layout_width="@dimen/input_wm"
-        android:layout_height="@dimen/input_h1"
-        android:hint="Descripcion"
-        android:inputType="textCapWords"
-        android:maxLength="20"
-        android:padding="10dp"
-        android:textSize="@dimen/inner_text_2"
-        app:layout_constraintEnd_toStartOf="@+id/guideline2"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="@+id/guideline"
-        app:layout_constraintTop_toBottomOf="@+id/input_add1"
-        tools:ignore="MissingConstraints" />
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/input_add1"
+            android:layout_width="@dimen/input_wm"
+            android:layout_height="@dimen/input_h1"
+            android:layout_marginTop="200dp"
+            android:hint="Nombre Cuenta"
+            android:inputType="textNoSuggestions|textCapWords"
+            android:maxLength="20"
+            android:padding="10dp"
+            android:textSize="@dimen/inner_text_2"
+            app:layout_constraintEnd_toStartOf="@+id/guideline2"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="@+id/guideline"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:ignore="MissingConstraints" />
 
-    <com.example.registro_cuentas.CurrencyEditText
-        android:id="@+id/input_add3"
-        android:layout_width="@dimen/input_wm"
-        android:layout_height="@dimen/input_h1"
-        android:ems="10"
-        android:hint="Monto Estimado"
-        android:imeOptions="actionDone"
-        android:maxLength="20"
-        android:padding="10dp"
-        android:textSize="@dimen/inner_text_2"
-        app:localeTag="ES"
-        app:maxNumberOfDecimalDigits="2"
-        app:useCurrencySymbolAsHint="true"
-        app:layout_constraintEnd_toStartOf="@+id/guideline2"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="@+id/guideline"
-        app:layout_constraintTop_toBottomOf="@+id/input_add2"
-        tools:ignore="MissingConstraints" />
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/input_add2"
+            android:layout_width="@dimen/input_wm"
+            android:layout_height="@dimen/input_h1"
+            android:hint="Descripcion"
+            android:inputType="textNoSuggestions|textCapWords"
+            android:maxLength="20"
+            android:padding="10dp"
+            android:textSize="@dimen/inner_text_2"
+            app:layout_constraintEnd_toStartOf="@+id/guideline2"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="@+id/guideline"
+            app:layout_constraintTop_toBottomOf="@+id/input_add1"
+            tools:ignore="MissingConstraints" />
 
-    <Button
-        android:id="@+id/butt_add1"
-        android:layout_width="@dimen/button_w1"
-        android:layout_height="@dimen/button_h1"
-        android:layout_marginBottom="248dp"
-        android:padding="2dp"
-        android:text="Guardar"
-        android:textSize="@dimen/inner_text_2"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/guideline2"
-        app:layout_constraintHorizontal_bias="0.476"
-        app:layout_constraintStart_toStartOf="@+id/guideline"
-        app:layout_constraintTop_toBottomOf="@+id/spin_add1"
-        app:layout_constraintVertical_bias="0.196" />
+        <com.example.registro_cuentas.CurrencyEditText
+            android:id="@+id/input_add3"
+            android:layout_width="@dimen/input_wm"
+            android:layout_height="@dimen/input_h1"
+            android:ems="10"
+            android:hint="Monto Estimado"
+            android:imeOptions="actionDone"
+            android:maxLength="20"
+            android:padding="10dp"
+            android:textSize="@dimen/inner_text_2"
+            app:localeTag="ES"
+            app:maxNumberOfDecimalDigits="2"
+            app:useCurrencySymbolAsHint="true"
+            app:layout_constraintEnd_toStartOf="@+id/guideline2"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="@+id/guideline"
+            app:layout_constraintTop_toBottomOf="@+id/input_add2"
+            tools:ignore="MissingConstraints" />
 
-
-    <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/guideline"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        app:layout_constraintGuide_begin="30dp" />
-
-    <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/guideline2"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        app:layout_constraintGuide_end="30dp" />
+        <Button
+            android:id="@+id/butt_add1"
+            android:layout_width="@dimen/button_w1"
+            android:layout_height="@dimen/button_h1"
+            android:layout_marginBottom="248dp"
+            android:padding="2dp"
+            android:text="Guardar"
+            android:textSize="@dimen/inner_text_2"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/guideline2"
+            app:layout_constraintHorizontal_bias="0.476"
+            app:layout_constraintStart_toStartOf="@+id/guideline"
+            app:layout_constraintTop_toBottomOf="@+id/spin_add1"
+            app:layout_constraintVertical_bias="0.196" />
 
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/guideline"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintGuide_begin="30dp" />
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/guideline2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintGuide_end="30dp" />
+
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</ScrollView>

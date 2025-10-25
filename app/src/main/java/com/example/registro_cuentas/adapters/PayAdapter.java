@@ -81,7 +81,7 @@ public class PayAdapter extends BaseAdapter implements Filterable, View.OnClickL
 
             // Se ajustan los parametros del Boton ----------------------------------
             butt.setId(R.id.butt_paylist);
-            butt.setTag((Integer) textList.get(idx)[0]);
+            butt.setTag((String) textList.get(idx)[0]);
             butt.setText("+");
             butt.setTypeface(Typeface.DEFAULT_BOLD);
             LinearLayout.LayoutParams buttParams = new LinearLayout.LayoutParams(mBasic.getPixelSiz(R.dimen.button_wss), mBasic.getPixelSiz(R.dimen.button_h1));
@@ -181,7 +181,7 @@ public class PayAdapter extends BaseAdapter implements Filterable, View.OnClickL
 
         if(itemId == R.id.butt_paylist) {
             StartVar startVar = new StartVar(mContex);
-            startVar.setPayIndex( (int)view.getTag());
+            startVar.setPayId( (String) view.getTag());
 
             Application application = (Application) mContex.getApplicationContext();
             Intent mIntent = new Intent(mContex, PayDetailsActivity.class);

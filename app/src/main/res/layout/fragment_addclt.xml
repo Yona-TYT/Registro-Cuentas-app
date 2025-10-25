@@ -112,7 +112,7 @@
             android:layout_width="@dimen/input_wm"
             android:layout_height="@dimen/input_h1"
             android:hint="Nombre Cliente"
-            android:inputType="textCapWords"
+            android:inputType="textNoSuggestions|textCapWords"
             android:maxLength="10"
             android:padding="10dp"
             android:textSize="@dimen/inner_text_2"
@@ -173,7 +173,7 @@
             android:layout_height="@dimen/input_h1"
             android:layout_marginTop="4dp"
             android:hint="Alias (Opcional)"
-            android:inputType="textCapWords"
+            android:inputType="textNoSuggestions|textCapWords"
             android:maxLength="20"
             android:padding="10dp"
             android:textSize="@dimen/inner_text_2"
@@ -198,19 +198,21 @@
             android:id="@+id/buttPrev"
             android:layout_width="90dp"
             android:layout_height="40dp"
-            android:layout_marginTop="10dp"
+            android:layout_marginTop="25dp"
+
             android:backgroundTint="@color/button"
             app:layout_constraintEnd_toStartOf="@+id/guideline2"
             app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="@+id/guideline"
-            app:layout_constraintTop_toBottomOf="@+id/check_clt1"
+            app:layout_constraintTop_toBottomOf="@+id/butt_clt1"
             app:srcCompat="@android:drawable/ic_media_previous" />
 
         <Button
             android:id="@+id/butt_clt1"
             android:layout_width="@dimen/button_w1"
             android:layout_height="@dimen/button_h1"
-            android:layout_marginTop="10dp"
+            android:layout_marginTop="20dp"
+
             android:padding="2dp"
             android:text="Guardar"
             android:textSize="@dimen/inner_text_2"
@@ -218,8 +220,8 @@
             app:layout_constraintEnd_toStartOf="@+id/guideline2"
             app:layout_constraintHorizontal_bias="0.476"
             app:layout_constraintStart_toStartOf="@+id/guideline"
-            app:layout_constraintTop_toBottomOf="@+id/buttPrev"
-            app:layout_constraintVertical_bias="0.169" />
+            app:layout_constraintTop_toBottomOf="@+id/check_clt1"
+            app:layout_constraintVertical_bias="0.0" />
 
         <androidx.constraintlayout.widget.Guideline
             android:id="@+id/guideline"

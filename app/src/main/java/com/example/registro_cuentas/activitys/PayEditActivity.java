@@ -133,8 +133,7 @@ public class PayEditActivity extends AppCompatActivity implements View.OnClickLi
         mBtnImg1 = findViewById(R.id.butt_payedit2);
         imageView1 = findViewById(R.id.image_payedit1);
 
-        listRegistro = StartVar.appDBall.daoPay().getUsers();
-        mpay = listRegistro.get(StartVar.payIndex);
+        mpay = StartVar.appDBall.daoPay().getUsers(StartVar.currPayId);
 
         mInput1.setText(mpay.concep);
         currDir = mFileM.getImage(mpay.imagen, imageView1);
