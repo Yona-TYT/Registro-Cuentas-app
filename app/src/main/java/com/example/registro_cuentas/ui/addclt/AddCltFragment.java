@@ -30,10 +30,12 @@ import com.example.registro_cuentas.BitsOper;
 import com.example.registro_cuentas.CalcCalendar;
 import com.example.registro_cuentas.DBListCreator;
 import com.example.registro_cuentas.db.Cliente;
+import com.example.registro_cuentas.db.Conf;
 import com.example.registro_cuentas.db.Cuenta;
 import com.example.registro_cuentas.CurrencyEditText;
 import com.example.registro_cuentas.db.DatabaseUtils;
 import com.example.registro_cuentas.db.dao.DaoAcc;
+import com.example.registro_cuentas.db.dao.DaoCfg;
 import com.example.registro_cuentas.db.dao.DaoClt;
 import com.example.registro_cuentas.db.dao.DaoDeb;
 import com.example.registro_cuentas.db.Deuda;
@@ -42,9 +44,6 @@ import com.example.registro_cuentas.R;
 import com.example.registro_cuentas.adapters.SelecAdapter;
 import com.example.registro_cuentas.StartVar;
 import com.example.registro_cuentas.databinding.FragmentAddcltBinding;
-
-import com.example.registro_cuentas.db.Pagos;
-import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -62,7 +61,7 @@ public class AddCltFragment extends Fragment  implements View.OnClickListener, A
     private DaoClt daoCliente;
     private DaoDeb daoDeuda;
     private DaoAcc daoCuenta;
-
+    private DaoCfg daoConf;
 
     private List<Cliente> listCliente = new ArrayList<>();
     private Cliente mClt = null;
@@ -118,7 +117,6 @@ public class AddCltFragment extends Fragment  implements View.OnClickListener, A
     private String mCurr = mCurrencyList.get(StartVar.mCurrency);
 
     private Basic mBasic = new Basic(BaseContext.getContext());
-
     @SuppressLint("SetTextI18n")
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
     {
@@ -203,12 +201,15 @@ public class AddCltFragment extends Fragment  implements View.OnClickListener, A
         //Para la lista del selector Mostrar ----------------------------------------------------------------------------------------------
         SelecAdapter adapt1 = new SelecAdapter(mContext, mSpin1L);
         mSpin1.setAdapter(adapt1);
-        mSpin1.setSelection(0); //Set default ingreso
+        daoConf = StartVar.appDBall.daoCfg();
+        currSel1 = daoConf.getUsers(StartVar.mConfID).show;
+        mSpin1.setSelection(currSel1); //Set default ingreso
 
         mSpin1.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
                 currSel1 = i;
+                daoConf.updateView(StartVar.mConfID, currSel1);
                 setAdapterClt(0);    //Recarga el adapter de lista clientes
             }
             @Override
@@ -246,7 +247,7 @@ public class AddCltFragment extends Fragment  implements View.OnClickListener, A
                         total = mDeb.rent;
                         if (currtTyp > 0) {
                             int mult = CalcCalendar.getRangeMultiple(mDeb.ulfech, currtTyp);
-                            Double monto = Basic.getDebt(mult, mDeb.rent, mDeb.paid);
+                            Double monto = Basic.getDebt(mult, mDeb.rent, mDeb.remnant);
 
                             int isDeb = mDeb.pagado;
                             String tx = "";
@@ -406,7 +407,7 @@ public class AddCltFragment extends Fragment  implements View.OnClickListener, A
 
                 //Datos de deudas y monto fijo
                 Deuda objDeb = new Deuda(
-                        debId, accId, cltId, rent, 0, currdate, (swEstat?1:0), 0,
+                        debId, accId, cltId, rent, 0, 0, currdate, (swEstat?1:0), 0,
                         CalcCalendar.getCorrectDate(currdate, currtTyp), 0,0d, (swEstat?"@null":currdate)
                 );
                 daoDeuda.insertUser(objDeb);
@@ -422,7 +423,7 @@ public class AddCltFragment extends Fragment  implements View.OnClickListener, A
 
                     //Datos de deudas y monto fijo
                     Deuda objDeb = new Deuda(
-                            debId, accId, cltId, rent, 0, currdate, (swEstat?1:0), 0,
+                            debId, accId, cltId, rent, 0, 0, currdate, (swEstat?1:0), 0,
                             CalcCalendar.getCorrectDate(currdate, currtTyp), currSel3,0d, (swEstat?"@null":currdate)
                     );
                     daoDeuda.insertUser(objDeb);
@@ -463,6 +464,13 @@ public class AddCltFragment extends Fragment  implements View.OnClickListener, A
             CalcCalendar.addCurrentMonthIfAbsent(mContext);
 
             Basic.msg("Se han GUARDADO los cambios");
+
+            if(currSel2 == 0){
+                mSpin2.setSelection(0);
+                mInput1.setText("");
+                mInput2.setText("");
+                mInput3.setText(Basic.setFormatter("0"));
+            }
 
             DBListCreator.createDbLists(); //Actualiza la lista para exportar csv
         }

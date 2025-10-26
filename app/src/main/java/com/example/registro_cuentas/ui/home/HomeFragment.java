@@ -23,7 +23,6 @@ import androidx.fragment.app.Fragment;
 
 import com.example.registro_cuentas.BitsOper;
 import com.example.registro_cuentas.activitys.AccDtailsActivity;
-import com.example.registro_cuentas.db.AllDao;
 import com.example.registro_cuentas.BaseContext;
 import com.example.registro_cuentas.Basic;
 import com.example.registro_cuentas.CalcCalendar;
@@ -44,7 +43,6 @@ import com.example.registro_cuentas.db.Pagos;
 import com.example.registro_cuentas.StartVar;
 import com.example.registro_cuentas.adapters.SelecAdapter;
 import com.example.registro_cuentas.databinding.FragmentHomeBinding;
-import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import java.io.IOException;
 import java.time.LocalDate;
@@ -501,7 +499,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener, Adap
             if (ultFec.isEmpty()){
                 ultFec = mClt.fecha;
             }
-            Double debe = mDeb.paid;
+            Double debe = mDeb.remnant;
             Double rent = mDeb.rent;
             int isDeb = mDeb.pagado;
             int mTyp =  StartVar.accCierre;

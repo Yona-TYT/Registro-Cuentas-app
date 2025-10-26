@@ -231,7 +231,7 @@ public class DBListCreator extends AppCompatActivity {
             txList[7] = myDeb.pagado.toString();
             txList[8] = myDeb.ulfech;
             txList[9] = myDeb.oper.toString();
-            txList[10] = myDeb.paid.toString();
+            txList[10] = myDeb.remnant.toString();
             txList[11] = myDeb.disabfec;
 
             mList.add(txList);
@@ -247,7 +247,7 @@ public class DBListCreator extends AppCompatActivity {
             debLmH.add(myDeb.pagado);
             debLmI.add(myDeb.ulfech);
             debLmJ.add(myDeb.oper);
-            debLmK.add(myDeb.paid);
+            debLmK.add(myDeb.remnant);
             //------------------------------------------
         }
 
@@ -468,7 +468,7 @@ public class DBListCreator extends AppCompatActivity {
                 }
                 if(opt==0) {
                     version = spl[1];
-                    daoConf.updateUser("confID0", spl[1], spl[2], spl[3], spl[4], Integer.parseInt(spl[5]), Double.parseDouble(spl[6]) ,Integer.parseInt(spl[7]), Integer.parseInt(spl[8]));
+                    daoConf.updateUser("confID0", spl[1], spl[2], spl[3], spl[4], Integer.parseInt(spl[5]), Double.parseDouble(spl[6]) ,Integer.parseInt(spl[7]), Integer.parseInt(spl[8]), 0);
                 }
                 else if(opt==1){
                     //Basic.msg(spl[10] +" "+name+" "+spl[1]);
@@ -487,7 +487,7 @@ public class DBListCreator extends AppCompatActivity {
                 }
                 else if(opt==3){
                     Deuda obj = new Deuda(
-                            spl[0], spl[1], spl[2], Double.parseDouble(spl[3]), Integer.parseInt(spl[4]), spl[5],
+                            spl[0], spl[1], spl[2], Double.parseDouble(spl[3]), 0, Integer.parseInt(spl[4]), spl[5],
                             Integer.parseInt(spl[6]), Integer.parseInt(spl[7]), spl[8], Integer.parseInt(spl[9]), Double.parseDouble(spl[10]), "@null"
                     );
                     daoDeuda.insertUser(obj);

@@ -116,7 +116,7 @@ public class CalcCalendar {
 
                 if (selec == 1) {
                     // Para días: diferencia directa (incluye día actual)
-                    num = ChronoUnit.DAYS.between(date, currdate);
+                    num = ChronoUnit.DAYS.between(date, currdate) + 1;
                 } else if (selec == 2) {
                     // Para meses: desde 1 del mes de txDate hasta 1 del mes actual +1 si día actual >1
                     LocalDate mDate = LocalDate.of(date.getYear(), date.getMonth(), 1);
@@ -150,7 +150,7 @@ public class CalcCalendar {
                 LocalDate currdate = LocalDate.now();  // O usa LocalDate.of(2025, 10, 26) para testing fijo
 
                 int result = currdate.compareTo(originalDate);
-                if (result < 1) {
+                if (result < 0) {
                     return null;
                 }
 
@@ -167,6 +167,9 @@ public class CalcCalendar {
                 int daysPassed = 0;
                 if (select == 1) {
                     numOwed = ChronoUnit.DAYS.between(adjustedOriginal, currdate);
+                    if (numOwed == 0) {
+                        numOwed = 1;
+                    }
                 } else if (select == 2) {
                     LocalDate currMonthStart = currdate.withDayOfMonth(1);
                     numOwed = ChronoUnit.MONTHS.between(adjustedOriginal, currMonthStart);

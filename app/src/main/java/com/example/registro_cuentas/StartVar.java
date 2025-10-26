@@ -147,7 +147,7 @@ public class StartVar {
             }
 
             //configDatabase.daoConf().insertUser();
-            Conf obj = new Conf(mConfID, "2", textID, date, time, 0, 0d, 0, 0);
+            Conf obj = new Conf(mConfID, "2", textID, date, time, 0, 0d, 0, 0, 0);
             StartVar.appDBall.daoCfg().insertUser(obj);
         }
 

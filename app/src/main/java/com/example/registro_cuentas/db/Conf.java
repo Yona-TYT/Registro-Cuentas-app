@@ -17,10 +17,9 @@ public class Conf {
     public Double dolar;
     public Integer moneda;
     public Integer mes;
+    public Integer show;
 
-
-
-    public Conf(@NonNull String config, String version, String hexid, String date, String time, Integer curr, Double dolar, Integer moneda, Integer mes) {
+    public Conf(@NonNull String config, String version, String hexid, String date, String time, Integer curr, Double dolar, Integer moneda, Integer mes, Integer show) {
         this.config = config;
         this.version = version;
         this.hexid = hexid;
@@ -30,6 +29,6 @@ public class Conf {
         this.dolar = dolar;
         this.moneda = moneda;
         this.mes = mes;
-
+        this.show = show;
     }
 }

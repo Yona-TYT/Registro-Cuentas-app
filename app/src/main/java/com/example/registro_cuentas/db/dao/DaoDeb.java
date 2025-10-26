@@ -29,14 +29,17 @@ public interface DaoDeb extends GenericDao<Deuda>{
     @Insert
     void insertUser(Deuda...deudas);
 
-    @Query("UPDATE deuda SET accid= :accid, cltid= :cltid, rent= :rent, porc= :porc, fecha= :fecha, estat= :estat, pagado= :pagado, ulfech= :ulfech, oper= :oper, paid= :paid WHERE deuda= :user")
-    void updateUser(String user, String accid, String cltid, Double rent, Integer porc, String fecha, Integer estat, Integer pagado, String ulfech, Integer oper, Double paid);
+    @Query("UPDATE deuda SET accid= :accid, cltid= :cltid, rent= :rent, total= :total, porc= :porc, fecha= :fecha, estat= :estat, pagado= :pagado, ulfech= :ulfech, oper= :oper, remnant= :remnant WHERE deuda= :user")
+    void updateUser(String user, String accid, String cltid, Double rent, Integer total, Integer porc, String fecha, Integer estat, Integer pagado, String ulfech, Integer oper, Double remnant);
 
-    @Query("UPDATE deuda SET  pagado= :pagado, ulfech= :ulfech, paid= :paid WHERE deuda= :user")
-    void updateDebt(String user, Integer pagado, String ulfech, Double paid);
+    @Query("UPDATE deuda SET  pagado= :pagado, ulfech= :ulfech, remnant= :remnant WHERE deuda= :user")
+    void updateDebt(String user, Integer pagado, String ulfech, Double remnant);
 
     @Query("UPDATE deuda SET  rent= :rent, estat= :estat, ulfech= :ulfech, oper= :oper, disabfec= :disabfec WHERE deuda= :user")
     void updateFormCltWin(String user, Double rent, Integer estat, String ulfech, Integer oper, String disabfec);
+
+    @Query("UPDATE deuda SET total= :total, porc= :porc, pagado= :pagado, ulfech= :ulfech, oper= :oper, remnant= :remnant  WHERE deuda= :user")
+    void updateFormPayWin(String user, Integer total, Integer porc, Integer pagado, String ulfech, Integer oper, Double remnant);
 
     @Query("DELETE FROM deuda WHERE  deuda= :user")
     void removerUser(String user);

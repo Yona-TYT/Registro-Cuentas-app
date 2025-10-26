@@ -104,7 +104,7 @@ public class MainActivity extends AppCompatActivity {
             }
         }
 
-//        Object[] mObj = CalcCalendar.dateToMoney("2025-10-01", 2, 10d, 10d);
+//        Object[] mObj = CalcCalendar.dateToMoney("2025-10-26", 1, 1d, 1d);
 //        if(mObj != null){
 //            double maxRent = (double)mObj[0];    //Total a pagar (si es 0 = Cuenta saldada)
 //            double remnant = (double)mObj[1];    //Remanente del pago (Se guarda para compensar futuros pagos)
@@ -207,14 +207,6 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private void showNavigationBar() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-            getWindow().getInsetsController().show(WindowInsets.Type.navigationBars());
-        } else {
-            getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_VISIBLE);
-        }
-    }
-
 
     //Para cargar los menus en toolbar
     @SuppressLint("ResourceType")
@@ -250,7 +242,7 @@ public class MainActivity extends AppCompatActivity {
                     intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                     intent.setType("text/comma-separated-values");
                     // Se obtine la Uri , se debe modificar manidest con: android:authorities="com.example.cow_data.provider"
-                    Uri fileUri = FileProvider.getUriForFile(MainActivity.this, getPackageName() + ".provider", file);
+                    Uri fileUri = FileProvider.getUriForFile(MainActivity.this, getPackageName() + ".fileprovider", file);
                     // Log.d("PhotoPicker", " Aquiiiiiiiiii Hayyyyyy ------------------------: "+ fileUri.toString());
 
                     intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION); // this will not work

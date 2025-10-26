@@ -106,19 +106,6 @@
             app:layout_constraintVertical_bias="0.005"
             tools:ignore="MissingConstraints" />
 
-        <Switch
-            android:id="@+id/sw_pay1"
-            android:layout_width="@dimen/input_wm"
-            android:layout_height="@dimen/input_h1"
-            android:layout_marginTop="8dp"
-            android:padding="10dp"
-            android:text="Modo (%)"
-            app:layout_constraintEnd_toStartOf="@+id/guideline2"
-            app:layout_constraintHorizontal_bias="0.0"
-            app:layout_constraintStart_toStartOf="@+id/guideline"
-            app:layout_constraintTop_toBottomOf="@+id/input_pay4"
-            tools:ignore="UseSwitchCompatOrMaterialXml" />
-
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/input_pay3"
             android:layout_width="@dimen/input_wm"
@@ -151,6 +138,32 @@
             app:layout_constraintTop_toBottomOf="@+id/input_pay1"
             tools:ignore="MissingConstraints" />
 
+        <Switch
+            android:id="@+id/sw_pay1"
+            android:layout_width="@dimen/input_wm"
+            android:layout_height="@dimen/input_h1"
+            android:layout_marginTop="8dp"
+            android:padding="10dp"
+            android:text="Monto Total"
+            app:layout_constraintEnd_toStartOf="@+id/guideline2"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="@+id/guideline"
+            app:layout_constraintTop_toBottomOf="@+id/input_pay4"
+            tools:ignore="UseSwitchCompatOrMaterialXml" />
+
+        <Switch
+            android:id="@+id/sw_pay2"
+            android:layout_width="@dimen/input_wm"
+            android:layout_height="@dimen/input_h1"
+            android:layout_marginTop="8dp"
+            android:padding="10dp"
+            android:text="Modo (%)"
+            app:layout_constraintEnd_toStartOf="@+id/guideline2"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="@+id/guideline"
+            app:layout_constraintTop_toBottomOf="@+id/sw_pay1"
+            tools:ignore="UseSwitchCompatOrMaterialXml" />
+
         <ImageView
             android:id="@+id/image_pay1"
             android:layout_width="177dp"
@@ -158,7 +171,7 @@
             android:layout_marginTop="12dp"
             app:layout_constraintBottom_toTopOf="@+id/butt_pay1"
             app:layout_constraintStart_toStartOf="@+id/guideline"
-            app:layout_constraintTop_toBottomOf="@+id/sw_pay1"
+            app:layout_constraintTop_toBottomOf="@+id/sw_pay2"
             tools:src="@tools:sample/backgrounds/scenic" />
 
         <Button
