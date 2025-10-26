@@ -529,13 +529,13 @@ public class AddPayFragment extends Fragment implements View.OnClickListener {
                        Object[] mObj = CalcCalendar.dateToMoney(mDeb.ulfech, mAcc.acctipo, mDeb.rent, (mDeb.paid + rent));
                        if(mObj != null){
                            //Basic.msg(" ulfech "+mDeb.ulfech+" "+mObj[1]+" "+mObj[2]);
-                           Double maxRent = (double)mObj[0];
-                           Double currPaid = (double)mObj[1];
-                           String startDate = (String) mObj[2];
+                           double maxRent = (double)mObj[0];    //Total a pagar (si es 0 = Cuenta saldada)
+                           double remnant = (double)mObj[1];    //Remanente del pago (Se guarda para compensar futuros pagos)
+                           String startDate = (String) mObj[2]; //La ultima fecha saldada
 
                            //Basic.msg("maxRent: "+maxRent+" currPaid "+currPaid);
 
-                           if (currPaid > 0) {
+                           if (maxRent == 0 && remnant > 0) {
                                    Basic.msg("El MONTO es mayor a la deuda!");
                                    mInput4.setText(Basic.getValueFormatter(String.valueOf(mDeb.rent - mDeb.paid)));
                                    return;
@@ -544,20 +544,8 @@ public class AddPayFragment extends Fragment implements View.OnClickListener {
                                if(maxRent == 0){
                                    pagado = 2;
                                }
-                               daoDeuda.updateDebt(mDeb.deuda, pagado, startDate, currPaid);
+                               daoDeuda.updateDebt(mDeb.deuda, pagado, startDate, remnant);
                            }
-
-//                           if(maxRent <= 0) {
-//                               Basic.msg("Cliente sin deudas!");
-//                               pagado = 2;
-//                               daoDeuda.updateDebt(mDeb.deuda, pagado, startDate, currPaid);
-//                               return;
-//                           }
-
-//                           if(maxRent == 0){
-//                               daoDeuda.updateDebt(mDeb.deuda, pagado, startDate, currPaid);
-//                           }
-
                        }
                        else {
                              Basic.msg("Cliente sin deudas!");

@@ -109,28 +109,36 @@ public class CalcCalendar {
         long num = 0;
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
             if (!txDate.isEmpty()) {
-                //Convierte Sting  a forrmato de fecha
+                // Convierte String a formato de fecha
                 LocalDate date = LocalDate.parse(txDate);
-                //Inicia la fecha actual
+                // Fecha actual
                 LocalDate currdate = LocalDate.now();
-                //Para Dias
+
                 if (selec == 1) {
+                    // Para días: diferencia directa (incluye día actual)
                     num = ChronoUnit.DAYS.between(date, currdate);
-                }
-                //Para meses
-                else if (selec == 2) {
+                } else if (selec == 2) {
+                    // Para meses: desde 1 del mes de txDate hasta 1 del mes actual +1 si día actual >1
                     LocalDate mDate = LocalDate.of(date.getYear(), date.getMonth(), 1);
-                    num = ChronoUnit.MONTHS.between(mDate, currdate);
-                }
-                //Para años
-                else if (selec == 3) {
-                    num = ChronoUnit.YEARS.between(date, currdate);
+                    LocalDate currMonthStart = currdate.withDayOfMonth(1);
+                    num = ChronoUnit.MONTHS.between(mDate, currMonthStart);
+                    if (currdate.getDayOfMonth() > 1) {
+                        num += 1;
+                    }
+                } else if (selec == 3) {
+                    // Para años: desde 1/1 del año de txDate hasta 1/1 del año actual +1 si día del año >1
+                    LocalDate yDate = LocalDate.of(date.getYear(), 1, 1);
+                    LocalDate currYearStart = currdate.withDayOfYear(1);
+                    num = ChronoUnit.YEARS.between(yDate, currYearStart);
+                    if (currdate.getDayOfYear() > 1) {
+                        num += 1;
+                    }
                 }
             }
         }
-        //Basic.msg(""+num);
-        return (int)num;
+        return (int) num;
     }
+
 
     public static Object[] dateToMoney(String startDate, int select, Double rent, Double paid) {
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
@@ -139,24 +147,40 @@ public class CalcCalendar {
             }
             if (!startDate.isEmpty()) {
                 LocalDate originalDate = LocalDate.parse(startDate);
-                LocalDate currdate = LocalDate.now();
+                LocalDate currdate = LocalDate.now();  // O usa LocalDate.of(2025, 10, 26) para testing fijo
 
                 int result = currdate.compareTo(originalDate);
                 if (result < 1) {
                     return null;
                 }
 
-                long numOwed = 0;
-                if (select == 1) {
-                    // Días: solo completos transcurridos (sin extra)
-                    numOwed = ChronoUnit.DAYS.between(originalDate, currdate);
-                } else if (select == 2) {
-                    // Meses: incluye período actual iniciado
-                    originalDate = LocalDate.of(originalDate.getYear(), originalDate.getMonth(), 1);
-                    numOwed = ChronoUnit.MONTHS.between(originalDate, currdate);
+                // Ajustar originalDate según select
+                LocalDate adjustedOriginal = originalDate;
+                if (select == 2) {
+                    adjustedOriginal = LocalDate.of(originalDate.getYear(), originalDate.getMonth(), 1);
                 } else if (select == 3) {
-                    originalDate = LocalDate.of(originalDate.getYear(), 1, 1);
-                    numOwed = ChronoUnit.YEARS.between(originalDate, currdate);
+                    adjustedOriginal = LocalDate.of(originalDate.getYear(), 1, 1);
+                }
+
+                // Calcular numOwed (períodos completos)
+                long numOwed = 0;
+                int daysPassed = 0;
+                if (select == 1) {
+                    numOwed = ChronoUnit.DAYS.between(adjustedOriginal, currdate);
+                } else if (select == 2) {
+                    LocalDate currMonthStart = currdate.withDayOfMonth(1);
+                    numOwed = ChronoUnit.MONTHS.between(adjustedOriginal, currMonthStart);
+                    daysPassed = currdate.getDayOfMonth() - 1;
+                    if (daysPassed > 0) {
+                        numOwed += 1;
+                    }
+                } else if (select == 3) {
+                    LocalDate currYearStart = currdate.withDayOfYear(1);
+                    numOwed = ChronoUnit.YEARS.between(adjustedOriginal, currYearStart);
+                    daysPassed = currdate.getDayOfYear() - 1;
+                    if (daysPassed > 0) {
+                        numOwed += 1;
+                    }
                 } else {
                     return new Object[]{0f, 0f, "", 1};
                 }
@@ -164,34 +188,108 @@ public class CalcCalendar {
                     numOwed = 0;
                 }
 
-                // Simula pagos desde la fecha original (garantiza date >= startDate)
-                LocalDate date = originalDate;
-                int count = 0;
-                Double currentPaid = paid;
-                //Basic.msg("currentPaid "+currentPaid+" numOwed: "+numOwed+ "count: "+count);
+                double debt = 0.0;
+                double currentPaid = 0.0;
+                LocalDate date = adjustedOriginal;
+                long covered = 0;
 
-                for (long i = numOwed; i > 0; i--) {
-                    if (currentPaid >= rent) {
-                        currentPaid -= rent;
-                        if (select == 1) {
-                            date = date.plusDays(1);
-                        } else if (select == 2) {
-                            date = date.plusMonths(1);
-                        } else {  // select == 3
-                            date = date.plusYears(1);
-                        }
-                    } else {
-                        count++;
-                    }
+                // Calcular covered
+                if (paid >= 0) {
+                    covered = (long) Math.floor(paid / rent);
+                } else {
+                    covered = (long) Math.ceil(paid / rent);
                 }
-                //Basic.msg("startDate "+startDate+" date: "+date.toString()+ "count: "+count);
 
-                double debt = Math.max(0f, (rent * count) - currentPaid);
+                long unpaidFull = numOwed - covered;
+                double remainder = paid - (double) covered * rent;
+                if (unpaidFull > 0) {
+                    debt = (double) unpaidFull * rent;
+                    currentPaid = remainder;
+                } else {
+                    debt = 0.0;
+                    currentPaid = paid - (double) numOwed * rent;
+                }
+
+                // Calcular fecha: clamp superior para overpay positivo, permite negativo
+                long periodsToAdd;
+                if (covered > numOwed) {
+                    periodsToAdd = numOwed;
+                } else {
+                    periodsToAdd = covered;
+                }
+                if (select == 1) {
+                    date = adjustedOriginal.plusDays(periodsToAdd);
+                } else if (select == 2) {
+                    date = adjustedOriginal.plusMonths(periodsToAdd);
+                } else {  // select == 3
+                    date = adjustedOriginal.plusYears(periodsToAdd);
+                }
+                // Para overpay, opcional: si periodsToAdd == numOwed && currentPaid > 0, mantener en el siguiente inicio
+
                 return new Object[]{debt, currentPaid, date.toString(), 0};
             }
         }
         return null;
     }
+
+//    public static Object[] dateToMoney(String startDate, int select, Double rent, Double paid) {
+//        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+//            if (rent <= 0) {
+//                return null;
+//            }
+//            if (!startDate.isEmpty()) {
+//                LocalDate originalDate = LocalDate.parse(startDate);
+//                LocalDate currdate = LocalDate.now();
+//
+//                int result = currdate.compareTo(originalDate);
+//                if (result < 1) {
+//                    return null;
+//                }
+//
+//                long numOwed = 0;
+//                if (select == 1) {
+//                    // Días:
+//                    numOwed = ChronoUnit.DAYS.between(originalDate, currdate);
+//                } else if (select == 2) {
+//                    // Meses: incluye período actual iniciado
+//                    originalDate = LocalDate.of(originalDate.getYear(), originalDate.getMonth(), 1);
+//                    numOwed = ChronoUnit.MONTHS.between(originalDate, currdate);
+//                } else if (select == 3) {
+//                    // Años
+//                    originalDate = LocalDate.of(originalDate.getYear(), 1, 1);
+//                    numOwed = ChronoUnit.YEARS.between(originalDate, currdate);
+//                } else {
+//                    return new Object[]{0f, 0f, "", 1};
+//                }
+//                if (numOwed < 1) {
+//                    numOwed = 0;
+//                }
+//
+//                // Simula pagos desde la fecha original (garantiza date >= startDate)
+//                LocalDate date = originalDate;
+//                int count = 0;
+//                Double currentPaid = paid;
+//
+//                for (long i = numOwed; i > 0; i--) {
+//                    if (currentPaid >= rent) {
+//                        currentPaid -= rent;
+//                        if (select == 1) {
+//                            date = date.plusDays(1);
+//                        } else if (select == 2) {
+//                            date = date.plusMonths(1);
+//                        } else {  // select == 3
+//                            date = date.plusYears(1);
+//                        }
+//                    } else {
+//                        count++;
+//                    }
+//                }
+//                double debt = Math.max(0f, (rent * count) - currentPaid);
+//                return new Object[]{debt, currentPaid, date.toString(), 0};
+//            }
+//        }
+//        return null;
+//    }
 
     public static String getDatePlus(String txDate, int sum, int selec) {
         String newDate = "";

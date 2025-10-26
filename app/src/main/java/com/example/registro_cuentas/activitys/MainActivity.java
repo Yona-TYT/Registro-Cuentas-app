@@ -104,9 +104,21 @@ public class MainActivity extends AppCompatActivity {
             }
         }
 
-//        Object[] mObj = CalcCalendar.dateToMoney("2025-10-05", 1, 50.00f, 50.00f);
+//        Object[] mObj = CalcCalendar.dateToMoney("2025-10-01", 2, 10d, 10d);
 //        if(mObj != null){
-//            Basic.msg(" MaxRent "+mObj[0]+" Pagado"+mObj[1]+" UltmFecha"+mObj[2]);
+//            double maxRent = (double)mObj[0];    //Total a pagar (si es 0 = Cuenta saldada)
+//            double remnant = (double)mObj[1];    //Remanente del pago (Se guarda para compensar futuros pagos)
+//            String startDate = (String) mObj[2]; //La ultima fecha saldada
+//
+//            if (maxRent == 0 && remnant > 0) {
+//                Basic.msg("El MONTO es mayor a la deuda!");
+//            }
+//            else{
+//                Basic.msg("Se guarda");
+//
+//            }
+//
+//            Basic.msg(" MaxRent: "+maxRent+" Remanente: "+remnant+" UltmFecha: "+startDate, true);
 //        }
 
 

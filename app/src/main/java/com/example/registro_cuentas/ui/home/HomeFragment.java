@@ -528,7 +528,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener, Adap
                     txB = " [PENDIENTE]";
                 } else {
                     txA = " [Pagado] ";
-                    txB = "Ult: " + ultFec;
+                    txB = "Prx.: " + ultFec;
                 }
             }
             else {
@@ -538,7 +538,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener, Adap
                 }
                 else {
                     txA = "  ";
-                    txB = " Ult: " + ultFec;
+                    txB = " Prx.: " + ultFec;
                 }
             }
             stList[1] = mClt.nombre;
