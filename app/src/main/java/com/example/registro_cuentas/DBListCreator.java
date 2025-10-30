@@ -55,7 +55,7 @@ public class DBListCreator extends AppCompatActivity {
         mList.add(new String[]{"<0>"});// Etiqueta para config
         //Instancia de la base de datos
         Conf mConf =  daoConf.getUsers(StartVar.mConfID);
-        mList.add(new String[]{mConf.config, mConf.version, mConf.hexid, mConf.date, mConf.time, mConf.curr.toString(), String.valueOf(mConf.dolar), mConf.moneda.toString(),mConf.mes.toString() });
+        mList.add(new String[]{mConf.config, mConf.version, mConf.hexid, mConf.date, mConf.time, mConf.curr.toString(), String.valueOf(mConf.dolar), mConf.moneda.toString(),mConf.mes.toString(), mConf.show.toString() });
 
         //=================================== Cuenta DB Lista =====================================================
 

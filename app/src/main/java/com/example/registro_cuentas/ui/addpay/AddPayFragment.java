@@ -69,6 +69,9 @@ public class AddPayFragment extends Fragment implements View.OnClickListener {
 
     private List<Cliente> listCliente = new ArrayList<>();
 
+    private Cuenta mAcc;
+    private Cliente mClt;
+
     private ConstraintLayout mConstrain;
 
     //Todos los Inputs
@@ -108,8 +111,6 @@ public class AddPayFragment extends Fragment implements View.OnClickListener {
     private int currtTyp = StartVar.accCierre;
 
     private String mCurr = mCurrencyList.get(StartVar.mCurrency);
-
-    private Basic mBasic = new Basic(BaseContext.getContext());
 
     private FilesManager mFileM = new FilesManager();
     private String sImage = "";
@@ -204,6 +205,8 @@ public class AddPayFragment extends Fragment implements View.OnClickListener {
         daoCliente = StartVar.appDBall.daoClt();
         daoDeuda = StartVar.appDBall.daoDeb();
 
+        mAcc = daoCuenta.getUsers().get(StartVar.accSelect);
+
         //Efecto moneda
         //-------------------------------------------------------------------------------------------------------
         mInput4.setCurrencySymbol(mCurr, true);
@@ -267,6 +270,11 @@ public class AddPayFragment extends Fragment implements View.OnClickListener {
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
                 currSel1 = i;
                 mInput2.setHint("Alias (Opcional)");
+                mClt = null;
+                mSw1.setChecked(false);
+                mSw2.setChecked(false);
+                swPorc = false;
+                swTotal = false;
 
                 if (i > 0) {
 
@@ -282,7 +290,7 @@ public class AddPayFragment extends Fragment implements View.OnClickListener {
                         mInput2.setHint("Vacio");
                     }
 
-                    Cliente mClt = daoCliente.getUsers(mIdList.get(i));
+                    mClt = daoCliente.getUsers(mIdList.get(i));
 
                     Cuenta mAcc = daoCuenta.getUsers().get(StartVar.accSelect);
 
@@ -296,7 +304,7 @@ public class AddPayFragment extends Fragment implements View.OnClickListener {
                             if (ultFec.isEmpty()){
                                 ultFec = mDeb.fecha;
                             }
-                            mInput4.setText(Basic.getValueFormatter(mDeb.rent.toString()));
+                            mInput4.setText(Basic.getValueFormatter(String.valueOf(mDeb.rent)));
                             int mult = CalcCalendar.getRangeMultiple(ultFec, currtTyp);
                             Double monto = Basic.getDebt(mult, mDeb.rent, mDeb.remnant);
 
@@ -452,7 +460,6 @@ public class AddPayFragment extends Fragment implements View.OnClickListener {
 
                 String debId = DatabaseUtils.generateId("debID", daoDeuda);
 
-                Cuenta mAcc = daoCuenta.getUsers().get(StartVar.accSelect);
                 String accId = mAcc.cuenta;
 
                 //Inicia la fecha actual
@@ -519,8 +526,6 @@ public class AddPayFragment extends Fragment implements View.OnClickListener {
                    //Actualiza la fecha del ultimo pago
                    daoCliente.updateUltfech(cltId, currdate);
 
-                   Cliente mClt = daoCliente.getUsers(cltId);
-
                    Deuda mDeb = daoDeuda.getUserByCltAndAcc(cltId, accId);
 
                    if(mDeb == null){
@@ -540,11 +545,17 @@ public class AddPayFragment extends Fragment implements View.OnClickListener {
                            double remnant = (double)mObj[1];    //Remanente del pago (Se guarda para compensar futuros pagos)
                            String startDate = (String) mObj[2]; //La ultima fecha saldada
 
-                           //Basic.msg("maxRent: "+maxRent+" currPaid "+currPaid);
+                           Basic.msg("maxRent: "+maxRent+" startDate "+mDeb.ulfech+ " remnant "+remnant, true);
 
                            if (maxRent == 0 && remnant > 0) {
                                    Basic.msg("El MONTO es mayor a la deuda!");
-                                   mInput4.setText(Basic.getValueFormatter(String.valueOf(mDeb.rent - mDeb.remnant)));
+                                   if(swTotal) {
+                                       int mult = CalcCalendar.getRangeMultiple(mDeb.ulfech, mAcc.acctipo);
+                                       mInput4.setText(Basic.getValueFormatter(String.valueOf( mDeb.rent * mult - mDeb.remnant)));
+                                   }
+                                   else {
+                                       mInput4.setText(Basic.getValueFormatter(String.valueOf( mDeb.rent - mDeb.remnant)));
+                                   }
                                    return;
                            }
                            else {
@@ -579,7 +590,29 @@ public class AddPayFragment extends Fragment implements View.OnClickListener {
             }
         }
         if (itemId == R.id.sw_pay1){
-            swTotal = !swTotal;
+            if(mClt == null){
+                Basic.msg("Cliente no VALIDO");
+                swTotal = false;
+                mSw1.setChecked(false);
+            }
+            else{
+                Deuda mDeb = daoDeuda.getUserByCltAndAcc(mClt.cliente, mAcc.cuenta);
+                if(mDeb == null){
+                    Basic.msg("Cliente no VALIDO");
+                    swTotal = false;
+                    mSw1.setChecked(false);
+                }
+                else {
+                    swTotal = !swTotal;
+                    if (swTotal) {
+                        int mult = CalcCalendar.getRangeMultiple(mDeb.ulfech, mAcc.acctipo);
+                        mInput4.setText(Basic.getValueFormatter(String.valueOf((Double) (mDeb.rent * mult))));
+                    }
+                    else{
+                        mInput4.setText(Basic.getValueFormatter(String.valueOf(mDeb.rent)));
+                    }
+                }
+            }
         }
         if (itemId == R.id.sw_pay2){
             swPorc = !swPorc;

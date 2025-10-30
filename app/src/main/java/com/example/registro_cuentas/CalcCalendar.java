@@ -166,10 +166,10 @@ public class CalcCalendar {
                 long numOwed = 0;
                 int daysPassed = 0;
                 if (select == 1) {
-                    numOwed = ChronoUnit.DAYS.between(adjustedOriginal, currdate);
-                    if (numOwed == 0) {
-                        numOwed = 1;
-                    }
+                    numOwed = ChronoUnit.DAYS.between(adjustedOriginal, currdate)+1;
+//                    if (numOwed == 0) {
+//                        numOwed = 1;
+//                    }
                 } else if (select == 2) {
                     LocalDate currMonthStart = currdate.withDayOfMonth(1);
                     numOwed = ChronoUnit.MONTHS.between(adjustedOriginal, currMonthStart);

@@ -48,6 +48,7 @@ import java.io.IOException;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
@@ -436,6 +437,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener, Adap
         }
 
         listPagos = daoPagos.getListByGroupId(mAcc.cuenta);
+        Collections.reverse(listPagos);
         List<Fecha> listFecha = dateOrderedList;
         int idx = currSel3;
         Fecha selFecha = listFecha.get(idx);
