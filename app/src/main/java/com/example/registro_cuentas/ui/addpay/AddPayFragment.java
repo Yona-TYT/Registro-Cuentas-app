@@ -276,6 +276,13 @@ public class AddPayFragment extends Fragment implements View.OnClickListener {
                 swPorc = false;
                 swTotal = false;
 
+                if(mAcc.acctipo == 0){
+                    mSw1.setEnabled(false);
+                }
+                else {
+                    mSw1.setEnabled(true);
+                }
+
                 if (i > 0) {
 
                     setEnabled(true);
