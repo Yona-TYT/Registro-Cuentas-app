@@ -545,7 +545,7 @@ public class AddPayFragment extends Fragment implements View.OnClickListener {
                            double remnant = (double)mObj[1];    //Remanente del pago (Se guarda para compensar futuros pagos)
                            String startDate = (String) mObj[2]; //La ultima fecha saldada
 
-                           Basic.msg("maxRent: "+maxRent+" startDate "+mDeb.ulfech+ " remnant "+remnant, true);
+                           //Basic.msg("maxRent: "+maxRent+" startDate "+mDeb.ulfech+ " remnant "+remnant, true);
 
                            if (maxRent == 0 && remnant > 0) {
                                    Basic.msg("El MONTO es mayor a la deuda!");

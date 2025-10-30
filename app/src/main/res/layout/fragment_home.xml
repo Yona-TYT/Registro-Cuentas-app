@@ -84,6 +84,8 @@
         app:localeTag="ES"
         app:currencySymbol="Bs"
         app:maxNumberOfDecimalDigits="2"
+        app:viewsToHideIds="searchBar,lv1"
+        app:keepFocusOnKeyboardClose="false"
         app:useCurrencySymbolAsHint="true"
         app:layout_constraintEnd_toStartOf="@+id/guideline4"
         app:layout_constraintTop_toBottomOf="@+id/txview2"

@@ -288,7 +288,7 @@ public class AddCltFragment extends Fragment  implements View.OnClickListener, A
                     }
                     mInput1.setText(mClt.nombre.toUpperCase());
                     mInput2.setText(mClt.alias.toUpperCase());
-                    mInput3.setText(Basic.getValueFormatter(total.toString()));
+                    mInput3.setText(Basic.getValueFormatter(String.valueOf(total)));
                 }
                 else{
                     mInput3.setEnabled(true);

@@ -148,7 +148,6 @@ public class Basic {
 //        mont = mont.replaceAll("([^.0-9]+)", "");
 //        debt = debt.replaceAll("([^.0-9]+)", "");
 
-        Double precDoll = StartVar.mDollar;
         double numA = mont;
         double numB = debt;
 
