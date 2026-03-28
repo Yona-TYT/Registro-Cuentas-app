@@ -116,7 +116,8 @@ public class AddCltFragment extends Fragment  implements View.OnClickListener, A
 
     private String mCurr = mCurrencyList.get(StartVar.mCurrency);
 
-    private Basic mBasic = new Basic(BaseContext.getContext());
+    private String fakeId = "IDFAKE";
+
     @SuppressLint("SetTextI18n")
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
     {
@@ -183,6 +184,10 @@ public class AddCltFragment extends Fragment  implements View.OnClickListener, A
         List<Cuenta> mAccList = StartVar.appDBall.daoAcc().getUsers();
         if (!mAccList.isEmpty()) {
             mAcc = mAccList.get(currtAcc);
+        }
+        else{
+            Cuenta fakeAcc = new Cuenta(fakeId,"Sin Cuentas","","",0,0,0,0, "", "");
+            mAcc = fakeAcc;
         }
 
         //Efecto moneda
@@ -391,10 +396,11 @@ public class AddCltFragment extends Fragment  implements View.OnClickListener, A
                 }
             }
 
+            String accId = mAcc.cuenta.equals(fakeId) ? "" : mAcc.cuenta;
+
             if (currSel2 == 0 && mClt == null){
                 String cltId = DatabaseUtils.generateId("cltID", daoCliente);
                 String debId = DatabaseUtils.generateId("debID", daoDeuda);
-                String accId = daoCuenta.getUsers().get(StartVar.accSelect).cuenta;
 
                 Cliente objClt = null;
 
@@ -406,11 +412,13 @@ public class AddCltFragment extends Fragment  implements View.OnClickListener, A
                 daoCliente.insertUser(objClt);
 
                 //Datos de deudas y monto fijo
-                Deuda objDeb = new Deuda(
-                        debId, accId, cltId, rent, 0, 0, currdate, (swEstat?1:0), 0,
-                        CalcCalendar.getCorrectDate(currdate, currtTyp), 0,0d, (swEstat?"@null":currdate)
-                );
-                daoDeuda.insertUser(objDeb);
+                if(!accId.isEmpty()) {
+                    Deuda objDeb = new Deuda(
+                            debId, accId, cltId, rent, 0, 0, currdate, (swEstat ? 1 : 0), 0,
+                            CalcCalendar.getCorrectDate(currdate, currtTyp), 0, 0d, (swEstat ? "@null" : currdate)
+                    );
+                    daoDeuda.insertUser(objDeb);
+                }
             }
             else {
 
@@ -418,15 +426,14 @@ public class AddCltFragment extends Fragment  implements View.OnClickListener, A
 
                 if(mDeb == null){
                     String debId = DatabaseUtils.generateId("debID", daoDeuda);
-
-                    String accId = daoCuenta.getUsers().get(StartVar.accSelect).cuenta;
-
-                    //Datos de deudas y monto fijo
-                    Deuda objDeb = new Deuda(
-                            debId, accId, cltId, rent, 0, 0, currdate, (swEstat?1:0), 0,
-                            CalcCalendar.getCorrectDate(currdate, currtTyp), currSel3,0d, (swEstat?"@null":currdate)
-                    );
-                    daoDeuda.insertUser(objDeb);
+                    if(!accId.isEmpty()) {
+                        //Datos de deudas y monto fijo
+                        Deuda objDeb = new Deuda(
+                                debId, accId, cltId, rent, 0, 0, currdate, (swEstat ? 1 : 0), 0,
+                                CalcCalendar.getCorrectDate(currdate, currtTyp), currSel3, 0d, (swEstat ? "@null" : currdate)
+                        );
+                        daoDeuda.insertUser(objDeb);
+                    }
 
                     daoCliente.updateUser(
                             cltId, nombre, alias, "@null", 0,

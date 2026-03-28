@@ -205,7 +205,14 @@ public class AddPayFragment extends Fragment implements View.OnClickListener {
         daoCliente = StartVar.appDBall.daoClt();
         daoDeuda = StartVar.appDBall.daoDeb();
 
-        mAcc = daoCuenta.getUsers().get(StartVar.accSelect);
+        List<Cuenta> mAccList = daoCuenta.getUsers();
+        if (!mAccList.isEmpty()) {
+            mAcc = mAccList.get(currtAcc);
+        }
+        else{
+            Cuenta fakeAcc = new Cuenta("IDFAKE","Sin Cuentas","","",0,0,0,0, "", "");
+            mAcc = fakeAcc;
+        }
 
         //Efecto moneda
         //-------------------------------------------------------------------------------------------------------
@@ -242,7 +249,7 @@ public class AddPayFragment extends Fragment implements View.OnClickListener {
             if (BitsOper.bitR(mByte, offset) == 1) {
 
                 Deuda mDeb = null;
-                String accId = daoCuenta.getUsers().get(StartVar.accSelect).cuenta;
+                String accId = mAcc.cuenta;
                 for(Deuda mD : daoDeuda.getListByGroupId(mClt.cliente)){
                     if(mD.accid.equals(accId)){
                         mDeb = mD;

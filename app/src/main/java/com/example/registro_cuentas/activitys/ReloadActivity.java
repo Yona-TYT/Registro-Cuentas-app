@@ -43,6 +43,9 @@ public class ReloadActivity extends AppCompatActivity {
         StartVar startVar = new StartVar(getApplicationContext());
         Basic mBasic = new Basic(getApplicationContext());
 
+        Basic.msg("Aqui HAy ");
+
+
         startVar.setAllListDB();
 
         StartVar.reloadActivity = this;

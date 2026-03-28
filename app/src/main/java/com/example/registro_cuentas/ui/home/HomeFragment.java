@@ -110,6 +110,8 @@ public class HomeFragment extends Fragment implements View.OnClickListener, Adap
     private ListView mLv1;
     //---------------------------------------------------------------------
 
+    private String fakeId = "IDFAKE";
+
     @SuppressLint("SetTextI18n")
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         //Para limpiar todas las listas
@@ -243,6 +245,9 @@ public class HomeFragment extends Fragment implements View.OnClickListener, Adap
             maccList.add(stList);
 
             accnameList.add("Vacio (No hay Cuentas Disponibles)");
+
+            Cuenta fakeAcc = new Cuenta(fakeId,"Sin Cuentas","","",0,0,0,0, "", "");
+            mAcc = fakeAcc;
         }
 
         SelecAdapter adapt2 = new SelecAdapter(mContext, accnameList);

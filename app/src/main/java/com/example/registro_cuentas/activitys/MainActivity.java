@@ -214,6 +214,7 @@ public class MainActivity extends AppCompatActivity {
     public boolean onCreateOptionsMenu(Menu menu){
         getMenuInflater().inflate(R.menu.save, menu);
         getMenuInflater().inflate(R.menu.impor, menu);
+        getMenuInflater().inflate(R.menu.sync, menu);
 
         for(int i = 0; i < menu.size(); i++){
             MenuItem item = menu.getItem(i);
@@ -267,6 +268,12 @@ public class MainActivity extends AppCompatActivity {
                     throw new RuntimeException(e);
                 }
             }
+        }
+
+        //Para Sincronizar datos
+        if (itemId == R.id.sync) {
+            Intent intent = new Intent(this, SettingsActivity.class);
+            startActivity(intent);
         }
         return true;
     }
@@ -372,7 +379,4 @@ public class MainActivity extends AppCompatActivity {
             );
         }
     }
-
-
-
 }

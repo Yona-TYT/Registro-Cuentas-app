@@ -162,6 +162,7 @@ public class GoogleDriveSettingsFragment extends PreferenceFragmentCompat implem
     @Override
     public boolean onPreferenceClick(Preference preference) {
         if (preference.getKey().equals(PreferenceNames.GOOGLE_DRIVE_FOLDER_PATH)) {
+
             SimpleFormDialog.build()
                     .title("R.string.google_drive_folder_path")
                     .neg("R.string.cancel")
