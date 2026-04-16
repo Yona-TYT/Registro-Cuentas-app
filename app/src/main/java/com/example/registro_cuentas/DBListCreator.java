@@ -153,7 +153,7 @@ public class DBListCreator extends AppCompatActivity {
         for (Cliente myClt : listClt) {
 
             //------------------------------------------------------
-            // Se crea la lista para esportar a csv  ---------------
+            // Se crea la lista para exportar a csv  ---------------
             String[] txList = new String[10];
 
             txList[0] = myClt.cliente;

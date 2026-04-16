@@ -107,7 +107,7 @@ public class AddAccFragment extends Fragment implements View.OnClickListener{
 
         //Efecto moneda
         //-------------------------------------------------------------------------------------------------------
-        mInput3.setCurrencySymbol(mCurr, true);
+        mInput3.setCurrencySymbol(mCurr);
         mInput3.setText(Basic.setFormatter("0"));
 
         //--------------------------------------------------------------------------------------------

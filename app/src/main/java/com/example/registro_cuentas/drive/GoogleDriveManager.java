@@ -12,6 +12,7 @@ import android.os.Looper;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import com.example.registro_cuentas.AppContextProvider;
 import com.example.registro_cuentas.Basic;
 import com.example.registro_cuentas.FilesManager;
 import com.example.registro_cuentas.StartVar;
@@ -209,7 +210,7 @@ public class GoogleDriveManager  {
     public void uploadDataBase() {
         //Dialogs.progress((FragmentActivity) getActivity(), "getString(R.string.please_wait)");
         //Basic.msg("StartVar.csvList: "+StartVar.csvList.get(1)[1]);
-
+        Context context = AppContextProvider.getAppContext();
         try {
             // Ejecutar ImportDataToDrive en el hilo principal
             new Handler(Looper.getMainLooper()).post(() -> {
@@ -230,7 +231,7 @@ public class GoogleDriveManager  {
                         LocalDate currDate = LocalDate.now();
                         File newFile = null;
                         try {
-                            newFile = FilesManager.getNewFile(file.getAbsolutePath(), currDate.toString().replaceAll("\\D", "-") + ".csv", StartVar.mContex);
+                            newFile = FilesManager.getNewFile(file.getAbsolutePath(), currDate.toString().replaceAll("\\D", "-") + ".csv", context);
                         } catch (IOException e) {
                             throw new RuntimeException(e);
                         }

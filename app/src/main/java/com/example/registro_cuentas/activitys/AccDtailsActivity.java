@@ -153,36 +153,36 @@ public class AccDtailsActivity extends AppCompatActivity implements View.OnClick
             mSw.setFocusedByDefault(false);
         }
 
-        //Para la lista del selector Fechas ----------------------------------------------------------------------------------------------
-        // Genera la lista de fechas ---------------------------------------------------------
-        List<String> fechaList = new ArrayList<>();
-        fechaList.add("Todos");
-        List<Fecha> listFecha = StartVar.appDBall.daoDat().getUsers();
-        for (int i = 0; i < listFecha.size(); i++){
-            String mes = listFecha.get(i).mes;
-            String year = listFecha.get(i).year;
-            fechaList.add(mes+" ("+year+")");
-        }
-        SelecAdapter adapt1 = new SelecAdapter(mContext, fechaList);
-        mSpin1.setAdapter(adapt1);
-        mSpin1.setSelection(fechaList.size()-1); //Set La fecha default
-        mSpin1.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                currSel1 = i;
-                StartVar.appDBall.daoCfg().updateMes(StartVar.mConfID, i);
-                StartVar mVars = new StartVar(mContext);
-                mVars.setCurrentMes(i);
-
-                // Se llenan los textView
-                setInputList();
-            }
-            @Override
-            public void onNothingSelected(AdapterView<?> adapterView) {
-
-            }
-        });
-        //--------------------------------------------------------------------------------------------
+//        //Para la lista del selector Fechas ----------------------------------------------------------------------------------------------
+//        // Genera la lista de fechas ---------------------------------------------------------
+//        List<String> fechaList = new ArrayList<>();
+//        fechaList.add("Todos");
+//        List<Fecha> listFecha = StartVar.appDBall.daoDat().getUsers();
+//        for (int i = 0; i < listFecha.size(); i++){
+//            String mes = listFecha.get(i).mes;
+//            String year = listFecha.get(i).year;
+//            fechaList.add(mes+" ("+year+")");
+//        }
+//        SelecAdapter adapt1 = new SelecAdapter(mContext, fechaList);
+//        mSpin1.setAdapter(adapt1);
+//        mSpin1.setSelection(fechaList.size()-1); //Set La fecha default
+//        mSpin1.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+//            @Override
+//            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+//                currSel1 = i;
+//                StartVar.appDBall.daoCfg().updateMes(StartVar.mConfID, i);
+//                StartVar mVars = new StartVar(mContext);
+//                mVars.setCurrentMes(i);
+//
+//                // Se llenan los textView
+//                setInputList();
+//            }
+//            @Override
+//            public void onNothingSelected(AdapterView<?> adapterView) {
+//
+//            }
+//        });
+//        //--------------------------------------------------------------------------------------------
 
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
@@ -207,35 +207,35 @@ public class AccDtailsActivity extends AppCompatActivity implements View.OnClick
             CalcCalendar cale = new CalcCalendar();
             //listRegistro = appDBregistro.get(accIndex).daoUser().getUsers();
 
-            float totalCred = 0;
-            float totalDeb = 0;
+            Double totalCred = 0.0;
+            Double totalDeb = 0.0;
 
-            listPagos = StartVar.appDBall.daoPay().getUsers();
+            Cuenta mCuenta = StartVar.appDBall.daoAcc().getUsers().get(accIndex);
+
+            listPagos = StartVar.appDBall.daoPay().getListByGroupId(mCuenta.cuenta);
 
             List<Fecha> listFecha = StartVar.appDBall.daoDat().getUsers();
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                 for (Pagos mPay : listPagos) {
                     String fecha = mPay.fecha;
-                    String mon = Basic.getValueFormatter(mPay.monto);
 
                     LocalDate date = LocalDate.parse(fecha);
                     if(currSel1 == 0){
                         if (mPay.oper == 0) {
-                            totalCred += mon.isEmpty() ? 0 : Basic.parseFloat(mon);
+                            totalCred += mPay.monto;
                         } else {
-                            totalDeb -= mon.isEmpty() ? 0 : Basic.parseFloat(mon);
+                            totalDeb -= mPay.monto;
                         }
                     }
                     else if (date.getMonth().toString().equals(listFecha.get(currSel1-1).mes)) {
                         if (mPay.oper == 0) {
-                            totalCred += mon.isEmpty() ? 0 : Basic.parseFloat(mon);
+                            totalCred += mPay.monto;
                         } else {
-                            totalDeb -= mon.isEmpty() ? 0 : Basic.parseFloat(mon);
+                            totalDeb -= mPay.monto;
                         }
                     }
                 }
             }
-            Cuenta mCuenta = StartVar.appDBall.daoAcc().getUsers().get(accIndex);
 
             String txName = mCuenta.nombre;
             String txDesc = mCuenta.desc;
@@ -246,11 +246,11 @@ public class AccDtailsActivity extends AppCompatActivity implements View.OnClick
             i++;
             mTextList.get(i).setText("Monto Estimado: "+txMont);
             i++;
-            mTextList.get(i).setText("Total Credito: "+ Basic.setFormatter(Float.toString(totalCred))+" "+mCurrencyList.get(mCindex));
+            mTextList.get(i).setText("Total Credito: "+ Basic.setFormatter(Double.toString(totalCred))+" "+mCurrencyList.get(mCindex));
             i++;
-            mTextList.get(i).setText("Total Debito: " + Basic.setFormatter(Float.toString(totalDeb)) + " "+ mCurrencyList.get(mCindex));
+            mTextList.get(i).setText("Total Debito: " + Basic.setFormatter(Double.toString(totalDeb)) + " "+ mCurrencyList.get(mCindex));
             i++;
-            mTextList.get(i).setText("Saldo Disponible: " + Basic.setFormatter(Float.toString((totalCred + totalDeb))) + " "+ mCurrencyList.get(mCindex));
+            mTextList.get(i).setText("Saldo Disponible: " + Basic.setFormatter(Double.toString((totalCred + totalDeb))) + " "+ mCurrencyList.get(mCindex));
             i++;
             mTextList.get(i).setText("Tipo : (" + accTypeL.get(mCuenta.acctipo)+")");
 

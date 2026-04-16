@@ -1,7 +1,10 @@
 package com.example.registro_cuentas.activitys;
 
 import android.os.Bundle;
+import android.view.MenuItem;
+import android.widget.Toolbar;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.preference.PreferenceFragmentCompat;
@@ -16,18 +19,16 @@ public class SettingsActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.settings_activity);
-        if (savedInstanceState == null) {
-            getSupportFragmentManager()
-                    .beginTransaction()
-                    .replace(R.id.settings, new SettingsFragment())
-                    .commit();
-        }
+
+        // Usamos el ActionBar nativo de la Activity
         ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) {
             actionBar.setDisplayHomeAsUpEnabled(true);
+            actionBar.setDisplayShowHomeEnabled(true);
+            actionBar.setTitle("Ajustes");
         }
 
-        // Carga GoogleDriveSettingsFragment directamente
+        // Cargar el fragmento
         if (savedInstanceState == null) {
             getSupportFragmentManager()
                     .beginTransaction()
@@ -36,6 +37,24 @@ public class SettingsActivity extends AppCompatActivity {
         }
     }
 
+    // Método principal para que funcione la flecha
+    @Override
+    public boolean onSupportNavigateUp() {
+        finish();
+        return true;
+    }
+
+    // Backup por si el anterior no responde
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        if (item.getItemId() == android.R.id.home) {
+            finish();
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    // Tu fragmento interno
     public static class SettingsFragment extends PreferenceFragmentCompat {
         @Override
         public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {

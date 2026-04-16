@@ -119,8 +119,8 @@ public class AccEditActivity extends AppCompatActivity implements View.OnClickLi
 
         //Efecto moneda
         //-------------------------------------------------------------------------------------------------------
-        mInput3.setCurrencySymbol(mCurr, true);
-        mInput3.setText(Basic.getConverteValue(mAcc.monto));
+        mInput3.setCurrencySymbol(mCurr);
+        mInput3.setText(Basic.getValueFormatter(Basic.getConverteValue(mAcc.monto)));
 
         //----------------------------------------------------------------------------------------------------
 

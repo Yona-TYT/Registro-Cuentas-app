@@ -174,8 +174,8 @@ public class PayEditActivity extends AppCompatActivity implements View.OnClickLi
 
         //Efecto moneda
         //-------------------------------------------------------------------------------------------------------
-        mInput2.setCurrencySymbol(mCurr, true);
-        mInput2.setText(Basic.getConverteValue(mpay.monto).toString());
+        mInput2.setCurrencySymbol(mCurr);
+        mInput2.setText(Basic.getValueFormatter(Basic.getConverteValue(mpay.monto)));
 
         //----------------------------------------------------------------------------------------------------
 

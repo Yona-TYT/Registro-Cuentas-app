@@ -108,24 +108,24 @@ public class StartVar {
 
     public static void getConfigDB(){
         //Instancia de la base de datos
-        StartVar.mConfigDB =  StartVar.appDBall.daoCfg().getUsers(mConfID);
+        StartVar.mConfigDB =  StartVar.appDBall.daoCfg().getUsers(StartVar.mConfID);
     }
 
     //------------------------------------------ Para guardar las cuentas
     public void setAllListDB(){
         //Instancia de la base de datos
-        StartVar.appDBall = Room.databaseBuilder( mContex, AllDao.class, nameDBacc).allowMainThreadQueries().build();
+        StartVar.appDBall = Room.databaseBuilder( StartVar.mContex, AllDao.class, StartVar.nameDBacc).allowMainThreadQueries().build();
 
-        StartVar.listacc = appDBall.daoAcc().getUsers();
-        StartVar.listclt = appDBall.daoClt().getUsers();
-        StartVar.listdeb = appDBall.daoDeb().getUsers();
-        StartVar.listfec = appDBall.daoDat().getUsers();
-        StartVar.listreg = appDBall.daoPay().getUsers();
+        StartVar.listacc = StartVar.appDBall.daoAcc().getUsers();
+        StartVar.listclt = StartVar.appDBall.daoClt().getUsers();
+        StartVar.listdeb = StartVar.appDBall.daoDeb().getUsers();
+        StartVar.listfec = StartVar.appDBall.daoDat().getUsers();
+        StartVar.listreg = StartVar.appDBall.daoPay().getUsers();
 
         //Instancia de la base de datos para Config
-        mConfigDB = StartVar.appDBall.daoCfg().getUsers(mConfID);
+        StartVar.mConfigDB = StartVar.appDBall.daoCfg().getUsers(StartVar.mConfID);
 
-        if(mConfigDB == null){
+        if(StartVar.mConfigDB == null){
             String date = "";
             String time= "";
             if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
@@ -147,11 +147,9 @@ public class StartVar {
             }
 
             //configDatabase.daoConf().insertUser();
-            Conf obj = new Conf(mConfID, "2", textID, date, time, 0, 0d, 0, 0, 0);
+            Conf obj = new Conf(StartVar.mConfID, "2", textID, date, time, 0, 0d, 0, 0, 0);
             StartVar.appDBall.daoCfg().insertUser(obj);
         }
-
-
     }
 
     public void getAccListDB(){

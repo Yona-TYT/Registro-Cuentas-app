@@ -192,7 +192,7 @@ public class AddCltFragment extends Fragment  implements View.OnClickListener, A
 
         //Efecto moneda
         //-------------------------------------------------------------------------------------------------------
-        mInput3.setCurrencySymbol(mCurr, true);
+        mInput3.setCurrencySymbol(mCurr);
         mInput3.setText("0");
         List<View> mViewL1 = new ArrayList<>();
 

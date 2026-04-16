@@ -216,7 +216,7 @@ public class AddPayFragment extends Fragment implements View.OnClickListener {
 
         //Efecto moneda
         //-------------------------------------------------------------------------------------------------------
-        mInput4.setCurrencySymbol(mCurr, true);
+        mInput4.setCurrencySymbol(mCurr);
         mInput4.setText(Basic.setFormatter("0"));
 
         mPermiss = StartVar.mPermiss;
