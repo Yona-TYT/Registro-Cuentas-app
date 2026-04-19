@@ -1,21 +1,27 @@
 package com.example.registro_cuentas;
 
 import android.content.Context;
+import android.os.Build;
+import android.util.Log;
 
 import com.example.registro_cuentas.db.Fecha;
 import com.example.registro_cuentas.db.dao.DaoDat;
 
+import java.text.SimpleDateFormat;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.Period;
 import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeFormatterBuilder;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
+import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class CalcCalendar {
-    public CalcCalendar() {
+public class CalendUtls {
+    public CalendUtls() {
     }
 
     public static String dataConverted(String text, int selec) {
@@ -96,7 +102,7 @@ public class CalcCalendar {
             LocalTime currtime = LocalTime.now();
             Fecha obj = new Fecha("dateID" + listFecha.size(), "" + currdate.getYear(),
                     currdate.getMonth().toString(), "" + currdate.getDayOfMonth(),
-                    CalcCalendar.getTime(currtime.toString()), currdate.toString());
+                    CalendUtls.getTime(currtime.toString()), currdate.toString());
             daoFecha.insertUser(obj);
             // Recarga la lista de la DB ----------------------------
             StartVar var = new StartVar();
@@ -235,65 +241,6 @@ public class CalcCalendar {
         return null;
     }
 
-//    public static Object[] dateToMoney(String startDate, int select, Double rent, Double paid) {
-//        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
-//            if (rent <= 0) {
-//                return null;
-//            }
-//            if (!startDate.isEmpty()) {
-//                LocalDate originalDate = LocalDate.parse(startDate);
-//                LocalDate currdate = LocalDate.now();
-//
-//                int result = currdate.compareTo(originalDate);
-//                if (result < 1) {
-//                    return null;
-//                }
-//
-//                long numOwed = 0;
-//                if (select == 1) {
-//                    // Días:
-//                    numOwed = ChronoUnit.DAYS.between(originalDate, currdate);
-//                } else if (select == 2) {
-//                    // Meses: incluye período actual iniciado
-//                    originalDate = LocalDate.of(originalDate.getYear(), originalDate.getMonth(), 1);
-//                    numOwed = ChronoUnit.MONTHS.between(originalDate, currdate);
-//                } else if (select == 3) {
-//                    // Años
-//                    originalDate = LocalDate.of(originalDate.getYear(), 1, 1);
-//                    numOwed = ChronoUnit.YEARS.between(originalDate, currdate);
-//                } else {
-//                    return new Object[]{0f, 0f, "", 1};
-//                }
-//                if (numOwed < 1) {
-//                    numOwed = 0;
-//                }
-//
-//                // Simula pagos desde la fecha original (garantiza date >= startDate)
-//                LocalDate date = originalDate;
-//                int count = 0;
-//                Double currentPaid = paid;
-//
-//                for (long i = numOwed; i > 0; i--) {
-//                    if (currentPaid >= rent) {
-//                        currentPaid -= rent;
-//                        if (select == 1) {
-//                            date = date.plusDays(1);
-//                        } else if (select == 2) {
-//                            date = date.plusMonths(1);
-//                        } else {  // select == 3
-//                            date = date.plusYears(1);
-//                        }
-//                    } else {
-//                        count++;
-//                    }
-//                }
-//                double debt = Math.max(0f, (rent * count) - currentPaid);
-//                return new Object[]{debt, currentPaid, date.toString(), 0};
-//            }
-//        }
-//        return null;
-//    }
-
     public static String getDatePlus(String txDate, int sum, int selec) {
         String newDate = "";
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
@@ -316,28 +263,6 @@ public class CalcCalendar {
         }
         return newDate;
     }
-//    public static String getCorrectDate(String txDate, int minus, int selec) {
-//        String newDate = "";
-//        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
-//            if (!txDate.isEmpty()) {
-//                //Convierte Sting  a forrmato de fecha
-//                LocalDate date = LocalDate.parse(txDate);
-//                //Para Dias
-//                if (selec == 1) {
-//                    newDate = date.minusDays(minus).toString();
-//                }
-//                //Para meses
-//                else if (selec == 2) {
-//                    newDate = date.minusMonths(minus).toString();
-//                }
-//                //Para años
-//                else if (selec == 3) {
-//                    newDate = date.minusYears(minus).toString();
-//                }
-//            }
-//        }
-//        return newDate;
-//    }
 
     public static String getCorrectDate(String txDate, int selec) {
         String newDate = "";
@@ -362,5 +287,41 @@ public class CalcCalendar {
             }
         }
         return newDate;
+    }
+
+    public static LocalDateTime DTformat(String dt) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            if (dt == null || dt.trim().isEmpty()) {
+                Log.e("DTformat", "Fecha recibida es null o vacía");
+                return LocalDateTime.now();
+            }
+
+            // Intentamos varios formatos comunes de Google Drive
+            String[] patterns = {
+                    "yyyy-MM-dd'T'HH:mm:ss",           // formato normal
+                    "yyyy-MM-dd'T'H:mm:ss",            // hora con 1 dígito
+                    "yyyy-MM-dd'T'HH:mm:ss.SSS",       // con milisegundos
+                    "yyyy-MM-dd'T'HH:mm:ss.SSSSSS",    // con microsegundos
+                    "yyyy-MM-dd'T'HH:mm:ss.SSSSSSSSS"  // con nanosegundos
+            };
+
+            for (String pattern : patterns) {
+                try {
+                    DateTimeFormatter formatter = DateTimeFormatter.ofPattern(pattern, Locale.getDefault());
+                    LocalDateTime result = LocalDateTime.parse(dt, formatter);
+
+                    Log.d("DTformat", "✅ Parseado con éxito usando: " + pattern + " → " + result);
+                    return result;
+
+                } catch (Exception ignored) {
+                    // Probamos el siguiente patrón
+                }
+            }
+
+            // Si ninguno funcionó
+            Log.e("DTformat", "❌ No se pudo parsear la fecha: " + dt);
+            return LocalDateTime.now(); // fallback seguro
+        }
+        return null;
     }
 }

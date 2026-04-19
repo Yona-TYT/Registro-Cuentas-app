@@ -1,7 +1,6 @@
 package com.example.registro_cuentas.activitys;
 
 import android.annotation.SuppressLint;
-import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
@@ -23,13 +22,11 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.appcompat.widget.Toolbar;
 
-import com.example.registro_cuentas.AppContextProvider;
 import com.example.registro_cuentas.Basic;
-import com.example.registro_cuentas.CalcCalendar;
+import com.example.registro_cuentas.CalendUtls;
 import com.example.registro_cuentas.FilesManager;
 import com.example.registro_cuentas.R;
 import com.example.registro_cuentas.StartVar;
-import com.example.registro_cuentas.db.AllDao;
 import com.example.registro_cuentas.db.Cuenta;
 import com.example.registro_cuentas.db.dao.DaoClt;
 import com.example.registro_cuentas.db.Pagos;
@@ -163,7 +160,7 @@ public class PayDetailsActivity extends AppCompatActivity implements View.OnClic
         Pagos mPay = StartVar.appDBall.daoPay().getUsers(payId);
 
         if(mPay != null) {
-            CalcCalendar cale = new CalcCalendar();
+            CalendUtls cale = new CalendUtls();
             mUser = mPay.pago;
             DaoClt mDao = StartVar.appDBall.daoClt();
             String txName = mDao.getSaveName(mPay.cltid);
@@ -173,7 +170,7 @@ public class PayDetailsActivity extends AppCompatActivity implements View.OnClic
             String txMont = mPay.monto.toString();
             String txOpt = (mPay.oper==0?"+ ":"- ");
             String txFech = mPay.fecha;
-            String txHora = CalcCalendar.getTime(mPay.time);
+            String txHora = CalendUtls.getTime(mPay.time);
 
             int i = 0;
             mTextList.get(i).setText("Cliente: " + txName + (txAlias.replaceAll("[^a-zA-Z0-9]", "").isEmpty()? "" : " ("+txAlias+")"));

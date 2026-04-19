@@ -27,7 +27,7 @@ import android.widget.TextView;
 import com.example.registro_cuentas.AppContextProvider;
 import com.example.registro_cuentas.Basic;
 import com.example.registro_cuentas.BitsOper;
-import com.example.registro_cuentas.CalcCalendar;
+import com.example.registro_cuentas.CalendUtls;
 import com.example.registro_cuentas.DBListCreator;
 import com.example.registro_cuentas.db.Cliente;
 import com.example.registro_cuentas.db.Cuenta;
@@ -254,7 +254,7 @@ public class AddCltFragment extends Fragment  implements View.OnClickListener, A
                         //Basic.msg(mClt.nombre);
                         total = mDeb.rent;
                         if (currtTyp > 0) {
-                            int mult = CalcCalendar.getRangeMultiple(mDeb.ulfech, currtTyp);
+                            int mult = CalendUtls.getRangeMultiple(mDeb.ulfech, currtTyp);
                             Double monto = Basic.getDebt(mult, mDeb.rent, mDeb.remnant);
 
                             int isDeb = mDeb.pagado;
@@ -418,7 +418,7 @@ public class AddCltFragment extends Fragment  implements View.OnClickListener, A
                 if(!accId.isEmpty()) {
                     Deuda objDeb = new Deuda(
                             debId, accId, cltId, rent, 0, 0, currdate, (swEstat ? 1 : 0), 0,
-                            CalcCalendar.getCorrectDate(currdate, currtTyp), 0, 0d, (swEstat ? "@null" : currdate)
+                            CalendUtls.getCorrectDate(currdate, currtTyp), 0, 0d, (swEstat ? "@null" : currdate)
                     );
                     daoDeuda.insertUser(objDeb);
                 }
@@ -433,7 +433,7 @@ public class AddCltFragment extends Fragment  implements View.OnClickListener, A
                         //Datos de deudas y monto fijo
                         Deuda objDeb = new Deuda(
                                 debId, accId, cltId, rent, 0, 0, currdate, (swEstat ? 1 : 0), 0,
-                                CalcCalendar.getCorrectDate(currdate, currtTyp), currSel3, 0d, (swEstat ? "@null" : currdate)
+                                CalendUtls.getCorrectDate(currdate, currtTyp), currSel3, 0d, (swEstat ? "@null" : currdate)
                         );
                         daoDeuda.insertUser(objDeb);
                     }
@@ -458,9 +458,9 @@ public class AddCltFragment extends Fragment  implements View.OnClickListener, A
                     String mUltFec = mDeb.ulfech;
                     if(!mDeb.disabfec.equals("@null") && swEstat){
                         //Hace comparaciones de fecha para determinar si es necesario actualizar mUltFec
-                        String startMonthDate = CalcCalendar.getCorrectDate(mDeb.disabfec, currtTyp);
-                        if(CalcCalendar.getRangeMultiple(startMonthDate, currtTyp) > 0) {
-                            mUltFec = CalcCalendar.getCorrectDate(currdate, currtTyp);
+                        String startMonthDate = CalendUtls.getCorrectDate(mDeb.disabfec, currtTyp);
+                        if(CalendUtls.getRangeMultiple(startMonthDate, currtTyp) > 0) {
+                            mUltFec = CalendUtls.getCorrectDate(currdate, currtTyp);
                         }
                     }
                     daoDeuda.updateFormCltWin(
@@ -471,7 +471,7 @@ public class AddCltFragment extends Fragment  implements View.OnClickListener, A
             }
 
             //Actualisza la lista de fechas
-            CalcCalendar.addCurrentMonthIfAbsent(mContext);
+            CalendUtls.addCurrentMonthIfAbsent(mContext);
 
             Basic.msg("Se han GUARDADO los cambios");
 

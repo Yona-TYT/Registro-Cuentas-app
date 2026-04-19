@@ -25,6 +25,7 @@ import androidx.work.WorkRequest;
 
 import com.example.registro_cuentas.AppContextProvider;
 import com.example.registro_cuentas.Basic;
+import com.example.registro_cuentas.CalendUtls;
 import com.example.registro_cuentas.DBListCreator;
 import com.example.registro_cuentas.StartVar;
 import com.example.registro_cuentas.activitys.ReloadActivity;
@@ -163,12 +164,8 @@ public class SetWorkResult {
                                             break;
                                         }
                                     }
-                                   Conf mConf = StartVar.appDBall.daoCfg().getUsers(StartVar.mConfID);
-
+                                    Conf mConf = StartVar.appDBall.daoCfg().getUsers(StartVar.mConfID);
                                     List<Cuenta> mAccList = StartVar.appDBall.daoAcc().getUsers();
-                                    List<Cliente> mCltList = StartVar.appDBall.daoClt().getUsers();
-                                    List<Deuda> mDebList = StartVar.appDBall.daoDeb().getUsers();
-
 
                                     if(!mConf.hexid.equals(hexID)){
                                         if(mAccList.isEmpty()){
@@ -197,8 +194,8 @@ public class SetWorkResult {
                                         }
 
                                         // Combinar fecha y hora en LocalDateTime
-                                        LocalDateTime dateTimeA = LocalDateTime.parse(mConf.date + "T" + mConf.time);
-                                        LocalDateTime dateTimeB = LocalDateTime.parse(date + "T" + time);
+                                        LocalDateTime dateTimeA = CalendUtls.DTformat(mConf.date + "T" + mConf.time);
+                                        LocalDateTime dateTimeB = CalendUtls.DTformat(date + "T" + time);
 
                                         // Comparar fechas y horas
                                         int result = dateTimeA.compareTo(dateTimeB);
@@ -207,11 +204,9 @@ public class SetWorkResult {
                                             if (newObj) {
                                                 //Basic.msg("Enviando Actualizacion...");
                                                 manager.uploadDataBase();
-
                                             }
                                             else{
                                                 //Basic.msg("Los datos locales están más actualizados (" + dateTimeA + " > " + dateTimeB + ")");
-
                                                 if(isCheck) {
                                                     StartVar.genericQueue.startUsuarioQueue(1);
                                                 }

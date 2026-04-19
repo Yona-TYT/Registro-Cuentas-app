@@ -23,15 +23,13 @@ import android.view.WindowInsetsController;
 import android.widget.Toast;
 
 import com.example.registro_cuentas.Basic;
-import com.example.registro_cuentas.CalcCalendar;
+import com.example.registro_cuentas.CalendUtls;
 import com.example.registro_cuentas.DBListCreator;
 
 import com.example.registro_cuentas.FilesManager;
 import com.example.registro_cuentas.R;
 import com.example.registro_cuentas.StartVar;
 import com.example.registro_cuentas.databinding.ActivityMainBinding;
-import com.example.registro_cuentas.db.DatabaseUtils;
-import com.example.registro_cuentas.db.dao.DaoAcc;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationBarView;
 
@@ -92,7 +90,7 @@ public class MainActivity extends AppCompatActivity {
         //Start File manager class
         mFile = new FilesManager();
 
-        CalcCalendar calen = new CalcCalendar();
+        CalendUtls calen = new CalendUtls();
 
         if(!StartVar.mPermiss) {
             if (checkStoragePermissions()) {

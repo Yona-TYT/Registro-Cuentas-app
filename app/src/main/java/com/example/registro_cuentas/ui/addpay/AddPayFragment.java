@@ -28,7 +28,7 @@ import androidx.fragment.app.Fragment;
 import com.example.registro_cuentas.AppContextProvider;
 import com.example.registro_cuentas.Basic;
 import com.example.registro_cuentas.BitsOper;
-import com.example.registro_cuentas.CalcCalendar;
+import com.example.registro_cuentas.CalendUtls;
 import com.example.registro_cuentas.activitys.ReloadActivity;
 import com.example.registro_cuentas.db.Cliente;
 import com.example.registro_cuentas.CurrencyEditText;
@@ -319,7 +319,7 @@ public class AddPayFragment extends Fragment implements View.OnClickListener {
                                 ultFec = mDeb.fecha;
                             }
                             mInput4.setText(Basic.getValueFormatter(String.valueOf(mDeb.rent)));
-                            int mult = CalcCalendar.getRangeMultiple(ultFec, currtTyp);
+                            int mult = CalendUtls.getRangeMultiple(ultFec, currtTyp);
                             Double monto = Basic.getDebt(mult, mDeb.rent, mDeb.remnant);
 
                             if (mAcc.acctipo > 0) {
@@ -531,7 +531,7 @@ public class AddPayFragment extends Fragment implements View.OnClickListener {
 
                    Deuda objDeb = new Deuda(
                            debId, accId, cltId, 0d, (swTotal?1:0), (swPorc?1:0), currdate,
-                           1, 0, CalcCalendar.getCorrectDate(currdate, currtTyp), currSel2,0d,"@null"
+                           1, 0, CalendUtls.getCorrectDate(currdate, currtTyp), currSel2,0d,"@null"
                            );
                    daoDeuda.insertUser(objDeb);
                }
@@ -544,13 +544,13 @@ public class AddPayFragment extends Fragment implements View.OnClickListener {
                    if(mDeb == null){
                        Deuda objDeb = new Deuda(
                                debId, accId, cltId, 0d, (swTotal?1:0), (swPorc?1:0), currdate,
-                               0, 0, CalcCalendar.getCorrectDate(currdate, currtTyp), currSel2,0d, "@null"
+                               0, 0, CalendUtls.getCorrectDate(currdate, currtTyp), currSel2,0d, "@null"
                        );
                        daoDeuda.insertUser(objDeb);
                    }
                    else if (mAcc.acctipo > 0){
                        int pagado = 1;
-                       Object[] mObj = CalcCalendar.dateToMoney(mDeb.ulfech, mAcc.acctipo, mDeb.rent, (mDeb.remnant + rent));
+                       Object[] mObj = CalendUtls.dateToMoney(mDeb.ulfech, mAcc.acctipo, mDeb.rent, (mDeb.remnant + rent));
                        //Basic.msg("dateToMoney("+mDeb.ulfech +", "+ mAcc.acctipo+", "+mDeb.rent+", "+ (mDeb.paid + rent)+")", true);
                        if(mObj != null){
                            //Basic.msg(" ulfech "+mDeb.ulfech+" "+mObj[1]+" "+mObj[2]);
@@ -563,7 +563,7 @@ public class AddPayFragment extends Fragment implements View.OnClickListener {
                            if (maxRent == 0 && remnant > 0) {
                                    Basic.msg("El MONTO es mayor a la deuda!");
                                    if(swTotal) {
-                                       int mult = CalcCalendar.getRangeMultiple(mDeb.ulfech, mAcc.acctipo);
+                                       int mult = CalendUtls.getRangeMultiple(mDeb.ulfech, mAcc.acctipo);
                                        mInput4.setText(Basic.getValueFormatter(String.valueOf( mDeb.rent * mult - mDeb.remnant)));
                                    }
                                    else {
@@ -593,7 +593,7 @@ public class AddPayFragment extends Fragment implements View.OnClickListener {
                 StartVar.appDBall.daoPay().insertUser(obj);
 
                //Actualisza la lista de fechas
-               CalcCalendar.addCurrentMonthIfAbsent(mContext);
+               CalendUtls.addCurrentMonthIfAbsent(mContext);
 
                //SE Limpia la lista
                 mList.clear();
@@ -622,7 +622,7 @@ public class AddPayFragment extends Fragment implements View.OnClickListener {
                 else {
                     swTotal = !swTotal;
                     if (swTotal) {
-                        int mult = CalcCalendar.getRangeMultiple(mDeb.ulfech, mAcc.acctipo);
+                        int mult = CalendUtls.getRangeMultiple(mDeb.ulfech, mAcc.acctipo);
                         mInput4.setText(Basic.getValueFormatter(String.valueOf((Double) (mDeb.rent * mult))));
                     }
                     else{

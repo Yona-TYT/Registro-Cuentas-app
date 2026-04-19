@@ -7,7 +7,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.Spinner;
 import android.widget.Switch;
@@ -26,13 +25,12 @@ import androidx.core.view.WindowInsetsCompat;
 
 import com.example.registro_cuentas.AppContextProvider;
 import com.example.registro_cuentas.Basic;
-import com.example.registro_cuentas.CalcCalendar;
+import com.example.registro_cuentas.CalendUtls;
 import com.example.registro_cuentas.db.Cuenta;
 import com.example.registro_cuentas.db.AllDao;
 import com.example.registro_cuentas.db.Fecha;
 import com.example.registro_cuentas.R;
 import com.example.registro_cuentas.db.Pagos;
-import com.example.registro_cuentas.adapters.SelecAdapter;
 import com.example.registro_cuentas.StartVar;
 
 import java.time.LocalDate;
@@ -204,7 +202,7 @@ public class AccDtailsActivity extends AppCompatActivity implements View.OnClick
     @SuppressLint("SetTextI18n")
     public void setInputList(){
         if(!appDBregistro.isEmpty()) {
-            CalcCalendar cale = new CalcCalendar();
+            CalendUtls cale = new CalendUtls();
             //listRegistro = appDBregistro.get(accIndex).daoUser().getUsers();
 
             Double totalCred = 0.0;

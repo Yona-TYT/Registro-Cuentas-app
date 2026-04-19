@@ -20,7 +20,7 @@ import androidx.appcompat.view.ContextThemeWrapper;
 import androidx.core.content.ContextCompat;
 
 import com.example.registro_cuentas.Basic;
-import com.example.registro_cuentas.CalcCalendar;
+import com.example.registro_cuentas.CalendUtls;
 import com.example.registro_cuentas.R;
 import com.example.registro_cuentas.activitys.PayDetailsActivity;
 import com.example.registro_cuentas.StartVar;
@@ -32,7 +32,7 @@ import java.util.List;
 public class PayAdapter extends BaseAdapter implements Filterable, View.OnClickListener{
     //Test------------------------------------------------------------
     private Context mContex;
-    private CalcCalendar cale = new CalcCalendar();
+    private CalendUtls cale = new CalendUtls();
     private Basic mBasic;
 
     private List<Object[]> textList = new ArrayList<>();

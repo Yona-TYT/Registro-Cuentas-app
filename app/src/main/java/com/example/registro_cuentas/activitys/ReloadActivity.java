@@ -1,7 +1,6 @@
 package com.example.registro_cuentas.activitys;
 
 import static com.example.registro_cuentas.StartVar.appDBall;
-import static com.example.registro_cuentas.StartVar.bitList;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -14,7 +13,7 @@ import androidx.core.view.WindowInsetsCompat;
 
 import com.example.registro_cuentas.AppContextProvider;
 import com.example.registro_cuentas.Basic;
-import com.example.registro_cuentas.CalcCalendar;
+import com.example.registro_cuentas.CalendUtls;
 import com.example.registro_cuentas.DBListCreator;
 import com.example.registro_cuentas.R;
 import com.example.registro_cuentas.StartVar;
@@ -59,7 +58,7 @@ public class ReloadActivity extends AppCompatActivity {
             if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
                 LocalDate currdate = LocalDate.now();
                 LocalTime currtime = LocalTime.now();
-                obj = new Fecha("dateID0", ""+currdate.getYear(), currdate.getMonth().toString(), ""+currdate.getDayOfMonth(), CalcCalendar.getTime(currtime.toString()), currdate.toString());
+                obj = new Fecha("dateID0", ""+currdate.getYear(), currdate.getMonth().toString(), ""+currdate.getDayOfMonth(), CalendUtls.getTime(currtime.toString()), currdate.toString());
             }
             else {
                 obj = new Fecha("dateID0", "0", "0", "0", "0", "0");

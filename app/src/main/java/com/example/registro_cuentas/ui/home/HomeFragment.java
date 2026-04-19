@@ -25,7 +25,7 @@ import com.example.registro_cuentas.AppContextProvider;
 import com.example.registro_cuentas.BitsOper;
 import com.example.registro_cuentas.activitys.AccDtailsActivity;
 import com.example.registro_cuentas.Basic;
-import com.example.registro_cuentas.CalcCalendar;
+import com.example.registro_cuentas.CalendUtls;
 import com.example.registro_cuentas.db.Cliente;
 import com.example.registro_cuentas.adapters.CltAdapter;
 import com.example.registro_cuentas.db.Cuenta;
@@ -510,7 +510,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener, Adap
             Double rent = mDeb.rent;
             int isDeb = mDeb.pagado;
             int mTyp =  StartVar.accCierre;
-            int mult = CalcCalendar.getRangeMultiple(ultFec, mTyp);
+            int mult = CalendUtls.getRangeMultiple(ultFec, mTyp);
             String monto = String.valueOf(Basic.getDebt(mult, rent, debe));
 
             String txA = "";
