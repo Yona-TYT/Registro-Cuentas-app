@@ -23,7 +23,7 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
-import com.example.registro_cuentas.BaseContext;
+import com.example.registro_cuentas.AppContextProvider;
 import com.example.registro_cuentas.Basic;
 import com.example.registro_cuentas.BitsOper;
 import com.example.registro_cuentas.adapters.BoxAdapter;
@@ -41,7 +41,7 @@ import io.reactivex.annotations.NonNull;
 
 public class CltEditActivity extends AppCompatActivity implements View.OnClickListener{
 
-    private Context mContext = BaseContext.getContext();
+    private Context mContext = AppContextProvider.getContext();
 
     // DB
     private AllDao appDBcuenta = StartVar.appDBall;
@@ -63,7 +63,7 @@ public class CltEditActivity extends AppCompatActivity implements View.OnClickLi
 
     private Button mBtton1;
 
-    public int cltIndex = StartVar.cltIndex;
+    public int cltIdx = StartVar.cltIndex;
     public int accIndex = StartVar.accSelect;
 
     @SuppressLint("SetTextI18n")
@@ -113,14 +113,14 @@ public class CltEditActivity extends AppCompatActivity implements View.OnClickLi
 
         DaoClt daoClt = StartVar.appDBall.daoClt();
         List<Cliente> mCltList = daoClt.getUsers();
-        mClt = mCltList.get(cltIndex);
+        mClt = mCltList.get(cltIdx);
 
         mInput1.setText(mClt.nombre);
         mInput2.setText(mClt.alias);
 
         //------------------------------------------------------------------------------------------
         //Para la lista de Cuentas Activas para el cliente------------------------------------------
-        StartVar startVar = new StartVar(mContext);
+        StartVar startVar = new StartVar();
         startVar.setCltBit(mClt.bits);
 
         setCheckBoxes();
@@ -194,9 +194,11 @@ public class CltEditActivity extends AppCompatActivity implements View.OnClickLi
             // Debug opcional
             // Log.d("setCheckBoxes", String.format("Cuenta %d: grupo=%d, offset=%d, bit=%b", i, group, offset, isChecked));
         }
-
         BoxAdapter adapt2 = new BoxAdapter(mContext, maccList, mSpin1);
         mSpin1.setAdapter(adapt2);
+
+        StartVar.bitList = maccList;
+
     }
 
     @Override
@@ -235,8 +237,12 @@ public class CltEditActivity extends AppCompatActivity implements View.OnClickLi
             //Basic.msg(BitsOper.mergeBitString(intList)+ " siz: "+intList.size());
             DaoClt mDao = StartVar.appDBall.daoClt();
             mDao.updateBits(mClt.cliente, BitsOper.mergeBitString(intList));
-
+            mDao.updateNames(mClt.cliente, nombre, alias);
             StartVar.bitList.clear();
+
+            //Encola al usuario para sincronizar
+            Cliente myUser = mDao.getUsers().get(cltIdx);
+            StartVar.genericQueue.enqueue(myUser);
 
             //Esto inicia las actividad Reload
             startActivity(new Intent(mContext, ReloadActivity.class));

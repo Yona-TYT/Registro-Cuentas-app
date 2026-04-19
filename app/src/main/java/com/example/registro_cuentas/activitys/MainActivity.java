@@ -22,7 +22,6 @@ import android.view.WindowInsets;
 import android.view.WindowInsetsController;
 import android.widget.Toast;
 
-import com.example.registro_cuentas.BaseContext;
 import com.example.registro_cuentas.Basic;
 import com.example.registro_cuentas.CalcCalendar;
 import com.example.registro_cuentas.DBListCreator;
@@ -84,10 +83,11 @@ public class MainActivity extends AppCompatActivity {
         onBackPressedDispatcher.addCallback(MainActivity.this, callback);
         //---------------------------------------------------------------------------------
 
-        BaseContext.initialise(this);
         //Satrted variables
-        StartVar startVar = new StartVar(getApplicationContext());
+        StartVar startVar = new StartVar();
         Basic mBasic = new Basic(getApplicationContext());
+        
+        startVar.setmActivity(this);
 
         //Start File manager class
         mFile = new FilesManager();
@@ -283,7 +283,7 @@ public class MainActivity extends AppCompatActivity {
             new ActivityResultContracts.OpenDocument(),
             uri -> {
                 if (uri != null) {
-                    StartVar mImpVar = new StartVar(this);
+                    StartVar mImpVar = new StartVar();
                     // call this to persist permission across decice reboots
                     getContentResolver().takePersistableUriPermission(uri, Intent.FLAG_GRANT_READ_URI_PERMISSION);
 

@@ -4,7 +4,9 @@ import androidx.room.Dao;
 import androidx.room.OnConflictStrategy;
 import androidx.room.Query;
 import androidx.room.Insert;
+import androidx.room.Update;
 
+import com.example.registro_cuentas.db.Cliente;
 import com.example.registro_cuentas.db.Fecha;
 
 import java.util.List;
@@ -24,11 +26,17 @@ public interface DaoDat extends GenericDao<Fecha>{
     @Insert
     void insertUser(Fecha...fechas);
 
+    @Update
+    void update(Fecha fecha);
+
     @Query("UPDATE fecha SET year= :year, mes= :mes, dia= :dia, hora= :hora, date= :date WHERE fecha= :user")
     void updateUser(String user, String year, String mes, String dia, String hora, String date);
 
     @Query("DELETE FROM fecha WHERE  fecha= :user")
     void removerUser(String user);
+
+    @Query("DELETE FROM fecha WHERE  uid= :uid")
+    void removerUser(long uid);
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     void  insertUser(Fecha user);

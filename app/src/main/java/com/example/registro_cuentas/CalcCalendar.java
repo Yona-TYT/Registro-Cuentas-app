@@ -99,7 +99,7 @@ public class CalcCalendar {
                     CalcCalendar.getTime(currtime.toString()), currdate.toString());
             daoFecha.insertUser(obj);
             // Recarga la lista de la DB ----------------------------
-            StartVar var = new StartVar(mContext);
+            StartVar var = new StartVar();
             var.getFecListDB();
             // -------------------------------------------------------
         }

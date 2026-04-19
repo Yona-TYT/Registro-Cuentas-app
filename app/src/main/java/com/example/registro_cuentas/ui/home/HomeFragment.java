@@ -21,9 +21,9 @@ import android.widget.SearchView;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
 
+import com.example.registro_cuentas.AppContextProvider;
 import com.example.registro_cuentas.BitsOper;
 import com.example.registro_cuentas.activitys.AccDtailsActivity;
-import com.example.registro_cuentas.BaseContext;
 import com.example.registro_cuentas.Basic;
 import com.example.registro_cuentas.CalcCalendar;
 import com.example.registro_cuentas.db.Cliente;
@@ -120,7 +120,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener, Adap
         binding = FragmentHomeBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
 
-        mContext = BaseContext.getContext();
+        mContext = AppContextProvider.getContext();
 
         mConstrain = binding.constrainHome;
 
@@ -162,7 +162,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener, Adap
                     Double value = mInput1.getNumericValue();
                     // Actualiza y guarda el Precio del dolar ------------------------
                     StartVar.appDBall.daoCfg().updateDolar(StartVar.mConfID, value);
-                    StartVar mVars = new StartVar(mContext);
+                    StartVar mVars = new StartVar();
                     mVars.setDollar(value);
                     //----------------------------------------------------------------------------------
 
@@ -199,7 +199,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener, Adap
                 // Actualiza y guarda el estado del selector tipo de moneda ------------------------
                 StartVar.appDBall.daoCfg().updateMoneda(StartVar.mConfID, i);
 
-                StartVar mVars = new StartVar(mContext);
+                StartVar mVars = new StartVar();
                 mVars.setCurrency(i);
                 //----------------------------------------------------------------------------------
                 //Lista de pagos
@@ -258,7 +258,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener, Adap
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
                 currSel2 = i;
                 // Actualiza y guarda el estado del selector de cuentas-----------------------------
-                StartVar mVars = new StartVar(mContext);
+                StartVar mVars = new StartVar();
                 int idx = i;
                 if(!listCuenta.isEmpty()) {
                     mAcc = daoCuenta.getUsers().get(idx);
@@ -323,7 +323,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener, Adap
                     currSel3 = i - 1;
 
                     StartVar.appDBall.daoCfg().updateMes(StartVar.mConfID, currSel3);
-                    StartVar mVars = new StartVar(mContext);
+                    StartVar mVars = new StartVar();
                     mVars.setCurrentMes(currSel3);
                 }
                 else {

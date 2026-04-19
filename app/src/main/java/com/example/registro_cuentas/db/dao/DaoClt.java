@@ -4,8 +4,10 @@ import androidx.room.Dao;
 import androidx.room.OnConflictStrategy;
 import androidx.room.Query;
 import androidx.room.Insert;
+import androidx.room.Update;
 
 import com.example.registro_cuentas.db.Cliente;
+import com.example.registro_cuentas.db.Conf;
 
 import java.util.List;
 
@@ -30,6 +32,9 @@ public interface DaoClt extends GenericDao<Cliente>{
     @Insert
     void insertUser(Cliente...clientes);
 
+    @Update
+    void update(Cliente cliente);
+
     @Query("UPDATE cliente SET nombre= :nombre, alias= :alias, defaulacc= :defaulacc, priority= :priority, fecha= :fecha, level= :level, ulfech= :ulfech WHERE cliente= :user")
     void updateUser(String user, String nombre, String alias, String defaulacc, Integer priority, String fecha, Float level, String ulfech);
 
@@ -39,8 +44,14 @@ public interface DaoClt extends GenericDao<Cliente>{
     @Query("UPDATE cliente SET  bits= :bits WHERE cliente= :user")
     void updateBits(String user, String bits);
 
+    @Query("UPDATE cliente SET  nombre= :nombre, alias= :alias WHERE cliente= :user")
+    void updateNames(String user, String nombre, String alias);
+
     @Query("DELETE FROM cliente WHERE  cliente= :user")
     void removerUser(String user);
+
+    @Query("DELETE FROM cliente WHERE  uid= :uid")
+    void removerUser(long uid);
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     void  insertUser(Cliente user);

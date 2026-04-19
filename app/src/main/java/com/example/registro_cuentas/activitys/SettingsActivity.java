@@ -2,7 +2,6 @@ package com.example.registro_cuentas.activitys;
 
 import android.os.Bundle;
 import android.view.MenuItem;
-import android.widget.Toolbar;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
@@ -10,7 +9,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.preference.PreferenceFragmentCompat;
 
 import com.example.registro_cuentas.R;
-import com.example.registro_cuentas.drive.GoogleDriveSettingsFragment;
 
 
 public class SettingsActivity extends AppCompatActivity {
@@ -32,7 +30,7 @@ public class SettingsActivity extends AppCompatActivity {
         if (savedInstanceState == null) {
             getSupportFragmentManager()
                     .beginTransaction()
-                    .replace(R.id.settings, new GoogleDriveSettingsFragment())
+                    .replace(R.id.settings, new com.example.registro_cuentas.drive.SettingsFragment())
                     .commit();
         }
     }

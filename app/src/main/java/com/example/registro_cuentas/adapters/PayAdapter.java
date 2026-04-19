@@ -180,7 +180,7 @@ public class PayAdapter extends BaseAdapter implements Filterable, View.OnClickL
         int itemId = view.getId();
 
         if(itemId == R.id.butt_paylist) {
-            StartVar startVar = new StartVar(mContex);
+            StartVar startVar = new StartVar();
             startVar.setPayId( (String) view.getTag());
 
             Application application = (Application) mContex.getApplicationContext();

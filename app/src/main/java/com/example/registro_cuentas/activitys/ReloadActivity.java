@@ -1,6 +1,7 @@
 package com.example.registro_cuentas.activitys;
 
 import static com.example.registro_cuentas.StartVar.appDBall;
+import static com.example.registro_cuentas.StartVar.bitList;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -11,7 +12,7 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
-import com.example.registro_cuentas.BaseContext;
+import com.example.registro_cuentas.AppContextProvider;
 import com.example.registro_cuentas.Basic;
 import com.example.registro_cuentas.CalcCalendar;
 import com.example.registro_cuentas.DBListCreator;
@@ -20,6 +21,10 @@ import com.example.registro_cuentas.StartVar;
 import com.example.registro_cuentas.db.Conf;
 import com.example.registro_cuentas.db.Cuenta;
 import com.example.registro_cuentas.db.Fecha;
+import com.example.registro_cuentas.drive.DriveManager;
+import com.example.registro_cuentas.ex.PreferenceHelper;
+
+import net.openid.appauth.AuthState;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -39,16 +44,14 @@ public class ReloadActivity extends AppCompatActivity {
             return insets;
         });
 
-        BaseContext.initialise(this);
         //Satrted variables
-        StartVar startVar = new StartVar(getApplicationContext());
+        StartVar startVar = new StartVar();
         Basic mBasic = new Basic(getApplicationContext());
 
         startVar.setAllListDB();
 
         StartVar.reloadActivity = this;
 
-        // Se agregan datos solo la primera vez a para las fechas ---------------------------------------------
         List<Fecha> listFecha = StartVar.listfec;
         if(listFecha.isEmpty()) {
             Fecha obj;
@@ -87,8 +90,23 @@ public class ReloadActivity extends AppCompatActivity {
 
         DBListCreator.createDbLists(); //Actualiza la lista para exportar csv
 
+        Bundle mExtra = getIntent().getExtras() ;
+        if (mExtra != null) {
+            boolean sync = mExtra.getBoolean("sync", false);
+            if (sync){
+                //Envia una actulaizacion del CSV completa en este caso
+                AuthState authState = new AuthState();
+                authState = DriveManager.getAuthState();
+                if (authState.isAuthorized()){
+                    DriveManager manager = new DriveManager(PreferenceHelper.getInstance());
+                    manager.uploadDataBase();
+                }
+                //----------------------------------------------------------------------
+            }
+        }
+
         //Esto inicia las actividad Main
-        startActivity(new Intent(BaseContext.getContext(), MainActivity.class));
+        startActivity(new Intent(AppContextProvider.getContext(), MainActivity.class));
         finish(); //Finaliza la actividad y ya no se accede mas
     }
 }

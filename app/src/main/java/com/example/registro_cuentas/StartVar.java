@@ -1,9 +1,9 @@
 package com.example.registro_cuentas;
 
 import android.app.Activity;
-import android.content.Context;
 import android.view.View;
 
+import androidx.lifecycle.LifecycleOwner;
 import androidx.room.Room;
 
 import com.example.registro_cuentas.db.AllDao;
@@ -13,7 +13,7 @@ import com.example.registro_cuentas.db.Cuenta;
 import com.example.registro_cuentas.db.Deuda;
 import com.example.registro_cuentas.db.Fecha;
 import com.example.registro_cuentas.db.Pagos;
-import com.example.registro_cuentas.db.UsuarioQueue;
+import com.example.registro_cuentas.db.GenericQueue;
 import com.example.registro_cuentas.drive.SetWorkResult;
 
 import java.nio.ByteBuffer;
@@ -84,7 +84,9 @@ public class StartVar {
     public static String saveRegName = "reg";
     public static String saveDebName = "deb";
 
-    public static final String dirAppName = "/.accdata/";
+    public static final String dirAppName = ".accdata";
+    public static final String csvAppName = "DataSave.csv";
+
 
     //Root View
     public static View mRootView;
@@ -94,17 +96,15 @@ public class StartVar {
     //Hacer upload cuando los datos esten disponibles.
     public static boolean makeUpdate = false;
 
-    public static Context mContex;
     public static Activity mActivity;
     public static Activity reloadActivity;
-    public static UsuarioQueue usuarioQueue;
+    public static GenericQueue genericQueue;
     public static int sendDate = 0;
 
     public static SetWorkResult mWorkResult = null;
+    public static LifecycleOwner mLifecycle = null;
 
-    public StartVar(Context mContex){
-        this.mContex = mContex;
-    }
+    public StartVar(){}
 
     public static void getConfigDB(){
         //Instancia de la base de datos
@@ -114,7 +114,7 @@ public class StartVar {
     //------------------------------------------ Para guardar las cuentas
     public void setAllListDB(){
         //Instancia de la base de datos
-        StartVar.appDBall = Room.databaseBuilder( StartVar.mContex, AllDao.class, StartVar.nameDBacc).allowMainThreadQueries().build();
+        StartVar.appDBall = Room.databaseBuilder( AppContextProvider.getContext(), AllDao.class, StartVar.nameDBacc).allowMainThreadQueries().build();
 
         StartVar.listacc = StartVar.appDBall.daoAcc().getUsers();
         StartVar.listclt = StartVar.appDBall.daoClt().getUsers();
@@ -210,6 +210,10 @@ public class StartVar {
     }
     public static void setCltBit(String value){
         StartVar.cltBit = value;
+    }
+
+    public void setmActivity(Activity activity){
+        StartVar.mActivity = activity;
     }
 
     public void setMorlist(ArrayList<String> list){

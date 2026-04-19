@@ -24,13 +24,12 @@ import android.widget.Spinner;
 import android.widget.Switch;
 import android.widget.TextView;
 
-import com.example.registro_cuentas.BaseContext;
+import com.example.registro_cuentas.AppContextProvider;
 import com.example.registro_cuentas.Basic;
 import com.example.registro_cuentas.BitsOper;
 import com.example.registro_cuentas.CalcCalendar;
 import com.example.registro_cuentas.DBListCreator;
 import com.example.registro_cuentas.db.Cliente;
-import com.example.registro_cuentas.db.Conf;
 import com.example.registro_cuentas.db.Cuenta;
 import com.example.registro_cuentas.CurrencyEditText;
 import com.example.registro_cuentas.db.DatabaseUtils;
@@ -44,6 +43,10 @@ import com.example.registro_cuentas.R;
 import com.example.registro_cuentas.adapters.SelecAdapter;
 import com.example.registro_cuentas.StartVar;
 import com.example.registro_cuentas.databinding.FragmentAddcltBinding;
+import com.example.registro_cuentas.drive.DriveManager;
+import com.example.registro_cuentas.ex.PreferenceHelper;
+
+import net.openid.appauth.AuthState;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -55,7 +58,7 @@ public class AddCltFragment extends Fragment  implements View.OnClickListener, A
 
     private FragmentAddcltBinding binding;
 
-    private Context mContext = BaseContext.getContext();
+    private Context mContext = AppContextProvider.getContext();
 
     // DB
     private DaoClt daoCliente;
@@ -480,6 +483,15 @@ public class AddCltFragment extends Fragment  implements View.OnClickListener, A
             }
 
             DBListCreator.createDbLists(); //Actualiza la lista para exportar csv
+
+            //Envia una actulaizacion del CSV completa en este caso
+            AuthState authState = new AuthState();
+            authState = DriveManager.getAuthState();
+            if (authState.isAuthorized()){
+                DriveManager manager = new DriveManager(PreferenceHelper.getInstance());
+                manager.uploadDataBase();
+            }
+            //----------------------------------------------------------------------
         }
 
         if(itemId == R.id.buttNext){

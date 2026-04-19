@@ -222,7 +222,7 @@ public class CltDetailsActivity extends AppCompatActivity implements View.OnClic
 
             //Elimina el registro selecionado
             //appDBregistro.get(accIndex).removerUser(mUser);
-            StartVar mVars = new StartVar(this);
+            StartVar mVars = new StartVar();
             //Recarga La lista de la DB ----------------------------
             mVars.getCltListDB();
             //-------------------------------------------------------

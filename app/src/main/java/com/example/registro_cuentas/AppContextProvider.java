@@ -3,6 +3,8 @@ package com.example.registro_cuentas;
 import android.app.Application;
 import android.content.Context;
 
+import androidx.work.WorkManager;
+
 public class AppContextProvider extends Application {
     private static AppContextProvider sInstance;
 
@@ -16,7 +18,11 @@ public class AppContextProvider extends Application {
         return sInstance;
     }
 
-    public static Context getAppContext() {
-        return sInstance != null ? sInstance.getApplicationContext() : null;
+    public static Context getContext() {
+        if (sInstance == null) {
+            throw new IllegalStateException("AppContextProvider no ha sido inicializado. " +
+                    "¿Olvidaste registrarlo en el AndroidManifest.xml?");
+        }
+        return sInstance.getApplicationContext();
     }
 }

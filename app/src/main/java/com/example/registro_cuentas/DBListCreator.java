@@ -414,7 +414,7 @@ public class DBListCreator extends AppCompatActivity {
                 daoPagos.removerUser(obj.pago);
             }
 
-            InputStream inputStream = StartVar.mContex.getContentResolver().openInputStream(uri);
+            InputStream inputStream = AppContextProvider.getContext().getContentResolver().openInputStream(uri);
 
             BufferedReader reader = new BufferedReader( new InputStreamReader(Objects.requireNonNull(inputStream)));
             String line;
@@ -521,7 +521,7 @@ public class DBListCreator extends AppCompatActivity {
         }
         
         if(finish) {
-            Intent mIntent = new Intent(StartVar.mContex, mActivity.getClass());
+            Intent mIntent = new Intent(AppContextProvider.getContext(), mActivity.getClass());
             mActivity.startActivity(mIntent);
             Basic.msg(mMsg);
             mActivity.finish();

@@ -109,7 +109,7 @@ public class FilesManager extends MainActivity implements View.OnClickListener{
         CsvWriterSimple write = new CsvWriterSimple();
 
         //Creamos el directorio para los archivos
-        File path = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS+StartVar.dirAppName);
+        File path = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS+"/"+StartVar.dirAppName+"/");
         boolean isDiralloway = true;
         if(!path.exists()){
             isDiralloway = path.mkdir();
@@ -154,7 +154,7 @@ public class FilesManager extends MainActivity implements View.OnClickListener{
     public static File directoryCreate() {
         //Creamos el directorio para los archivos
 
-        File path = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS + StartVar.dirAppName);
+        File path = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS+"/"+StartVar.dirAppName+"/");
         boolean isDiralloway = true;
         if (!path.exists()) {
             isDiralloway = path.mkdir();

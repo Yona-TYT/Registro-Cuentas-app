@@ -4,8 +4,10 @@ import androidx.room.Dao;
 import androidx.room.OnConflictStrategy;
 import androidx.room.Query;
 import androidx.room.Insert;
+import androidx.room.Update;
 
 import com.example.registro_cuentas.db.Conf;
+import com.example.registro_cuentas.db.Cuenta;
 
 import java.util.List;
 
@@ -19,6 +21,9 @@ public interface DaoCfg extends GenericDao<Conf>{
 
     @Insert
     void insertUser(Conf...config);
+
+    @Update
+    void update(Conf config);
 
     @Query("UPDATE Conf SET version = :version, hexid= :hexid, date= :date, time= :time, curr= :curr, dolar= :dolar, moneda= :moneda, mes= :mes, show= :show WHERE config= :user")
     void updateUser(String user, String version, String hexid, String date, String time, Integer curr, Double dolar, Integer moneda, Integer mes, Integer show);
@@ -42,6 +47,9 @@ public interface DaoCfg extends GenericDao<Conf>{
 
     @Query("DELETE FROM Conf WHERE  config= :user")
     void removerUser(String user);
+
+    @Query("DELETE FROM Conf WHERE  uid= :uid")
+    void removerUser(long uid);
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     void  insertUser(Conf user);

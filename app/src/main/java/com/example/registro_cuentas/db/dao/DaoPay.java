@@ -4,8 +4,10 @@ import androidx.room.Dao;
 import androidx.room.OnConflictStrategy;
 import androidx.room.Query;
 import androidx.room.Insert;
+import androidx.room.Update;
 
 import com.example.registro_cuentas.db.Deuda;
+import com.example.registro_cuentas.db.Fecha;
 import com.example.registro_cuentas.db.Pagos;
 
 import java.util.List;
@@ -32,6 +34,9 @@ public interface DaoPay extends GenericDao<Pagos>{
     @Insert
     void insertUser(Pagos...registros);
 
+    @Update
+    void update(Pagos pago);
+
     @Query("UPDATE Pagos SET nombre= :nombre, concep= :concep, monto= :monto, oper= :oper, porc= :porc, imagen= :imagen, fecha= :fecha, time= :time, cltid= :cltid, accid= :accid, more4= :more4, more5= :more5 WHERE pago= :user")
     void updateUser(String user, String nombre, String concep, Double monto, Integer oper, Integer porc, String imagen, String fecha, String time , String cltid, String accid, Integer more4, String more5 );
 
@@ -43,6 +48,9 @@ public interface DaoPay extends GenericDao<Pagos>{
 
     @Query("DELETE FROM Pagos WHERE  pago= :user")
     void removerUser(String user);
+
+    @Query("DELETE FROM Pagos WHERE  uid= :uid")
+    void removerUser(long uid);
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     void  insertUser(Pagos user);

@@ -72,7 +72,7 @@ public class GetDollar {
                                 if (mObjA.equals(sKey)) {
                                     String price = json.get(sKey).toString();
                                     double mValue = Double.parseDouble(price);
-                                    StartVar startVar = new StartVar(mContext);
+                                    StartVar startVar = new StartVar();
 
                                     if(mValue > 0) {
                                         startVar.setDollar(mValue);

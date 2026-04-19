@@ -22,7 +22,7 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
-import com.example.registro_cuentas.BaseContext;
+import com.example.registro_cuentas.AppContextProvider;
 import com.example.registro_cuentas.Basic;
 import com.example.registro_cuentas.db.AllDao;
 import com.example.registro_cuentas.db.Cuenta;
@@ -41,7 +41,7 @@ import io.reactivex.annotations.NonNull;
 
 public class AccEditActivity extends AppCompatActivity implements View.OnClickListener {
 
-    private Context mContext = BaseContext.getContext();
+    private Context mContext = AppContextProvider.getContext();
 
     // DB
     private AllDao appDBcuenta = StartVar.appDBall;
@@ -186,6 +186,10 @@ public class AccEditActivity extends AppCompatActivity implements View.OnClickLi
 
             DaoAcc mDao = StartVar.appDBall.daoAcc();
             mDao.updateAccount(mAcc.cuenta, nombre, desc, monto, currSel1);
+
+            //Encola al usuario para sincronizar
+            Cuenta myUser = mDao.getUsers().get(StartVar.accSelect);
+            StartVar.genericQueue.enqueue(myUser);
 
             //Esto inicia las actividad Reload
             startActivity(new Intent(mContext, ReloadActivity.class));

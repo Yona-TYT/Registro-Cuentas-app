@@ -25,7 +25,8 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import androidx.preference.PreferenceManager;
 
-import com.example.registro_cuentas.BaseContext;
+import com.example.registro_cuentas.AppContextProvider;
+
 import org.slf4j.Logger;
 import java.io.*;
 
@@ -36,7 +37,7 @@ public class PreferenceHelper {
     private static final Logger LOG = Logs.of(PreferenceHelper.class);
 
     @SuppressLint("StaticFieldLeak")
-    private static Context mContext = BaseContext.getContext();
+    private static Context mContext = AppContextProvider.getContext();
 
     /**
      * Use PreferenceHelper.getInstance()

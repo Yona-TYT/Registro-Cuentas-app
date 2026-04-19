@@ -182,7 +182,7 @@ public class CltAdapter extends BaseAdapter implements Filterable, View.OnClickL
         int itemId = view.getId();
 
         if(itemId == R.id.butt_cltlist) {
-            StartVar startVar = new StartVar(mContex);
+            StartVar startVar = new StartVar();
             startVar.setCltIndex( (int)view.getTag());
 
             Application application = (Application) mContex.getApplicationContext();

@@ -24,7 +24,7 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
-import com.example.registro_cuentas.BaseContext;
+import com.example.registro_cuentas.AppContextProvider;
 import com.example.registro_cuentas.Basic;
 import com.example.registro_cuentas.CalcCalendar;
 import com.example.registro_cuentas.db.Cuenta;
@@ -44,7 +44,7 @@ import io.reactivex.annotations.NonNull;
 
 public class AccDtailsActivity extends AppCompatActivity implements View.OnClickListener {
 
-    private Context mContext = BaseContext.getContext();
+    private Context mContext = AppContextProvider.getContext();
 
     // DB ----------------------------------------------------------------
     private AllDao appDBcuenta = StartVar.appDBall;

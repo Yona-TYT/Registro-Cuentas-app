@@ -23,7 +23,7 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.appcompat.widget.Toolbar;
 
-import com.example.registro_cuentas.BaseContext;
+import com.example.registro_cuentas.AppContextProvider;
 import com.example.registro_cuentas.Basic;
 import com.example.registro_cuentas.CalcCalendar;
 import com.example.registro_cuentas.FilesManager;
@@ -41,8 +41,6 @@ import java.util.List;
 import io.reactivex.annotations.NonNull;
 
 public class PayDetailsActivity extends AppCompatActivity implements View.OnClickListener {
-
-    private  Context mContext = BaseContext.getContext();
 
     // DB ----------------------------------------------------------------
     private List<Cuenta> listCuenta;
@@ -209,7 +207,7 @@ public class PayDetailsActivity extends AppCompatActivity implements View.OnClic
 
             //Elimina el registro selecionado
             //appDBregistro.get(accIndex).daoUser().removerUser(mUser);
-            StartVar mVars = new StartVar(mContext);
+            StartVar mVars = new StartVar();
             //Recarga La lista de la DB ----------------------------
             mVars.getCltListDB();
             //-------------------------------------------------------

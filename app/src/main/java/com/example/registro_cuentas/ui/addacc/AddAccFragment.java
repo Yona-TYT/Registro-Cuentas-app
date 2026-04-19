@@ -17,8 +17,8 @@ import androidx.annotation.NonNull;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
 
+import com.example.registro_cuentas.AppContextProvider;
 import com.example.registro_cuentas.activitys.ReloadActivity;
-import com.example.registro_cuentas.BaseContext;
 import com.example.registro_cuentas.Basic;
 import com.example.registro_cuentas.db.Cuenta;
 import com.example.registro_cuentas.CurrencyEditText;
@@ -29,7 +29,6 @@ import com.example.registro_cuentas.StartVar;
 import com.example.registro_cuentas.databinding.FragmentAddaccBinding;
 import com.example.registro_cuentas.db.DatabaseUtils;
 import com.example.registro_cuentas.db.dao.DaoAcc;
-import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -40,10 +39,10 @@ public class AddAccFragment extends Fragment implements View.OnClickListener{
 
     private FragmentAddaccBinding binding;
 
-    private Context mContext = BaseContext.getContext();
+    private Context mContext = AppContextProvider.getContext();
 
     // DB
-    private DaoAcc daoCuenta;
+    private DaoAcc mDao;
 
     //Todos los Inputs
     private EditText mInput1;
@@ -62,14 +61,14 @@ public class AddAccFragment extends Fragment implements View.OnClickListener{
     //Botones
     private Button mButt1;
 
-    private String mIndex = "";
+    private String accId = "";
 
     private List<String> mCurrencyList= Arrays.asList("$", "Bs");
 
     // Para guardar los permisos de app comprobados en main
     private boolean mPermiss = false;
 
-    private Basic mBasic = new Basic(BaseContext.getContext());
+    private Basic mBasic = new Basic(AppContextProvider.getContext());
 
     private String mCurr = mCurrencyList.get(StartVar.mCurrency);
 
@@ -103,7 +102,7 @@ public class AddAccFragment extends Fragment implements View.OnClickListener{
         mInputList.add(mInput1);
         mInputList.add(mInput2);
 
-        daoCuenta = StartVar.appDBall.daoAcc();
+        mDao = StartVar.appDBall.daoAcc();
 
         //Efecto moneda
         //-------------------------------------------------------------------------------------------------------
@@ -129,7 +128,7 @@ public class AddAccFragment extends Fragment implements View.OnClickListener{
         //--------------------------------------------------------------------------------------------
 
         mPermiss = StartVar.mPermiss;
-        mIndex = DatabaseUtils.generateId("accID", daoCuenta);
+        accId = DatabaseUtils.generateId("accID", mDao);
 
         return root;
     }
@@ -147,7 +146,7 @@ public class AddAccFragment extends Fragment implements View.OnClickListener{
             boolean result = true;
             int msgIdx = 0;
             List<String> mList = new ArrayList<>();
-            mList.add(mIndex);
+            mList.add(accId);
             for(int i = 0; i < mInputList.size(); i++) {
                 String text = mInputList.get(i).getText().toString();
                 text = Basic.inputProcessor(text); //Elimina caracteres que afectan a los csv
@@ -187,14 +186,18 @@ public class AddAccFragment extends Fragment implements View.OnClickListener{
                 }
 
                 Cuenta obj = new Cuenta(mList.get(0), mList.get(1), mList.get(2), monto, currSel1, 0, 0,0,"0", currdate);
-                daoCuenta.insertUser(obj);
+                mDao.insertUser(obj);
                 //SE Limpia la lista
                 mList.clear();
 
                 //Recarga La lista de la DB ----------------------------
-                StartVar mVars = new StartVar(mContext);
+                StartVar mVars = new StartVar();
                 mVars.getAccListDB();
                 //-------------------------------------------------------
+
+                //Encola al elemento a sincronizar
+                Cuenta myUser = mDao.getUsers(accId);
+                StartVar.genericQueue.enqueue(myUser);
 
                 //Esto inicia las actividad Reload
                 startActivity(new Intent(mContext, ReloadActivity.class));

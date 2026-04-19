@@ -30,7 +30,7 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
-import com.example.registro_cuentas.BaseContext;
+import com.example.registro_cuentas.AppContextProvider;
 import com.example.registro_cuentas.Basic;
 import com.example.registro_cuentas.CurrencyEditText;
 import com.example.registro_cuentas.FilesManager;
@@ -51,7 +51,7 @@ import io.reactivex.annotations.NonNull;
 
 public class PayEditActivity extends AppCompatActivity implements View.OnClickListener {
 
-    private Context mContext = BaseContext.getContext();
+    private Context mContext = AppContextProvider.getContext();
 
     // DB
     private List<Pagos> appDBregistro = StartVar.appDBall.daoPay().getUsers();
@@ -253,6 +253,10 @@ public class PayEditActivity extends AppCompatActivity implements View.OnClickLi
             }
             DaoPay mDao = StartVar.appDBall.daoPay();
             mDao.updatePay(mpay.pago, concep, rent, currSel1, (swPorc?1:0), sImage);
+
+            //Encola al usuario para sincronizar
+            Pagos myUser = mDao.getUsers(StartVar.currPayId);
+            StartVar.genericQueue.enqueue(myUser);
 
             //Esto inicia las actividad Reload
             startActivity(new Intent(mContext, ReloadActivity.class));

@@ -25,7 +25,7 @@ import androidx.annotation.NonNull;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
 
-import com.example.registro_cuentas.BaseContext;
+import com.example.registro_cuentas.AppContextProvider;
 import com.example.registro_cuentas.Basic;
 import com.example.registro_cuentas.BitsOper;
 import com.example.registro_cuentas.CalcCalendar;
@@ -59,7 +59,7 @@ public class AddPayFragment extends Fragment implements View.OnClickListener {
 
     private FragmentAddpayBinding binding;
 
-    private Context mContext = BaseContext.getContext();
+    private Context mContext = AppContextProvider.getContext();
 
     // DB
     private DaoAcc daoCuenta;
@@ -397,7 +397,6 @@ public class AddPayFragment extends Fragment implements View.OnClickListener {
         int itemId = view.getId();
         if (itemId == R.id.butt_pay1) {
             //Comprueba que la lista de cuentas no este vacia
-            StartVar mVars = new StartVar(mContext);
             if (daoCuenta.getUsers().isEmpty()) {
                 setMessage(3); //MSG lista de cuentas vacia
                 return;
@@ -599,8 +598,12 @@ public class AddPayFragment extends Fragment implements View.OnClickListener {
                //SE Limpia la lista
                 mList.clear();
 
+                Bundle mBundle = new Bundle();
+                mBundle.putBoolean("sync", true);
+                Intent mIntent = new Intent(mContext, ReloadActivity.class);
+                mIntent.putExtras(mBundle);
                 //Esto inicia las actividad Reload
-                startActivity(new Intent(mContext, ReloadActivity.class));
+                startActivity(mIntent);
             }
         }
         if (itemId == R.id.sw_pay1){
