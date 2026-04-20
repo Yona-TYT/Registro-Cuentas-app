@@ -1,22 +1,19 @@
 package com.example.registro_cuentas.drive;
 
-import android.content.ClipData;
-import android.content.ClipboardManager;
 import android.content.Context;
 import android.os.Build;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.work.Worker;
 import androidx.work.WorkerParameters;
 
+import com.example.registro_cuentas.FilesManager;
 import com.example.registro_cuentas.ex.Logs;
 import com.example.registro_cuentas.ex.PreferenceHelper;
 import com.example.registro_cuentas.ex.UploadEvents;
 
 
 import net.openid.appauth.AuthState;
-import net.openid.appauth.AuthorizationException;
 import net.openid.appauth.AuthorizationService;
 
 import org.json.JSONObject;
@@ -28,6 +25,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import de.greenrobot.event.EventBus;
@@ -77,32 +75,12 @@ public class DriveUpWorker extends Worker {
         final AtomicBoolean taskDone = new AtomicBoolean(false);
         //PreferenceHelper preferenceHelper = PreferenceHelper.getInstance();
 
+        DriveUtils.copyToClipboard(mContext, filePaths.length+" ?", "tag");
+
+
         try {
             AuthorizationService authorizationService = DriveManager.getAuthorizationService(mContext);
-
-            // The performActionWithFreshTokens seems to happen on a UI thread! (Why??)
-            // So I can't do network calls on this thread.
-            // Instead, updating a class level variable, and waiting for it afterwards.
-            // https://github.com/openid/AppAuth-Android/issues/123
-            authState.performActionWithFreshTokens(authorizationService, new AuthState.AuthStateAction() {
-                @Override
-                public void execute(@Nullable String accessToken, @Nullable String idToken, @Nullable AuthorizationException ex) {
-                    if (ex != null) {
-                        EventBus.getDefault().post(new UploadEvents.GoogleDrive().failed(ex.toJsonString(), ex));
-                        taskDone.set(true);
-                        LOG.error(ex.toJsonString(), ex);
-                        return;
-                    }
-                    googleDriveAccessToken = accessToken;
-                    taskDone.set(true);
-                }
-            });
-
-            // Wait for the performActionWithFreshTokens.execute callback
-            // (which happens on the UI thread for some reason) to complete.
-            while (!taskDone.get()) {
-                Thread.sleep(500);
-            }
+            googleDriveAccessToken = DriveUtils.getFreshAccessToken(authState, authorizationService);
 
             if (DriveUtils.isNullOrEmpty(googleDriveAccessToken)) {
                 LOG.error("Failed to fetch Access Token for Google Drive. Stopping this job.");
@@ -129,8 +107,6 @@ public class DriveUpWorker extends Worker {
                 parentFolderId = latestFolderId;
             }
 
-            //copyToClipboard(mContext, folderPath+" id: "+parentFolderId, "tago");
-
             String diverFolderId = latestFolderId;
 
             if (DriveUtils.isNullOrEmpty(diverFolderId)) {
@@ -138,7 +114,7 @@ public class DriveUpWorker extends Worker {
                 success = false;
             }
             else{
-                if (isList){
+                 if (isList){
                     String imgFolderName = PreferenceHelper.getInstance().getGoogleDriveImgPath();
                     String imgFolderId = DriveUtils.getFileIdFromFileName(googleDriveAccessToken, imgFolderName, diverFolderId, "application/vnd.google-apps.folder");
                     if (!DriveUtils.isNullOrEmpty(imgFolderId)) {
@@ -199,9 +175,9 @@ public class DriveUpWorker extends Worker {
     }
 
     private boolean filesSet(File localFile, String folderId) throws Exception {
-        LOG.info("=== INICIANDO filesSet() - Archivo: " + localFile.getName());
-
         String fileName = localFile.getName();
+
+        LOG.info("=== INICIANDO filesSet() - Archivo: " + fileName);
 
         // 1. Buscar ID existente
         String driveFileId = DriveUtils.getFileIdFromFileName(googleDriveAccessToken, fileName, folderId);
@@ -239,26 +215,35 @@ public class DriveUpWorker extends Worker {
         LOG.info("   → Iniciando updateFileContents()...");
         //copyToClipboard(mContext, localFile.getName()+" "  +getLocalFileMd5(localFile), localFile.getName());
 
+        String mMime = FilesManager.getMimeType(localFile);
+        if(fileName.endsWith("bin")){
+            mMime = "application/octet-stream";
+        }
         if(driveFile == null) {
-            //copyToClipboard(mContext, localFile.getName()+" "+ driveFile.md5Checksum +" "+getLocalFileMd5(localFile), localFile.getName());
-            updateFileContents(googleDriveAccessToken, driveFileId, localFile);
+            //DriveUtils.copyToClipboard(mContext, localFile.getName()+" "+ driveFile.md5Checksum +" "+DriveUtils.getLocalFileMd5(localFile), localFile.getName());
+            uploadFileContents(googleDriveAccessToken, driveFileId, localFile);
             LOG.info("   → updateFileContents() finalizado correctamente");
             LOG.info("=== FIN DE filesSet() para " + fileName);
             return true;
         }
 
         else {
-            if(fileName.endsWith("csv")){
-                updateFileContents(googleDriveAccessToken, driveFileId, localFile);
+//            if(fileName.endsWith("csv")){
+//                DriveUtils.copyToClipboard(mContext, fileName+" --"+ driveFile.md5Checksum +" --"+ DriveUtils.getLocalFileMd5(localFile), fileName);
+//
+//            }
+//
+//            if(fileName.endsWith("csv")){
+//                uploadFileContents(googleDriveAccessToken, driveFileId, localFile);
+//
+//                LOG.info("   → updateFileContents() finalizado correctamente");
+//                LOG.info("=== FIN DE filesSet() para " + fileName);
+//                return true;
+//            }
+            if(!driveFile.md5Checksum.equals(DriveUtils.getLocalFileMd5(localFile))){
+                //copyToClipboard(mContext, driveFile.modifiedTime+driveFile.md5Checksum.isEmpty()+" --"+ driveFile.md5Checksum +" --"+ DriveUtils.getLocalFileMd5(localFile), fileName);
 
-                LOG.info("   → updateFileContents() finalizado correctamente");
-                LOG.info("=== FIN DE filesSet() para " + fileName);
-                return true;
-            }
-            else if(!driveFile.md5Checksum.equals(DriveUtils.getLocalFileMd5(localFile))){
-                copyToClipboard(mContext, driveFile.modifiedTime+driveFile.md5Checksum.isEmpty()+" --"+ driveFile.md5Checksum +" --"+ DriveUtils.getLocalFileMd5(localFile), fileName);
-
-                updateFileContents(googleDriveAccessToken, driveFileId, localFile);
+                uploadFileContents(googleDriveAccessToken, driveFileId, localFile);
 
                 LOG.info("   → updateFileContents() finalizado correctamente");
                 LOG.info("=== FIN DE filesSet() para " + fileName);
@@ -269,7 +254,102 @@ public class DriveUpWorker extends Worker {
         return false;
     }
 
-    private String updateFileContents(String accessToken, String driveFileId, File fileToUpload) throws Exception {
+    private String uploadFileContents2(String accessToken, String driveFileId, File fileToUpload, String mType) throws Exception {
+
+        if (fileToUpload == null || !fileToUpload.exists()) {
+            throw new IllegalArgumentException("El archivo a subir no existe");
+        }
+
+        String mimeType = DriveUtils.getMimeTypeFromFileName(fileToUpload.getName());
+
+        // Para CSV forzamos UTF-8 explícitamente (muy importante)
+        String contentType = mType; //"application/octet-stream";
+
+
+//        String contentType = fileToUpload.getName().toLowerCase().endsWith(".csv")
+//                ? "text/csv; charset=utf-8"
+//                : mimeType;
+
+        String updateUrl = "https://www.googleapis.com/upload/drive/v3/files/" +
+                driveFileId + "?uploadType=media";
+
+        LOG.debug("Subiendo archivo a Drive → ID: {} | Nombre: {} | Tipo: {}",
+                driveFileId, fileToUpload.getName(), contentType);
+
+        OkHttpClient client = new OkHttpClient.Builder()
+                .connectTimeout(30, TimeUnit.SECONDS)
+                .writeTimeout(60, TimeUnit.SECONDS)
+                .build();
+
+        // Usamos RequestBody.create con el archivo directamente (más eficiente)
+        RequestBody body = RequestBody.create(fileToUpload, MediaType.parse(contentType));
+
+        Request.Builder builder = new Request.Builder()
+                .url(updateUrl)
+                .addHeader("Authorization", "Bearer " + accessToken);
+
+        // Soporte para Android antiguo
+        if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.KITKAT) {
+            builder.addHeader("X-HTTP-Method-Override", "PATCH");
+            builder.method("POST", body);
+        } else {
+            builder.method("PATCH", body);
+        }
+
+        Request request = builder.build();
+
+        try (Response response = client.newCall(request).execute()) {
+
+            if (!response.isSuccessful()) {
+                String errorBody = response.body() != null ? response.body().string() : "";
+                LOG.error("Error al subir archivo. Código: {} - {}", response.code(), errorBody);
+                throw new Exception("Error al subir archivo: Código " + response.code() + " - " + errorBody);
+            }
+
+            String responseBody = response.body() != null ? response.body().string() : "";
+            LOG.debug("Respuesta de Drive al subir: {}", responseBody);
+
+            JSONObject json = new JSONObject(responseBody);
+            String fileId = json.getString("id");
+
+            LOG.info("✅ Archivo subido correctamente a Drive. ID: {}", fileId);
+            return fileId;
+
+        } catch (Exception e) {
+            LOG.error("Error en updateFileContents al subir: {}", fileToUpload.getName(), e);
+            throw e;
+        }
+    }
+
+    private String uploadFileContents(String accessToken, String driveFileId, File fileToUpload) throws Exception {
+        FileInputStream fis = new FileInputStream(fileToUpload);
+        String fileId = null;
+
+        String fileUpdateUrl = "https://www.googleapis.com/upload/drive/v3/files/" + driveFileId + "?uploadType=media";
+
+        OkHttpClient client = new OkHttpClient();
+        Request.Builder requestBuilder = new Request.Builder().url(fileUpdateUrl);
+
+        requestBuilder.addHeader("Authorization", "Bearer " + accessToken);
+        RequestBody body = RequestBody.create(MediaType.parse(DriveUtils.getMimeTypeFromFileName(fileToUpload.getName())), getByteArrayFromInputStream(fis));
+        if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.KITKAT) {
+            requestBuilder.addHeader("X-HTTP-Method-Override", "PATCH");
+        }
+        requestBuilder = requestBuilder.method("PATCH", body);
+
+        Request request = requestBuilder.build();
+        Response response = client.newCall(request).execute();
+        String fileMetadata = response.body().string();
+        LOG.debug(fileMetadata);
+        response.body().close();
+
+        JSONObject fileMetadataJson = new JSONObject(fileMetadata);
+        fileId = fileMetadataJson.getString("id");
+
+        return fileId;
+    }
+
+    private String uploadFileContents3(String accessToken, String driveFileId, File fileToUpload, String mType) throws Exception {
         FileInputStream fis = new FileInputStream(fileToUpload);
         String fileId = null;
 
@@ -299,33 +379,6 @@ public class DriveUpWorker extends Worker {
 
     protected int getRetryLimit() {
         return 3;
-    }
-
-    /**
-     * Copia un texto al portapapeles del dispositivo.
-     *
-     * @param context Contexto de la aplicación.
-     * @param text    Texto a copiar al portapapeles.
-     * @param label   Etiqueta opcional para describir el contenido (puede ser null).
-     * @return true si se copió exitosamente, false si ocurrió un error.
-     */
-    private static boolean copyToClipboard(@NonNull Context context, @NonNull String text, @Nullable String label) {
-        try {
-            // Obtener el servicio del portapapeles
-            ClipboardManager clipboard = (ClipboardManager) context.getSystemService(Context.CLIPBOARD_SERVICE);
-
-            // Crear un ClipData con el texto
-            ClipData clip = ClipData.newPlainText(label != null ? label : "Texto copiado", text);
-
-            // Copiar al portapapeles
-            clipboard.setPrimaryClip(clip);
-
-            return true;
-        } catch (Exception e) {
-            // Registrar el error (puedes usar un logger como Logcat o el de tu preferencia)
-            android.util.Log.e("ClipboardUtils", "Error al copiar al portapapeles: " + e.getMessage(), e);
-            return false;
-        }
     }
 
     public static byte[] getByteArrayFromInputStream(InputStream is) {

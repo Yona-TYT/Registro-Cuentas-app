@@ -8,6 +8,7 @@ import android.os.Environment;
 import android.provider.MediaStore;
 import android.util.Log;
 import android.view.View;
+import android.webkit.MimeTypeMap;
 import android.widget.ImageView;
 
 import androidx.activity.result.ActivityResultLauncher;
@@ -320,6 +321,14 @@ public class FilesManager extends MainActivity implements View.OnClickListener{
         }
 
         return fileName;
+    }
+
+    public static String getMimeType(File file) {
+        String extension = MimeTypeMap.getFileExtensionFromUrl(file.getAbsolutePath());
+        if (extension != null) {
+            return MimeTypeMap.getSingleton().getMimeTypeFromExtension(extension.toLowerCase());
+        }
+        return "application/octet-stream";
     }
 
 }

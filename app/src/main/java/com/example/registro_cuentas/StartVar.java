@@ -86,6 +86,8 @@ public class StartVar {
 
     public static final String dirAppName = ".accdata";
     public static final String csvAppName = "DataSave.csv";
+    public static final String exportName = "DataSave.bin";
+
 
 
     //Root View

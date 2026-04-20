@@ -114,12 +114,14 @@ public class SetWorkResult {
                         boolean isFileOk = outputData.getBoolean("file", false);
                         boolean isCheck = outputData.getBoolean("check", false);
                         boolean isImg = outputData.getBoolean("img", false);
+                        boolean isId = outputData.getBoolean("isId", false);
 
                         //Basic.msg("!!!!---0 !: "+ isCheck);
 
                         String[] filesDownloaded = outputData.getStringArray("files_downloaded");
 
                         if (workInfo.getState() == WorkInfo.State.SUCCEEDED) {
+
                             String displayMessage = message != null ? message : "Descarga completada";
                             if (filesDownloaded != null && filesDownloaded.length > 0) {
                                 displayMessage += ": " + String.join(", ", filesDownloaded);
@@ -129,7 +131,7 @@ public class SetWorkResult {
                                 return;
                             }
 
-                            File mFile = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS+"/"+StartVar.dirAppName+"/"+StartVar.csvAppName);
+                            File mFile = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS+"/"+StartVar.dirAppName+"/"+StartVar.exportName);
                             if(mFile.exists()){
 
                                 Uri uri = Uri.fromFile(mFile);
@@ -139,6 +141,9 @@ public class SetWorkResult {
                                 try {
                                     InputStream inputStream = context.getContentResolver().openInputStream(uri);
                                     BufferedReader reader = new BufferedReader( new InputStreamReader(Objects.requireNonNull(inputStream)));
+
+                                    Basic.msg(uri.getPath());
+
 
                                     String line;
 
@@ -164,9 +169,16 @@ public class SetWorkResult {
                                             break;
                                         }
                                     }
+
+                                    // Se ha seleccionado un respaldo y remplazara todos los datos locales
+                                    if (isId){
+                                        String mMsg = "Restaurando respaldo...";
+                                        DBListCreator.cvsToDB(StartVar.mActivity, uri, 1, mMsg);
+                                        return;
+                                    }
+
                                     Conf mConf = StartVar.appDBall.daoCfg().getUsers(StartVar.mConfID);
                                     List<Cuenta> mAccList = StartVar.appDBall.daoAcc().getUsers();
-
                                     if(!mConf.hexid.equals(hexID)){
                                         if(mAccList.isEmpty()){
                                             String mMsg = "Los datos locales están vacios";
@@ -267,14 +279,17 @@ public class SetWorkResult {
                             String displayMessage = message != null ? message : "Error en la descarga";
                             //Basic.msg("CVS no Existe 2 !: "+displayMessage);
 
+                           // Basic.msg("Aqui hay ? "+displayMessage,true);
                             if (!isFileOk) {
-                                if(preloader){
-                                    resetPreloader(true);
-                                    StartVar.makeUpdate = true;
-                                }
-                                else {
-                                    Basic.msg("Subiendo Datos...");
-                                    manager.uploadDataBase();
+                                List<Cuenta> mAccList = StartVar.appDBall.daoAcc().getUsers();
+                                if(!mAccList.isEmpty()) {
+                                    if (preloader) {
+                                        resetPreloader(true);
+                                        StartVar.makeUpdate = true;
+                                    } else {
+                                        Basic.msg("Subiendo Datos...");
+                                        manager.uploadDataBase();
+                                    }
                                 }
                             }
                         }

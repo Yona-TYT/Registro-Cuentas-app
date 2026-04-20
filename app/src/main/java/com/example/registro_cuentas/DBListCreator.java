@@ -415,7 +415,6 @@ public class DBListCreator extends AppCompatActivity {
             }
 
             InputStream inputStream = AppContextProvider.getContext().getContentResolver().openInputStream(uri);
-
             BufferedReader reader = new BufferedReader( new InputStreamReader(Objects.requireNonNull(inputStream)));
             String line;
             String version = "0";
@@ -471,7 +470,6 @@ public class DBListCreator extends AppCompatActivity {
                     daoConf.updateUser("confID0", spl[1], spl[2], spl[3], spl[4], Integer.parseInt(spl[5]), Double.parseDouble(spl[6]) ,Integer.parseInt(spl[7]), Integer.parseInt(spl[8]), 0);
                 }
                 else if(opt==1){
-                    //Basic.msg(spl[10] +" "+name+" "+spl[1]);
                     Cuenta obj = new Cuenta(
                             spl[0], spl[1], spl[2], spl[3], Integer.parseInt(spl[4]), Integer.parseInt(spl[5]),
                             Integer.parseInt(spl[6]), Integer.parseInt(spl[7]), spl[8], spl[9]
@@ -519,8 +517,15 @@ public class DBListCreator extends AppCompatActivity {
             Basic.msg("ErrorB: "+ e.getMessage());
             throw new RuntimeException(e);
         }
-        
+
+        Basic.msg("??"+daoPagos.getUsers().size());
+
+
         if(finish) {
+
+            if( StartVar.reloadActivity != null){
+                mActivity = StartVar.reloadActivity;
+            }
             Intent mIntent = new Intent(AppContextProvider.getContext(), mActivity.getClass());
             mActivity.startActivity(mIntent);
             Basic.msg(mMsg);

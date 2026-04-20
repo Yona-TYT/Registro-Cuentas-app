@@ -8,9 +8,11 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.Handler;
 import android.os.Looper;
 import android.util.Base64;
+import android.util.Log;
 
 import androidx.activity.result.ActivityResult;
 import androidx.activity.result.ActivityResultCallback;
@@ -19,10 +21,14 @@ import androidx.activity.result.IntentSenderRequest;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.FragmentActivity;
+import androidx.preference.DropDownPreference;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
 import androidx.preference.SwitchPreferenceCompat;
+import androidx.work.Data;
+import androidx.work.ListenableWorker;
 
 
 import com.example.registro_cuentas.AppContextProvider;
@@ -56,6 +62,7 @@ import java.io.IOException;
 import java.security.MessageDigest;
 import java.security.SecureRandom;
 import java.time.LocalTime;
+import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -87,6 +94,7 @@ public class SettingsFragment extends PreferenceFragmentCompat implements
 
         manager = new DriveManager(PreferenceHelper.getInstance());
 
+
         if(Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP){
             findPreference(PreferenceNames.AUTOSEND_GOOGLE_DRIVE_ENABLED).setEnabled(false);
             ((SwitchPreferenceCompat)findPreference(PreferenceNames.AUTOSEND_GOOGLE_DRIVE_ENABLED)).setChecked(false);
@@ -107,6 +115,12 @@ public class SettingsFragment extends PreferenceFragmentCompat implements
         findPreference("google_drive_sync").setOnPreferenceClickListener(this);
         findPreference("google_drive_sync_img").setOnPreferenceClickListener(this);
 
+        DropDownPreference backupSpinner = findPreference("google_drive_backups");
+        if (backupSpinner != null) {
+            loadDriveCsvBackups(backupSpinner);
+            backupSpinner.setOnPreferenceChangeListener(this);
+        }
+
         registerEventBus();
 
         setPreferencesState();
@@ -114,9 +128,7 @@ public class SettingsFragment extends PreferenceFragmentCompat implements
         ExecutorService executorService = Executors.newSingleThreadExecutor();
 
         mWorkResult = new SetWorkResult(this, executorService, manager);
-
     }
-
 
     @Override
     public void onDestroy() {
@@ -130,6 +142,73 @@ public class SettingsFragment extends PreferenceFragmentCompat implements
         } catch (Throwable t){
             //this may crash if registration did not go through. just be safe
         }
+    }
+
+    private void loadDriveCsvBackups(DropDownPreference spinner) {
+        spinner.setEnabled(false);
+        spinner.setSummary("Buscando respaldos en Drive...");
+
+        Executors.newSingleThreadExecutor().execute(() -> {
+            try {
+                AuthorizationService authorizationService = DriveManager.getAuthorizationService(getContext());
+                String googleDriveAccessToken = DriveUtils.getFreshAccessToken(authState, authorizationService);
+
+                // Obtener folderId (tu código actual)
+                String folderPath = PreferenceHelper.getInstance().getGoogleDriveFolderPath();
+                String[] pathParts = folderPath.split("/");
+                String parentFolderId = null;
+                String latestFolderId = null;
+
+                for (String part : pathParts) {
+                    latestFolderId = DriveUtils.getFileIdFromFileName(googleDriveAccessToken, part, parentFolderId);
+                    if (DriveUtils.isNullOrEmpty(latestFolderId)) {
+                        latestFolderId = DriveUtils.createEmptyFile(googleDriveAccessToken, part,
+                                "application/vnd.google-apps.folder",
+                                DriveUtils.isNullOrEmpty(parentFolderId) ? "root" : parentFolderId);
+                    }
+                    parentFolderId = latestFolderId;
+                }
+
+                List<DriveFileMeta> csvFiles = DriveUtils.listCsvFilesFromDrive(googleDriveAccessToken, latestFolderId);
+
+                new Handler(Looper.getMainLooper()).post(() -> {
+                    if (csvFiles.isEmpty()) {
+                        spinner.setSummary("No hay respaldos disponibles");
+                        spinner.setEnabled(false);
+                        return;
+                    }
+
+                    // ==================== ELEMENTO FALSO AL INICIO ====================
+                    String[] entries = new String[csvFiles.size() + 1];
+                    String[] entryValues = new String[csvFiles.size() + 1];
+
+                    // Primer elemento falso (no hace nada)
+                    entries[0] = "— Selecciona un respaldo —";
+                    entryValues[0] = "";   // valor vacío = no hacer nada
+
+                    // Agregar los respaldos reales a partir del índice 1
+                    for (int i = 0; i < csvFiles.size(); i++) {
+                        DriveFileMeta file = csvFiles.get(i);
+                        entries[i + 1] = file.name + " (" + file.modifiedTime + ")";
+                        entryValues[i + 1] = file.id;
+                    }
+
+                    spinner.setEntries(entries);
+                    spinner.setEntryValues(entryValues);
+                    spinner.setEnabled(true);
+                    spinner.setSummary("Selecciona un respaldo para restaurar");
+
+                    // Seleccionamos el elemento falso por defecto
+                    spinner.setValue("");
+                });
+
+            } catch (Exception e) {
+                new Handler(Looper.getMainLooper()).post(() -> {
+                    spinner.setSummary("Error al cargar respaldos");
+                    Log.e("SettingsFragment", "Error cargando backups", e);
+                });
+            }
+        });
     }
 
     private void registerEventBus() {
@@ -151,13 +230,45 @@ public class SettingsFragment extends PreferenceFragmentCompat implements
         findPreference("google_drive_test").setEnabled(authState.isAuthorized());
         findPreference("google_drive_sync").setEnabled(authState.isAuthorized());
         findPreference("google_drive_sync_img").setEnabled(authState.isAuthorized());
-
+        findPreference("google_drive_backups").setEnabled(authState.isAuthorized());
 
         findPreference(PreferenceNames.GOOGLE_DRIVE_FOLDER_PATH).setVisible(false); // Ocultar la preferencia
     }
 
     @Override
     public boolean onPreferenceChange(Preference preference, Object newValue) {
+        if (preference.getKey().equals("google_drive_backups")) {
+
+            String selectedFileId = (String) newValue;
+
+            // Ignorar si es el elemento falso
+            if (DriveUtils.isNullOrEmpty(selectedFileId)) {
+
+                LOG.debug("Elemento 'Selecciona un respaldo' seleccionado → ignorado");
+                return true;
+            }
+
+            if (!DriveUtils.isNullOrEmpty(selectedFileId)) {
+                LOG.debug("Usuario seleccionó respaldo con ID: " + selectedFileId);
+
+                // Confirmación antes de restaurar
+                new AlertDialog.Builder(requireContext())
+                        .setTitle("Restaurar respaldo")
+                        .setMessage("¿Estás seguro de restaurar este respaldo?\n\nEsta acción puede sobrescribir datos existentes.")
+                        .setPositiveButton("Restaurar", (dialog, which) -> {
+
+                            File path = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS+"/"+StartVar.dirAppName+"/"+StartVar.exportName);
+                            String mType = "?alt=media";
+                            //DriveUtils.downloadFileFromDrive(accessToken,  selectedFileId, path, mType);
+                            manager.dataSynchronizeSelect(selectedFileId);
+
+                            })
+                        .setNegativeButton("Cancelar", null)
+                        .show();
+            }
+            return true;
+        }
+
         return false;
     }
 
