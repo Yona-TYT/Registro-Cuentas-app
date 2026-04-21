@@ -96,7 +96,7 @@ public class DriveManager {
 
         //copyToClipboard(mContext, google_drive_auth_state, "tago");
 
-        if (!isNullOrEmpty(google_drive_auth_state)) {
+        if (!DriveUtils.isNullOrEmpty(google_drive_auth_state)) {
             try {
                 authState = AuthState.jsonDeserialize(google_drive_auth_state);
 
@@ -251,24 +251,20 @@ public class DriveManager {
                 List<File> mFileList = new ArrayList<>();
 
                 // Procesamiento de la lista (Operación pesada de I/O)
-                if (StartVar.listreg != null) {
-                    for (Pagos mUser : StartVar.listreg) {
-                        File mFile = new File(mUser.imagen);
-                        if (mFile.exists()) {
-                            mFileList.add(mFile);
-                        }
+                for (String s : StartVar.getImgList()) {
+                    File mFile = new File(s);
+                    if (mFile.exists()) {
+                        mFileList.add(mFile);
                     }
                 }
-
                 // 3. Encolar el trabajo solo si hay archivos
                 if (!mFileList.isEmpty()) {
                     //Basic.msg("Siz img: "+mFileList.size());
                     // Llamamos a ImportDataToDrive directamente desde este hilo
                     ImportDataToDrive( mFileList, true);
-
                     android.util.Log.i("DriveSync", "✅ Lista preparada: " + mFileList.size() + " imágenes.");
-                } else {
-
+                }
+                else {
                     Basic.msg("Descargando imagenes...");
                     //Si la lista esta vacia se procede a descargar las imagenes
                     dataSynchronizeImg();
@@ -299,43 +295,5 @@ public class DriveManager {
 
     public boolean accept(File file, String s) {
         return true;
-    }
-
-
-    /**
-     * Checks if a string is null or empty
-     *
-     * @param text
-     * @return
-     */
-    public static boolean isNullOrEmpty(String text) {
-        return text == null ||  text.trim().length() == 0;
-    }
-
-    /**
-     * Copia un texto al portapapeles del dispositivo.
-     *
-     * @param context Contexto de la aplicación.
-     * @param text    Texto a copiar al portapapeles.
-     * @param label   Etiqueta opcional para describir el contenido (puede ser null).
-     * @return true si se copió exitosamente, false si ocurrió un error.
-     */
-    public static boolean copyToClipboard(@NonNull Context context, @NonNull String text, @Nullable String label) {
-        try {
-            // Obtener el servicio del portapapeles
-            ClipboardManager clipboard = (ClipboardManager) context.getSystemService(Context.CLIPBOARD_SERVICE);
-
-            // Crear un ClipData con el texto
-            ClipData clip = ClipData.newPlainText(label != null ? label : "Texto copiado", text);
-
-            // Copiar al portapapeles
-            clipboard.setPrimaryClip(clip);
-
-            return true;
-        } catch (Exception e) {
-            // Registrar el error (puedes usar un logger como Logcat o el de tu preferencia)
-            android.util.Log.e("ClipboardUtils", "Error al copiar al portapapeles: " + e.getMessage(), e);
-            return false;
-        }
     }
 }

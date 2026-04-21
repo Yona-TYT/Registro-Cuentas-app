@@ -1,7 +1,5 @@
 package com.example.registro_cuentas.drive;
 
-
-
 import android.content.Context;
 import android.content.Intent;
 import android.net.ConnectivityManager;
@@ -25,31 +23,19 @@ import androidx.work.WorkRequest;
 
 import com.example.registro_cuentas.AppContextProvider;
 import com.example.registro_cuentas.Basic;
-import com.example.registro_cuentas.CalendUtls;
-import com.example.registro_cuentas.DBListCreator;
 import com.example.registro_cuentas.StartVar;
 import com.example.registro_cuentas.activitys.ReloadActivity;
-import com.example.registro_cuentas.db.Cliente;
-import com.example.registro_cuentas.db.Conf;
 import com.example.registro_cuentas.db.Cuenta;
-import com.example.registro_cuentas.db.Deuda;
 import com.example.registro_cuentas.ex.PreferenceHelper;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
+
 import java.util.HashMap;
 import java.util.List;
-import java.util.Objects;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.TimeUnit;
 
@@ -110,11 +96,8 @@ public class SetWorkResult {
                         Data outputData = workInfo.getOutputData();
                         String message = outputData.getString("result_message");
                         boolean preloader = outputData.getBoolean("preloader", false);
-                        boolean newObj = outputData.getBoolean("newobj", false);
                         boolean isFileOk = outputData.getBoolean("file", false);
-                        boolean isCheck = outputData.getBoolean("check", false);
                         boolean isImg = outputData.getBoolean("img", false);
-                        boolean isId = outputData.getBoolean("isId", false);
 
                         //Basic.msg("!!!!---0 !: "+ isCheck);
 
@@ -126,150 +109,19 @@ public class SetWorkResult {
                             if (filesDownloaded != null && filesDownloaded.length > 0) {
                                 displayMessage += ": " + String.join(", ", filesDownloaded);
                             }
-
                             if(isImg){
                                 return;
                             }
-
                             File mFile = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS+"/"+StartVar.dirAppName+"/"+StartVar.exportName);
                             if(mFile.exists()){
-
+                                //Aqui se analizan los nuevos datos y se comparan con los existentes
                                 Uri uri = Uri.fromFile(mFile);
-
-                                // call this to persist permission across decice reboots
-                                StringBuilder stringBuilder = new StringBuilder();
                                 try {
-                                    InputStream inputStream = context.getContentResolver().openInputStream(uri);
-                                    BufferedReader reader = new BufferedReader( new InputStreamReader(Objects.requireNonNull(inputStream)));
-
-                                    Basic.msg(uri.getPath());
-
-
-                                    String line;
-
-                                    String hexID = "";
-                                    String date = "";
-                                    String time = "";
-
-                                    while ((line = reader.readLine()) != null) {
-                                        line = line.replaceAll("\"", "");
-                                        String[] spl = line.split(",");
-
-                                        if (spl[0].equals("confID0")){
-                                            //spl[0]; //Obj id
-                                            //spl[1]; //Version
-                                            hexID = spl[2]; //Hexa ID
-                                            date = spl[3]; //Date
-                                            time = spl[4]; //Time
-                                            //spl[5]; //Save1
-                                            //spl[6]; //Save2
-                                            //spl[7]; //Save3
-
-                                            stringBuilder.append(line);
-                                            break;
-                                        }
-                                    }
-
-                                    // Se ha seleccionado un respaldo y remplazara todos los datos locales
-                                    if (isId){
-                                        String mMsg = "Restaurando respaldo...";
-                                        DBListCreator.cvsToDB(StartVar.mActivity, uri, 1, mMsg);
-                                        return;
-                                    }
-
-                                    Conf mConf = StartVar.appDBall.daoCfg().getUsers(StartVar.mConfID);
-                                    List<Cuenta> mAccList = StartVar.appDBall.daoAcc().getUsers();
-                                    if(!mConf.hexid.equals(hexID)){
-                                        if(mAccList.isEmpty()){
-                                            String mMsg = "Los datos locales están vacios";
-                                            DBListCreator.cvsToDB(StartVar.mActivity, uri, 1, mMsg);
-                                            return;
-                                        }
-                                        else {
-                                            Basic.msg("Error: Los IDs de las DB no coinciden: "+hexID+" , "+mConf.hexid,true);
-
-                                            //Si es desde el preloder se reinicia la actividad
-                                            resetPreloader(preloader);
-                                            return;
-                                        }
-                                    }
-                                    else if(mAccList.isEmpty()){
-                                        String mMsg = "Los datos locales están vacios";
-                                        DBListCreator.cvsToDB(StartVar.mActivity, uri, 1, mMsg);
-                                        return;
-                                    }
-                                    if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
-                                        // Validar datos de entrada
-                                        if (mConf.date == null || date.isEmpty() || mConf.time == null || time.isEmpty()) {
-                                            Basic.msg("Error: Datos de fecha/hora incompletos");
-                                            return;
-                                        }
-
-                                        // Combinar fecha y hora en LocalDateTime
-                                        LocalDateTime dateTimeA = CalendUtls.DTformat(mConf.date + "T" + mConf.time);
-                                        LocalDateTime dateTimeB = CalendUtls.DTformat(date + "T" + time);
-
-                                        // Comparar fechas y horas
-                                        int result = dateTimeA.compareTo(dateTimeB);
-                                        if (result > 0) {
-                                            //uploadDataBase();
-                                            if (newObj) {
-                                                //Basic.msg("Enviando Actualizacion...");
-                                                manager.uploadDataBase();
-                                            }
-                                            else{
-                                                //Basic.msg("Los datos locales están más actualizados (" + dateTimeA + " > " + dateTimeB + ")");
-                                                if(isCheck) {
-                                                    StartVar.genericQueue.startUsuarioQueue(1);
-                                                }
-                                            }
-                                        }
-                                        else if (result < 0) {
-
-                                            String mMsg = "Los datos en línea están más actualizados (" + dateTimeA + " < " + dateTimeB + ")";
-
-                                            if (newObj){
-                                                mMsg = "Error los cambios no se sincronizaron";
-                                            }
-                                            if(isCheck) {
-                                                DBListCreator.cvsToDbNotFinish(StartVar.mActivity, uri, 1, "");
-                                                StartVar.genericQueue.startUsuarioQueue(2);
-                                            }
-                                            else {
-                                                DBListCreator.cvsToDB(StartVar.mActivity, uri, 1, "");
-
-                                            }
-                                            return;
-                                        }
-                                        else {
-                                            if (newObj){
-                                                //Basic.msg("Enviando Actualizacion...");
-                                                String currDate = LocalDate.now().toString();
-                                                String currTime = LocalTime.now().toString();
-                                                StartVar.appDBall.daoCfg().updateDateTime(StartVar.mConfID, currDate, currTime);
-                                                StartVar.getConfigDB();
-                                                manager.uploadDataBase();
-                                            }
-                                            else {
-                                                if(!isCheck) {
-                                                    Basic.msg("La base de datos está actualizada (" + dateTimeA + ")");
-                                                }
-                                            }
-                                            if(isCheck) {
-                                                StartVar.genericQueue.startUsuarioQueue(1);
-                                            }
-                                        }
-
-                                        //Si es desde el preloder se reinicia la actividad
-                                        resetPreloader(preloader);
-                                    }
-                                }
-                                catch (FileNotFoundException e) {
+                                    SetDb.set(context, outputData, uri,  manager);
+                                } catch (IOException e) {
                                     throw new RuntimeException(e);
                                 }
-                                catch (IOException e) {
-                                    throw new RuntimeException(e);
-                                }
+                                //------------------------------------------------------------------
                             }
                             else {
                                 Basic.msg("CVS no Existe 1 !: "+displayMessage);
@@ -278,8 +130,7 @@ public class SetWorkResult {
                         else if (workInfo.getState() == WorkInfo.State.FAILED) {
                             String displayMessage = message != null ? message : "Error en la descarga";
                             //Basic.msg("CVS no Existe 2 !: "+displayMessage);
-
-                           // Basic.msg("Aqui hay ? "+displayMessage,true);
+                            //Basic.msg("Aqui hay ? "+displayMessage,true);
                             if (!isFileOk) {
                                 List<Cuenta> mAccList = StartVar.appDBall.daoAcc().getUsers();
                                 if(!mAccList.isEmpty()) {
@@ -297,78 +148,6 @@ public class SetWorkResult {
                 }
             });
     }
-
-    /**
-     * Starts a OneTimeWorkRequest with the given worker class and data map and tag. The constraints are set to
-     * UNMETERED network type if the user has set the app to only send on wifi. Otherwise it is set to
-     * CONNECTED. The initial delay is set to 1 second to avoid the work being enqueued immediately.
-     * The backoff criteria is set to exponential with a 30 second initial delay. The tag is used to
-     * uniquely identify the work request, and it replaces any existing work with the same tag.
-     * @param workerClass
-     * @param dataMap
-     * @return
-     */
-//    public static void startWorkManagerRequest(Class workerClass, HashMap<String, Object> dataMap, String tag) {
-//        // 1. Obtener contexto de forma segura
-//        Context context = AppContextProvider.getContext();
-//        if (context == null) {
-//            android.util.Log.e("DriveSync", "❌ No se pudo obtener contexto de AppContextProvider. Abortando WorkManager.");
-//            return;
-//        }
-//
-//        // 2. Crear los datos de entrada
-//        androidx.work.Data data = new Data.Builder().putAll(dataMap).build();
-//
-//        // 3. Configurar restricciones de red
-//        NetworkRequest.Builder builder = new NetworkRequest.Builder();
-//        builder.addCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET);
-//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-//            builder.addCapability(NetworkCapabilities.NET_CAPABILITY_VALIDATED);
-//        }
-//        if (PreferenceHelper.getInstance().shouldAutoSendOnWifiOnly()) {
-//            builder.addTransportType(NetworkCapabilities.TRANSPORT_WIFI);
-//        }
-//        NetworkRequest networkRequest = builder.build();
-//
-//        Constraints constraints = new Constraints.Builder()
-//                .setRequiredNetworkRequest(networkRequest,
-//                        PreferenceHelper.getInstance().shouldAutoSendOnWifiOnly()
-//                                ? NetworkType.UNMETERED : NetworkType.CONNECTED)
-//                .setRequiredNetworkType(
-//                        PreferenceHelper.getInstance().shouldAutoSendOnWifiOnly()
-//                                ? NetworkType.UNMETERED : NetworkType.CONNECTED)
-//                .build();
-//
-//        // 4. Verificar conexión (usando la versión segura)
-//        if (!isNetworkAvailable(context)) {
-//            android.util.Log.w("DriveSync", "Sin conexión a internet. Se encolará cuando vuelva la conexión.");
-//
-//            // Solo forzamos el preloader si es el flujo inicial
-//            if (!StartVar.mainStart) {
-//                StartVar.setmMainStart(true);
-//                resetPreloader(true);
-//            }
-//            // Puedes decidir si quieres encolar igual o no. WorkManager lo manejará con las constraints.
-//        }
-//
-//        // 5. Crear y encolar el trabajo
-//        OneTimeWorkRequest workRequest = new OneTimeWorkRequest.Builder(workerClass)
-//                .setConstraints(constraints)
-//                .setInitialDelay(1, java.util.concurrent.TimeUnit.SECONDS)
-//                .setBackoffCriteria(BackoffPolicy.EXPONENTIAL, 30, java.util.concurrent.TimeUnit.SECONDS)
-//                .setInputData(data)
-//                .build();
-//
-//        try {
-//            WorkManager.getInstance(context)   // ← Ahora usamos context seguro
-//                    .enqueueUniqueWork(tag, ExistingWorkPolicy.REPLACE, workRequest);
-//
-//            android.util.Log.i("DriveSync", "✅ WorkManager encolado correctamente: " + tag);
-//        } catch (Exception e) {
-//            android.util.Log.e("DriveSync", "Error al encolar WorkManager", e);
-//        }
-//    }
-
 
     public static void startWorkManagerRequest(Class<? extends ListenableWorker> workerClass, HashMap<String, Object> dataMap, String tag) {
         // 1. Usar el contexto proporcionado o el global como respaldo
@@ -399,10 +178,7 @@ public class SetWorkResult {
 
         // 5. Verificar conexión (usando la versión segura)
         if (!isNetworkAvailable(appContext)) {
-
-            Basic.msg("Aqui hay! "+isNetworkAvailable(appContext),true);
             android.util.Log.w("DriveSync", "Sin conexión a internet. Se encolará cuando vuelva la conexión.");
-
             // Solo forzamos el preloader si es el flujo inicial
             if (!StartVar.mainStart) {
                 StartVar.setmMainStart(true);
@@ -420,7 +196,6 @@ public class SetWorkResult {
             android.util.Log.e("DriveSync", "❌ Error Binder/WorkManager", e);
         }
     }
-
     public static boolean isNetworkAvailable(Context context) {
 
         if (context == null) {
@@ -441,7 +216,7 @@ public class SetWorkResult {
                 capabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_VALIDATED);
     }
 
-    private static void resetPreloader(boolean preloader){
+    public static void resetPreloader(boolean preloader){
         if(preloader){
             if(StartVar.mActivity != null){
                 Intent mIntent = new Intent(AppContextProvider.getContext(),  ReloadActivity.class);

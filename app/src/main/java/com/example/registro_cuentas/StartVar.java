@@ -16,6 +16,7 @@ import com.example.registro_cuentas.db.Pagos;
 import com.example.registro_cuentas.db.GenericQueue;
 import com.example.registro_cuentas.drive.SetWorkResult;
 
+import java.io.File;
 import java.nio.ByteBuffer;
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -48,7 +49,7 @@ public class StartVar {
     public static List<Cuenta> listacc =  new ArrayList<>();
     public static List<Cliente> listclt =  new ArrayList<>();
     public static List<Fecha> listfec =  new ArrayList<>();
-    public static List<Pagos> listreg = new ArrayList<>();
+    public static List<Pagos> listpay = new ArrayList<>();
     public static List<Deuda> listdeb = new ArrayList<>();
     // DB
     public static AllDao appDBall;
@@ -79,10 +80,6 @@ public class StartVar {
     public static String currPayId = "";
     public static int cltIndex = 0;
     public static String cltBit = "0x0";
-
-
-    public static String saveRegName = "reg";
-    public static String saveDebName = "deb";
 
     public static final String dirAppName = ".accdata";
     public static final String csvAppName = "DataSave.csv";
@@ -122,7 +119,7 @@ public class StartVar {
         StartVar.listclt = StartVar.appDBall.daoClt().getUsers();
         StartVar.listdeb = StartVar.appDBall.daoDeb().getUsers();
         StartVar.listfec = StartVar.appDBall.daoDat().getUsers();
-        StartVar.listreg = StartVar.appDBall.daoPay().getUsers();
+        StartVar.listpay = StartVar.appDBall.daoPay().getUsers();
 
         //Instancia de la base de datos para Config
         StartVar.mConfigDB = StartVar.appDBall.daoCfg().getUsers(StartVar.mConfID);
@@ -153,7 +150,6 @@ public class StartVar {
             StartVar.appDBall.daoCfg().insertUser(obj);
         }
     }
-
     public void getAccListDB(){
         //Instancia para obtener Cuentas
         StartVar.listacc =  StartVar.appDBall.daoAcc().getUsers();
@@ -166,12 +162,10 @@ public class StartVar {
     }
     //----------------------------------------------------------------------------------
 
-
     public void getFecListDB(){
         //Instancia para obtener Fechas
         StartVar.listfec =  StartVar.appDBall.daoDat().getUsers();
     }
-
     public void setmPermiss(boolean permiss){
         mPermiss = permiss;
     }
@@ -186,9 +180,6 @@ public class StartVar {
     public void setCurrentMes(int idx){
         mCurrMes = idx;
     }
-    public void setCurrentClt(int idx){
-        mCurrMes = idx;
-    }
 
     public void setDollar(Double value){
         StartVar.mDollar = value;
@@ -201,9 +192,6 @@ public class StartVar {
         StartVar.typeList = listC;
     }
 
-    public void setCurrSel4(int value){
-        StartVar.currSel4 = value;
-    }
     public void setPayId(String value){
         StartVar.currPayId = value;
     }
@@ -221,6 +209,15 @@ public class StartVar {
     public void setMorlist(ArrayList<String> list){
         StartVar.morlist.clear();
         StartVar.morlist = list;
+    }
+
+    public static List<String> getImgList(){
+        ArrayList<String> list = new ArrayList<>();
+        List<Pagos> payList =  StartVar.appDBall.daoPay().getUsers();
+        for (Pagos mU : payList) {
+            list.add(mU.imagen);
+        }
+        return list;
     }
 
     public static void setmMainStart(boolean mStart){mainStart = mStart;}

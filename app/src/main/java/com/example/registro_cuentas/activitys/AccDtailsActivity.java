@@ -49,7 +49,7 @@ public class AccDtailsActivity extends AppCompatActivity implements View.OnClick
 
 
     private List<Cuenta> listCuenta;
-    private List<Pagos> appDBregistro = StartVar.listreg;
+    private List<Pagos> appDBregistro = StartVar.listpay;
     private List<Pagos> listPagos;
     //--------------------------------------------------------------------
 

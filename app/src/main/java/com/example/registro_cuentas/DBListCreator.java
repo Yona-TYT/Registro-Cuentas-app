@@ -518,9 +518,6 @@ public class DBListCreator extends AppCompatActivity {
             throw new RuntimeException(e);
         }
 
-        Basic.msg("??"+daoPagos.getUsers().size());
-
-
         if(finish) {
 
             if( StartVar.reloadActivity != null){
